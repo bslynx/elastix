@@ -27,12 +27,12 @@
   +----------------------------------------------------------------------+
   $Id: DialerConn.class.php,v 1.48 2009/03/26 13:46:58 alex Exp $ */
 
-abstract class DialerConn
+abstract class MultiplexConn
 {
-    public $dialSrv = NULL;
+    public $multiplexSrv = NULL;
     public $sKey = NULL;
 
-    // Todas las implementaciones asumen que $dialSrv y $sKey son válidos
+    // Todas las implementaciones asumen que $multiplexSrv y $sKey son válidos
     abstract public function procesarInicial();
     abstract public function procesarCierre();
     abstract public function parsearPaquetes($sDatos);

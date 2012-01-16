@@ -28,14 +28,25 @@
   +----------------------------------------------------------------------+
   $Id: dialerd,v 1.2 2008/09/08 18:29:36 alex Exp $ */
 declare(ticks=1);
+ini_set('memory_limit', -1);        // Permitir al programa usar toda la memoria que necesite
 ini_set('display_errors', 0);       // Impedir que los errores de STDERR se copien en STDOUT
 ini_set('error_reporting', E_ALL);  // Mostrar advertencias además de errores
 
 // Agregar directorio de script a la lista de rutas a buscar para require()
 ini_set('include_path', dirname($argv[0]).":".ini_get('include_path'));
 
+// Auto-cargado de las clases en base al nombre de archivo
+function __autoload($sNombreClase) {
+    $sNombreBase = $sNombreClase.'.class.php';
+    foreach (explode(':', ini_get('include_path')) as $sDirInclude) {
+        if (file_exists($sDirInclude.'/'.$sNombreBase)) {
+            require_once($sNombreBase);
+            return;
+        }
+    }
+}
+
 require_once('Console/Getopt.php');     // Parseo de opciones de línea de comando
-require_once('AppLogger.class.php');    // Log del demonio
 
 $gsNombreSignal = NULL; // Número de la señal atrapada
 $goAppLog = NULL;
@@ -53,7 +64,7 @@ if (PEAR::isError($opt)) {
 $iRes = main($opt,
     'Marcador predictivo en PHP',
     'dialerd',
-    'DialerProcess');
+    'HubProcess');
 exit($iRes);
 
 // Punto de entrada del programa demonio (plantilla)
@@ -94,7 +105,9 @@ function main($paramConfig, $sDescDemonio, $sNombreDemonio /* , ... */)
     // Intentar cargar el archivo de configuración
     $infoConfig = parse_ini_file($sArchivoConfig, TRUE);
     if (count($infoConfig) == 0) {
-        $e = error_get_last();
+        if (function_exists('error_get_last')) 
+            $e = error_get_last();
+        else $e = array('message' => 'Failed to open file, error_get_last() not available.');
         die("Could not load configuration file: $e[message]\n");
     }
     if (!isset($infoConfig['basedir'])) $infoConfig['basedir'] = $sRutaTrabajo;
@@ -144,7 +157,7 @@ $sBannerLog
     Powered by Palosanto Solutions
 
       Please report bugs/issues at:
-        a_villacis@palosanto.com
+        http://bugs.elastix.org/
 ----------------------------------------
 BANNEREND;
         $oMainLog->output($sBanner);
@@ -331,9 +344,6 @@ function iniciarTarea($sNombreDemonio, $sNombreTarea, $infoConfig, &$oMainLog)
 
     set_error_handler('daemonErrorHandler');
 
-    // Intentar cargar el archivo que define la tarea
-    require_once("$sNombreTarea.class.php");
-
     // Verificar que el nombre de la clase que implementa el proceso es válido
     if (!class_exists($sNombreTarea)) {
         $oMainLog->output("FATAL: (internal) Invalid process classname '$sNombreTarea'");
@@ -394,8 +404,8 @@ function iniciarTarea($sNombreDemonio, $sNombreTarea, $infoConfig, &$oMainLog)
                     	$oMainLog->output("PID = ".posix_getpid().", process received signal $gsNombreSignal, switching logs...");
                     	$oMainLog->reopen();
                     	$oMainLog->output("PID = ".posix_getpid().", process received signal $gsNombreSignal, using new log.");
+                        $gsNombreSignal = NULL;
                     }
-                   	$gsNombreSignal = NULL;
                 }
             }
 

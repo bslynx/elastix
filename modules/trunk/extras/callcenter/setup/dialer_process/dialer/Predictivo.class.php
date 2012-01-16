@@ -137,10 +137,10 @@ class Predictivo
         if (!is_array($estadoCola)) return FALSE;
         
         // Obtener número de ociosos más número de llamadas a punto de terminar
-        $iNumLlamadasColocar = 0;
+        $iNumLlamadasColocar = array(0, 0, 0);
         foreach ($estadoCola['members'] as $infoAgente) {
         	// Ociosos
-            if ($infoAgente['status'] == 'canBeCalled') $iNumLlamadasColocar++;
+            if ($infoAgente['status'] == 'canBeCalled') $iNumLlamadasColocar[0]++;
             
             // Llamadas a punto de terminar. Puede ocurrir que no se pueda alcanzar a
             // identificar el tiempo de habla de un agente, así que se verifica aquí
@@ -157,17 +157,13 @@ class Predictivo
                     1,
                     1 / $this->_estadisticasCola[$sNombreCola]['PROMEDIO_DURACION']);                    
                 if ($iProbabilidad >= $this->_estadisticasCola[$sNombreCola]['PROBABILIDAD_ATENCION']) {
-                	$iNumLlamadasColocar++;
+                	$iNumLlamadasColocar[1]++;
                 }
             }
         }
         
         // Restar del número de llamadas a colocar, el número de llamadas encoladas
-        if ($iNumLlamadasColocar >= count($estadoCola['callers'])) {
-        	$iNumLlamadasColocar -= count($estadoCola['callers']);
-        } else {
-        	$iNumLlamadasColocar = 0;
-        }
+        $iNumLlamadasColocar[2] = count($estadoCola['callers']);
 
         return $iNumLlamadasColocar;
     }
@@ -210,7 +206,6 @@ class Predictivo
      */
     private function _leerEstadoCola_filtroAgente($sNombreCola, $sNumAgenteFiltro = NULL)
     {
-    	$iTimestampActual = time();
         $estadoCola = NULL;
         $this->_conflictReport = NULL;
     
@@ -237,6 +232,7 @@ class Predictivo
                 $respuestaCola = $this->_astConn->Command("queue show $sNombreCola");        
         }
 
+        $iTimestampActual = time();
         $estadoCola = array(
             'members'   =>  array(),
             'callers'   =>  array(),
@@ -246,14 +242,14 @@ class Predictivo
             
         if (is_array($respuestaListaAgentes) && is_array($respuestaCola)) {
 
-        	// Averiguar qué canal (si alguno) usa cada agente
+            // Averiguar qué canal (si alguno) usa cada agente
             $lineasRespuesta = explode("\n", $respuestaListaAgentes['data']);
             $tiempoAgente = array();
             foreach ($lineasRespuesta as $sLinea) {
-            	$regs = NULL;
+                $regs = NULL;
                 // 9000         (Over 9000!!!!!) logged in on SIP/1064-00000001 talking to DAHDI/1-1 (musiconhold is 'default')
                 if (preg_match('/^\s*(\d{2,})/', $sLinea, $regs)) {
-            		$sAgente = $regs[1];  // Agente ha sido identificado
+                    $sAgente = $regs[1];  // Agente ha sido identificado
                     $regs = NULL;
                     
                     // Filtrar agentes que no me interesan
@@ -262,7 +258,7 @@ class Predictivo
                     // El strpos se hace antes para descartar rápidamente el agente ocioso
                     if (strpos($sLinea, 'talking to') && 
                         preg_match('|talking to (\w+/\S{2,})|', $sLinea, $regs)) {
-                    	$sCanalAgente = $regs[1];
+                        $sCanalAgente = $regs[1];
                         $tiempoAgente[$sAgente]['clientchannel'] = $sCanalAgente;
                         
                         // Para el canal, averiguar el momento de inicio de llamada
@@ -270,9 +266,9 @@ class Predictivo
                         if (!is_array($respuestaCanal)) return NULL;
                         $lineasCanal = explode("\n", $respuestaCanal['data']);
                         foreach ($lineasCanal as $sLineaCanal) {
-                        	$regs = NULL;
+                            $regs = NULL;
                             if (preg_match('/level \d+: start=(.*)/', $sLineaCanal, $regs)) {
-                            	$sFechaInicio = $regs[1];
+                                $sFechaInicio = $regs[1];
                                 $iTimestampInicio = strtotime($sFechaInicio);
                                 $tiempoAgente[$sAgente]['talkTime'] = $iTimestampActual - $iTimestampInicio;
                             }
@@ -318,7 +314,7 @@ class Predictivo
                             );
                         }
                     }
-            	}
+                }
             }
 
             // Parsear la salida de la lista de colas
@@ -339,27 +335,27 @@ class Predictivo
                             // Saltar fuera del switch y al final del foreach
                             if (!is_null($sNumAgenteFiltro) && $regs[1] != $sNumAgenteFiltro) continue 2; 
 
-                        	$sCodigoAgente = $regs[1];
+                            $sCodigoAgente = $regs[1];
                             $sInfoAgente = $regs[2];
                             $estadoCola['members'][$sCodigoAgente] = array(
                                 'sourceline'    =>  $sLinea,
                                 'attributes'    =>  array(),
                                 'status'        =>  NULL,
                                 'talkTime'      =>  NULL,
-                                'penalty'		=>	NULL,
+                                'penalty'       =>  NULL,
                             );
                             
                             // Extraer la información de penalización, si existe
                             if (preg_match('/^with penalty (\d+)\s+(.*)/', $sInfoAgente, $regs)) {
-                            	$sInfoAgente = $regs[2];
-                            	$estadoCola['members'][$sCodigoAgente]['penalty'] = $regs[1];
+                                $sInfoAgente = $regs[2];
+                                $estadoCola['members'][$sCodigoAgente]['penalty'] = $regs[1];
                             }
                             
                             // Separar todos los atributos del agente en la cola
                             // ej: "(dynamic) (Unavailable) has taken..."
                             $regs = NULL;
                             while (preg_match('/^\(([^)]+)\)\s+(.*)/', $sInfoAgente, $regs)) {
-                            	$estadoCola['members'][$sCodigoAgente]['attributes'][] = $regs[1];
+                                $estadoCola['members'][$sCodigoAgente]['attributes'][] = $regs[1];
                                 $sInfoAgente = $regs[2];                                
                                 $regs = NULL;
                             }
@@ -387,21 +383,21 @@ class Predictivo
                             } elseif (in_array('In use', $estadoCola['members'][$sCodigoAgente]['attributes']) ||
                                 in_array('Busy', $estadoCola['members'][$sCodigoAgente]['attributes']) ||
                                 in_array('Ring+Inuse', $estadoCola['members'][$sCodigoAgente]['attributes'])) {
-                            	
-                            	if (in_array('In use', $estadoCola['members'][$sCodigoAgente]['attributes']) &&
-                            		in_array($sCodigoAgente, $listaAgentesLibres)) {
-                            		// BUG: reporte de 'agent show' difiere de 'queue show'
-                            		$estadoCola['members'][$sCodigoAgente]['status'] = 'canBeCalled';
-                            		$estadoCola['members'][$sCodigoAgente]['conflictBug'] = TRUE;
-                            		
-                            		if (is_null($this->_conflictReport)) $this->_conflictReport = array();
-                            		$this->_conflictReport[] = $sCodigoAgente;
-                            	} else {
-	                                // Agente está ocupado con una llamada
-	                                $estadoCola['members'][$sCodigoAgente]['status'] = 'inUse';
-                            	}
+                                
+                                if (in_array('In use', $estadoCola['members'][$sCodigoAgente]['attributes']) &&
+                                    in_array($sCodigoAgente, $listaAgentesLibres)) {
+                                    // BUG: reporte de 'agent show' difiere de 'queue show'
+                                    $estadoCola['members'][$sCodigoAgente]['status'] = 'canBeCalled';
+                                    $estadoCola['members'][$sCodigoAgente]['conflictBug'] = TRUE;
+                                    
+                                    if (is_null($this->_conflictReport)) $this->_conflictReport = array();
+                                    $this->_conflictReport[] = $sCodigoAgente;
+                                } else {
+                                    // Agente está ocupado con una llamada
+                                    $estadoCola['members'][$sCodigoAgente]['status'] = 'inUse';
+                                }
                             } else {
-                            	// Agente no está disponible
+                                // Agente no está disponible
                                 $estadoCola['members'][$sCodigoAgente]['status'] = 'unAvailable';
                             }
                             if (isset($tiempoAgente[$sCodigoAgente])) {
@@ -417,7 +413,7 @@ class Predictivo
                      case 'callers':
                         $estadoCola['callers'][] = trim($sLinea);
                         break;
-                     }	
+                     }  
                 } 
                 
                 

@@ -27,15 +27,13 @@
   +----------------------------------------------------------------------+
   $Id: DialerConn.class.php,v 1.48 2009/03/26 13:46:58 alex Exp $ */
 
-require_once ('DialerConn.class.php');
-
 if(!class_exists('AGI')) {
     require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'phpagi.php');
 }
 
 define('AMI_PORT', 5038);
 
-class AMIClientConn extends DialerConn
+class AMIClientConn extends MultiplexConn
 {
     private $oLogger;
     private $server;
@@ -54,7 +52,7 @@ class AMIClientConn extends DialerConn
     function AMIClientConn($dialSrv, $oMainLog)
     {
         $this->oLogger = $oMainLog;
-        $this->dialSrv = $dialSrv;
+        $this->multiplexSrv = $dialSrv;
     }
     
     // Datos a mandar a escribir apenas se inicia la conexión
@@ -196,7 +194,7 @@ class AMIClientConn extends DialerConn
             $req = "Action: $action\r\n";
             foreach($parameters as $var => $val) $req .= "$var: $val\r\n";
             $req .= "\r\n";
-            $this->dialSrv->encolarDatosEscribir($this->sKey, $req);
+            $this->multiplexSrv->encolarDatosEscribir($this->sKey, $req);
             return $this->wait_response();
         } else return NULL;
     }
@@ -205,7 +203,7 @@ class AMIClientConn extends DialerConn
     private function wait_response()
     {
         while (!is_null($this->sKey) && is_null($this->_response)) {
-            if (!$this->dialSrv->procesarActividad()) {
+            if (!$this->multiplexSrv->procesarActividad()) {
                 usleep(100000);
             }
         }
@@ -250,7 +248,7 @@ class AMIClientConn extends DialerConn
         //$this->oLogger->output("DEBUG: cabecera recibida es: $str");
         
         // Registrar el socket con el objeto de conexiones
-        $this->dialSrv->agregarDialerConn($this, $hConn);
+        $this->multiplexSrv->agregarNuevaConexion($this, $hConn);
 
         // Iniciar login con Asterisk
         $res = $this->send_request('login', array('Username'=>$username, 'Secret'=>$secret));
@@ -265,7 +263,7 @@ class AMIClientConn extends DialerConn
     function disconnect()
     {
         $this->logoff();
-        $this->dialSrv->marcarCerrado($this->sKey);
+        $this->multiplexSrv->marcarCerrado($this->sKey);
     }
 
     function finalizarConexion()
@@ -818,6 +816,13 @@ class AMIClientConn extends DialerConn
       }
       $this->event_handlers[$event] = $callback;
       return true;
+    }
+
+    function remove_event_handler($event)
+    {
+    	if (isset($this->event_handlers[$event])) {
+    		unset($this->event_handlers[$event]);
+    	}
     }
 
    /**

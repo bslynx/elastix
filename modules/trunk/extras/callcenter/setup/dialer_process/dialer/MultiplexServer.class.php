@@ -27,12 +27,15 @@
   +----------------------------------------------------------------------+
   $Id: MultiplexServer.class.php,v 1.48 2009/03/26 13:46:58 alex Exp $ */
 
-abstract class MultiplexServer
+class MultiplexServer
 {
 	protected $_oLog;		// Objeto log para reportar problemas
-	private $_hEscucha;		// Socket de escucha para nuevas conexiones
+	protected $_hEscucha;		// Socket de escucha para nuevas conexiones
 	private $_conexiones;	// Lista de conexiones atendidas con clientes
 	private $_uniqueid;
+
+    // Lista de objetos escucha, de tipos variados
+    protected $_listaConn = array();
 	
     /**
      * Constructor del objeto. Se esperan los siguientes parámetros:
@@ -43,19 +46,22 @@ abstract class MultiplexServer
      * o unix:///tmp/dialer.sock) y desactiva el bloqueo para poder usar
      * stream_select() sobre el socket. 
      */
-    function MultiplexServer($sUrlSocket, &$oLog)
+    function __construct($sUrlSocket, &$oLog)
     {
     	$this->_oLog =& $oLog;
     	$this->_conexiones = array();
     	$this->_uniqueid = 0;
-    	$errno = $errstr = NULL;    	
-    	$this->_hEscucha = stream_socket_server($sUrlSocket, $errno, $errstr);
-    	if (!$this->_hEscucha) {
-            $this->_oLog->output("ERR: no se puede iniciar socket de escucha $sUrlSocket: ($errno) $errstr");
-        } else {
-            // No bloquearse en escucha de conexiones
-            stream_set_blocking($this->_hEscucha, 0);
-            $this->_oLog->output("INFO: escuchando peticiones en $sUrlSocket ...");
+    	$errno = $errstr = NULL;
+        $this->_hEscucha = FALSE;
+        if (!is_null($sUrlSocket)) {    	
+        	$this->_hEscucha = stream_socket_server($sUrlSocket, $errno, $errstr);
+        	if (!$this->_hEscucha) {
+                $this->_oLog->output("ERR: no se puede iniciar socket de escucha $sUrlSocket: ($errno) $errstr");
+            } else {
+                // No bloquearse en escucha de conexiones
+                stream_set_blocking($this->_hEscucha, 0);
+                $this->_oLog->output("INFO: escuchando peticiones en $sUrlSocket ...");
+            }
         }
     }
     
@@ -76,7 +82,7 @@ abstract class MultiplexServer
      * 
      * @return	VERDADERO si alguna conexión tuvo actividad
      */
-    function procesarActividad()
+    function procesarActividad($iMaxTimeout = 1)
     {
         $bNuevosDatos = FALSE;
         $listoLeer = array();
@@ -84,14 +90,15 @@ abstract class MultiplexServer
         $listoErr = NULL;
 
         // Recolectar todos los descriptores que se monitorean
-        $listoLeer[] = $this->_hEscucha;        // Escucha de nuevas conexiones
+        if ($this->_hEscucha)
+            $listoLeer[] = $this->_hEscucha;        // Escucha de nuevas conexiones
         foreach ($this->_conexiones as &$conexion) {
             if (!$conexion['exit_request']) $listoLeer[] = $conexion['socket'];
             if (strlen($conexion['pendiente_escribir']) > 0) {
                 $listoEscribir[] = $conexion['socket'];                
             }
         }
-        $iNumCambio = stream_select($listoLeer, $listoEscribir, $listoErr, 1);
+        $iNumCambio = @stream_select($listoLeer, $listoEscribir, $listoErr, $iMaxTimeout);
         if ($iNumCambio === false) {
             // Interrupción, tal vez una señal
             $this->_oLog->output("INFO: select() finaliza con fallo - señal pendiente?");
@@ -189,6 +196,60 @@ abstract class MultiplexServer
         
         return $bNuevosDatos;
     }
+
+    /**
+     * Procedimiento para agregar un objeto instancia de MultiplexConn, que abre
+     * un socket arbitrario y desea estar asociado con tal socket.
+     * 
+     * @param   object      $oNuevaConn Objeto que hereda de DialerConn
+     * @param   resource    $hSock      Conexión a un socket TCP o UNIX
+     * 
+     * @return void
+     */
+    function agregarNuevaConexion($oNuevaConn, $hSock)
+    {
+        if (!is_a($oNuevaConn, 'MultiplexConn')) {
+            die(__METHOD__.' - $oNuevaConn no es subclase de MultiplexConn');
+        }
+
+        $sKey = $this->agregarConexion($hSock);
+        $oNuevaConn->multiplexSrv = $this;
+        $oNuevaConn->sKey = $sKey;
+        $this->_listaConn[$sKey] = $oNuevaConn;
+        $this->_listaConn[$sKey]->procesarInicial();
+    }
+
+    /* Enviar los datos recibidos para que sean procesados por la conexión */
+    function procesarNuevosDatos($sKey)
+    {
+        if (isset($this->_listaConn[$sKey])) {
+            $sDatos = $this->obtenerDatosLeidos($sKey);
+            $iLongProcesado = $this->_listaConn[$sKey]->parsearPaquetes($sDatos);
+            $this->descartarDatosLeidos($sKey, $iLongProcesado);
+        }
+    }
+    
+    function procesarCierre($sKey)
+    {
+        if (isset($this->_listaConn[$sKey])) {
+            $this->_listaConn[$sKey]->procesarCierre();
+            unset($this->_listaConn[$sKey]);
+        }
+    }
+    
+    function procesarPaquetes()
+    {
+        $bHayProcesados = FALSE;
+        foreach ($this->_listaConn as &$oConn) {
+            if ($oConn->hayPaquetes()) {
+                $bHayProcesados = TRUE;
+                $oConn->procesarPaquete();
+                $this->vaciarBuferesEscritura();
+            }
+        }
+        return $bHayProcesados;
+    }
+
 
 	// Procesar una nueva conexión que ingresa al servidor
     private function _procesarConexionNueva()
@@ -317,7 +378,19 @@ abstract class MultiplexServer
 	 * 
 	 * @return	void
      */
-	abstract protected function procesarInicial($sKey);
+	protected function procesarInicial($sKey) {}
+
+    function finalizarServidor()
+    {
+        if ($this->_hEscucha !== FALSE) {
+            fclose($this->_hEscucha);
+            $this->_hEscucha = FALSE;
+        }
+        foreach ($this->_listaConn as &$oConn) {
+            $oConn->finalizarConexion();
+        }
+        $this->procesarActividad();
+    }
 
 	/**
 	 * Procedimiento que se debe implementar en la subclase, para manejar datos
@@ -326,7 +399,7 @@ abstract class MultiplexServer
 	 * 
 	 * @return	void
 	 */
-	abstract protected function procesarNuevosDatos($sKey);
+	//abstract protected function procesarNuevosDatos($sKey);
 
     /**
      * Procedimiento que se debe implementar en la subclase, para manejar el 
@@ -335,6 +408,6 @@ abstract class MultiplexServer
      * 
      * @return  void
      */
-    abstract protected function procesarCierre($sKey);
+    //abstract protected function procesarCierre($sKey);
 }
 ?>
