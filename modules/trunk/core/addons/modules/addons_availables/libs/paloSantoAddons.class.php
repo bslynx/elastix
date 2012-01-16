@@ -257,7 +257,7 @@ class paloSantoAddons
         
         $r = _compareRpmVersion_string($a[0], $b[0]);
         if ($r != 0) return $r;
-        _compareRpmVersion_string($a[1], $b[1]);
+        return _compareRpmVersion_string($a[1], $b[1]);
     }
     
     private function _getUpdater()
