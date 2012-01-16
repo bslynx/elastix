@@ -1,3 +1,25 @@
+* Dialer: (almost) complete rewrite of the central code.
+  During a deployment with a moderately large number of agents, several design
+  flaws were uncovered in the dialer code. The largest of such design flaws was
+  the attempt to handle all of the operations of the dialer in a single process.
+  Coupled with this, several event handlers required synchronous database 
+  updates or reads, and in at least one handler, a database access with every
+  single event, whether the event was from a handled call or not. In addition to
+  this, the same event handler required a synchronous AMI request that required
+  three seconds to parse completely. Furthermore, several instances were found
+  where data was read from the database that could have been cached, since the
+  dialer itself generated the data. All of this added up to large and 
+  ever-increasing delays in event processing that degraded the responsiveness of
+  the agent console (any implementation) by tens of seconds or more. To fix all
+  of these problems, the dialer was rewritten to make use of multiple processes.
+  One process handles AMI events, and does not read or write to the database.
+  All of the database updates are sent as asynchronous messages to another 
+  process, the process that reads outgoing campaign calls and places its calls.
+  A third process handles the ECCP protocol and database accesses that result
+  from ECCP requests and events. Also, I seized the opportunity to reorganize
+  the code around a fully object-oriented model that caches as much information
+  as possible in memory and unifies almost all of the handling for outgoing and
+  incoming calls. 
 * Dialer (ECCP): add new example program getcallinfo.php
 * Agent Monitoring: fix some uses of undefined variables
 * CallCenter Configuration: add new flag to completely disable dial prediction
