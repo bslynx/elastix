@@ -1,3 +1,4 @@
+* Dialer (ECCP): add new example program getcallinfo.php
 * Agent Monitoring: fix some uses of undefined variables
 * CallCenter Configuration: add new flag to completely disable dial prediction
   in dialer.
