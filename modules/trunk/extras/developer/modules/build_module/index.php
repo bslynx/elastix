@@ -650,7 +650,8 @@ function mostrar_menu($level, $parent_1_existing, $parent_2_existing, $id_parent
             if($parent_2_existing==0)
             {
                 require_once('libs/paloSantoNavigation.class.php');
-                global $arrMenu;
+                $pMenu = new paloMenu($arrConf['elastix_dsn']['menu']);
+		$arrMenu = $pMenu->cargar_menu();
                 $pNav = new paloSantoNavigation(null, $arrMenu, $smarty);
                 $arrMenuOptions = $pNav->getArrSubMenu($id_parent);
 
