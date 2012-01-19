@@ -686,6 +686,8 @@ class WSDLcreator
 
             $objIN_Body->addAttribute("use","literal");
             $objOUT_Body->addAttribute("use","literal");
+            $objIN_Body->addAttribute("namespace", $this->targetNamespace);
+            $objOUT_Body->addAttribute("namespace", $this->targetNamespace);
         }
         catch(Exception $ex){
             $this->errorMSG = "Failed generate Operation Binding WSDL section ".$ex->getMessage();
