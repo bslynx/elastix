@@ -63,6 +63,11 @@ class CampaignProcess extends TuberiaProcess
     // Estimación de la versión de Asterisk que se usa
     private $_asteriskVersion = array(1, 4, 0, 0);
 
+    /* VERDADERO si al momento de verificar actividad en tubería, no habían
+     * mensajes pendientes. Sólo cuando se esté ocioso se intentarán verificar
+     * nuevas llamadas de la campaña. */
+    private $_ociosoSinEventos = TRUE;
+
     /* Si se setea a VERDADERO, el programa intenta finalizar y no deben 
      * colocarse nuevas llamadas.
      */
@@ -235,16 +240,17 @@ class CampaignProcess extends TuberiaProcess
                     // Verificar si se ha cambiado la configuración
                     $this->_verificarCambioConfiguracion();
     
-                    $this->_actualizarCampanias();
-            
-                    // Actualizar la información remota en AMIClientConn
-                    $this->_actualizarInformacionRemota();
+                    if ($this->_ociosoSinEventos) {
+                        $this->_actualizarCampanias();
+                
+                        // Actualizar la información remota en AMIClientConn
+                        $this->_actualizarInformacionRemota();
+                    }
                 }
         
                 // Rutear todos los mensajes pendientes entre tareas
-                if ($this->_multiplex->procesarPaquetes())
-                    $this->_multiplex->procesarActividad(0);
-                else $this->_multiplex->procesarActividad(1);
+                $this->_ociosoSinEventos = !$this->_multiplex->procesarPaquetes();
+                $this->_multiplex->procesarActividad($this->_ociosoSinEventos ? 1 : 0);
             } catch (PDOException $e) {
                 $this->_log->output('ERR: '.__METHOD__.
                     ': no se puede realizar operación de base de datos: '.
@@ -515,6 +521,9 @@ PETICION_CAMPANIAS_ENTRANTES;
 
         // Averiguar cuantas llamadas se pueden hacer (por predicción), y tomar
         // el menor valor de entre máx campaña y predictivo.
+        if ($this->DEBUG) {
+        	$this->_log->output('DEBUG: '.__METHOD__.' verificando agentes libres...');
+        }
         $resumenPrediccion = $oPredictor->predecirNumeroLlamadas(
             $infoCampania['queue'], 
             $this->_configDB->dialer_predictivo && ($infoCampania['num_completadas'] >= MIN_MUESTRAS));
