@@ -93,7 +93,7 @@ $.blockUI.defaults = {
 		cursor:		'wait',
 		'-moz-border-radius': '6px',
 		'border-radius': '6px',
-		'-webkit-border-radius': '6px',
+		'-webkit-border-radius': '6px'
 	},
 	
 	// minimal style set used when themes are used
