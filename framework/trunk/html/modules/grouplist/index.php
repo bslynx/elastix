@@ -304,7 +304,7 @@ function _moduleContent(&$smarty, $module_name)
                         );
 
         $oGrid = new paloSantoGrid($smarty);
-        $oGrid->showFilter("<input type='submit' name='submit_create_group' value='{$arrLang['Create New Group']}' class='button' />");
+        $oGrid->addNew("submit_create_group",_tr("Create New Group"));
         $contenidoModulo = $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
     }
     return $contenidoModulo;
