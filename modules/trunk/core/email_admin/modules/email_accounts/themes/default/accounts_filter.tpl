@@ -1,6 +1,5 @@
 <form style='margin-bottom:0;' method='POST' action='?menu=email_accounts'>
 <table width="50%" border="0" cellspacing="0" cellpadding="0" align="left">
-
 <tr>
   <td>
     <table width="100%" cellpadding="0" cellspacing="0" border="0">
@@ -13,8 +12,8 @@
    </table>
   </td>
 </tr>
-      <tr class="letra12">
+<tr class="letra12">
 
-      </tr>
+</tr>
 </table>
 </form>

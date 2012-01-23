@@ -1,7 +1,4 @@
-<table width="99%" border="0" cellspacing="0" cellpadding="0" align="center">
-<tr>
-  <td>
-    <table width="100%" cellpadding="4" cellspacing="0" border="0">
+    <table width="99%" cellpadding="4" cellspacing="0" border="0" align="center">
       <tr class="letra12">
         <td width="10%" align="right">{$date_start.LABEL}:</td>
         <td width="10%" align="left" nowrap>{$date_start.INPUT}</td>
@@ -23,7 +20,5 @@
         <td width="10%" align="left" nowrap>{$ringgroup.INPUT}</td>
       </tr>
    </table>
-  </td>
-</tr>
-</table>
+
 

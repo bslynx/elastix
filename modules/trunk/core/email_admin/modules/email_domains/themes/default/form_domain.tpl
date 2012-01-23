@@ -28,8 +28,8 @@
 	<td width="35%">{$domain_name.INPUT}</td>
       </tr>
     </table>
-    </td>
-  </tr>
+  </td>
+</tr>
 </table>
 <input type="hidden" name="id_domain" value="{$id_domain}">
 </form>
