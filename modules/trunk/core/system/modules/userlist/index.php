@@ -679,10 +679,9 @@ function reportUserList($arrLang, $pACL, $idUserAccount, $smarty, $userLevel1, $
                     );
 
     $oGrid = new paloSantoGrid($smarty);
-    $buttonCreateNewUser = "<input type='submit' name='submit_create_user' value='{$arrLang['Create New User']}' class='button'>";
-    if($typeUser == "other")
-        $buttonCreateNewUser = "";
-    $oGrid->showFilter("<form style='margin-bottom:0;' method='POST' action='?menu=userlist'>$buttonCreateNewUser</form>");
+    if(!($typeUser == "other"))
+      $oGrid->addNew("submit_create_user",_tr("Create New User"));
+   
     $contenidoModulo = $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
     return $contenidoModulo;
 }

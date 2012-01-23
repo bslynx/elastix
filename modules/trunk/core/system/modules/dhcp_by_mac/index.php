@@ -93,6 +93,9 @@ function reportDHCP_Configuration($smarty, $module_name, $local_templates_dir, &
     $oGrid  = new paloSantoGrid($smarty);
     $totalDHCP_Configuration = $pDHCP_Configuration->contarIpFijas($filter_field, $filter_value);
 
+    $oGrid->addNew("new_dhcpconft",_tr("Assign IP Address"));
+    $oGrid->deleteList("Are you sure you wish to delete the DHCP configuration.","delete_dhcpConf",_tr("Delete"));
+
     $limit  = 20;
     $total  = $totalDHCP_Configuration;
     $oGrid->setLimit($limit);
@@ -115,7 +118,7 @@ function reportDHCP_Configuration($smarty, $module_name, $local_templates_dir, &
         }
     }
 
-    $buttonDelete = "<input type='submit' name='delete_dhcpConf' value='"._tr('Delete')."' class='button' onclick=\" return confirmSubmit('"._tr('Are you sure you wish to delete the DHCP configuration.')."');\" />";
+    $buttonDelete = "";
 
     $arrGrid = array("title"    => _tr('Assign IP Address to Host'),
                         "icon"     => "images/list.png",
@@ -140,7 +143,6 @@ function reportDHCP_Configuration($smarty, $module_name, $local_templates_dir, &
     $arrFormFilterDHCP_Configuration = createFieldFilter();
     $oFilterForm = new paloForm($smarty, $arrFormFilterDHCP_Configuration);
     $smarty->assign("SHOW", _tr('Show'));
-    $smarty->assign("NEW_DHCPCONF", _tr('Assign IP Address'));
 
     $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/filter.tpl","",$_POST);
     //end section filter
