@@ -76,9 +76,6 @@ function _moduleContent(&$smarty, $module_name)
 	else
 	    $smarty->assign('mb_message', "<b>"._tr("no_extension")."</b>");
     }
-  
-    if($isAdministrator)
-	$smarty->assign("user","administrator");
 
     // Para usuarios que no son administradores, se restringe a los CDR de la
     // propia extensión
@@ -97,8 +94,6 @@ function _moduleContent(&$smarty, $module_name)
     // Cadenas estáticas en la plantilla
     $smarty->assign(array(
         "Filter"    =>  _tr("Filter"),
-        "Delete"    =>  _tr("Delete"),
-        "Delete_Warning"    =>  _tr("Are you sure you wish to delete CDR(s) Report(s)?"),
     ));
 
     $arrFormElements = array(
@@ -217,6 +212,8 @@ function _moduleContent(&$smarty, $module_name)
     $oGrid->enableExport();   // enable export.
     $oGrid->setNameFile_Export(_tr("CDRReport"));
     $oGrid->setURL($url);
+    if($isAdministrator)
+	$oGrid->deleteList("Are you sure you wish to delete CDR(s) Report(s)?","delete",_tr("Delete"));
     
     $arrData = null;
     if(!isset($sExtension) || $sExtension == ""  && !$isAdministrator)

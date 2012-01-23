@@ -138,7 +138,7 @@ function reportBillingRates($smarty, $module_name, $local_templates_dir, &$pDB, 
     $oGrid->setTitle(_tr("Billing Rates"));
     $oGrid->setNameFile_Export("Billing_Rates");
     $oGrid->setURL($url);
-
+    $oGrid->addNew("new_rate",_tr("create_rate"));
 
     $smarty->assign("module_name", $module_name);
 
@@ -203,7 +203,6 @@ function reportBillingRates($smarty, $module_name, $local_templates_dir, &$pDB, 
     //begin section filter
     $arrFormFilterBillingRates = createFieldFilter($arrLang);
     $oFilterForm = new paloForm($smarty, $arrFormFilterBillingRates);
-    $smarty->assign("create_rate", _tr("create_rate"));
     $smarty->assign("import_rate", _tr("import_rate"));
     $smarty->assign("by_min",_tr("by_min"));
     $smarty->assign("Date_close",_tr("Date close"));
