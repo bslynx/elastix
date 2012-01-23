@@ -402,6 +402,10 @@ function iniciarTarea($sNombreDemonio, $sNombreTarea, $infoConfig, &$oMainLog)
                     	$bContinuar = FALSE;
                     } elseif ($gsNombreSignal == SIGHUP) {
                     	$oMainLog->output("PID = ".posix_getpid().", process received signal $gsNombreSignal, switching logs...");
+                        if (method_exists($oProceso, 'propagarSIGHUP')) {
+                           $oMainLog->output("PID = ".posix_getpid().", process has handler for SIGHUP, calling...");
+                           $oProceso->propagarSIGHUP();
+                        }
                     	$oMainLog->reopen();
                     	$oMainLog->output("PID = ".posix_getpid().", process received signal $gsNombreSignal, using new log.");
                         $gsNombreSignal = NULL;

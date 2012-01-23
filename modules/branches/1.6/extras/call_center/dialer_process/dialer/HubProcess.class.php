@@ -53,8 +53,6 @@ class HubProcess extends AbstractProcess
     
     public function procedimientoDemonio()
     {
-        global $gsNombreSignal;
-
         $bHayNuevasTareas = FALSE;
 
         // Si la tarea ha finalizado o no existe, se debe iniciar
@@ -89,6 +87,20 @@ class HubProcess extends AbstractProcess
         // Registrar el multiplex con todas las conexiones nuevas
         if ($bHayNuevasTareas) $this->_hub->registrarMultiplexPadre();
         
+        $this->propagarSIGHUP();
+        
+        // Rutear todos los mensajes pendientes entre tareas
+        if ($this->_hub->procesarPaquetes())
+            $this->_hub->procesarActividad(0);
+        else $this->_hub->procesarActividad(1);
+        
+        return TRUE;
+    }
+    
+    public function propagarSIGHUP()
+    {
+        global $gsNombreSignal;
+
         if (!is_null($gsNombreSignal) && $gsNombreSignal == SIGHUP) {
             // Mandar la señal a todos los procesos controlados
             $this->_log->output("PID = ".posix_getpid().", se ha recibido señal #$gsNombreSignal, ".
@@ -99,15 +111,8 @@ class HubProcess extends AbstractProcess
                     posix_kill($this->_tareas[$sTarea], $gsNombreSignal);
                     $this->_log->output("Completada propagación de señal a $sTarea");
                 }
-            }        	
+            }           
         }
-        
-        // Rutear todos los mensajes pendientes entre tareas
-        if ($this->_hub->procesarPaquetes())
-            $this->_hub->procesarActividad(0);
-        else $this->_hub->procesarActividad(1);
-        
-        return TRUE;
     }
     
     /* Iniciar una tarea específica en un proceso separado. Para el proceso 
