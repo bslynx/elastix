@@ -215,7 +215,6 @@ function showLanguages($smarty, $module_name, $local_templates_dir, $arrLang, $a
 
     $oFilterForm = new paloForm($smarty, $arrFormElements);
     $smarty->assign("SHOW", $arrLang["Show"]);
-    $smarty->assign("NEW", $arrLangModule["Add"]);
     $smarty->assign("SAVE_ALL", "Save All");
 
     $module   = getParameter("module");
@@ -239,6 +238,7 @@ function showLanguages($smarty, $module_name, $local_templates_dir, $arrLang, $a
     $total  = $total_datos;
 
     $oGrid  = new paloSantoGrid($smarty);
+    $oGrid->addNew("new",_tr("Add"));
 
     $offset = $oGrid->getOffSet($limit,$total,$action,$start);
 

@@ -1,6 +1,6 @@
 <table width="99%" border="0" cellspacing="0" cellpadding="0" align="center">
     <tr class="letra12">
-        <td align="left"><input class="button" type="submit" name="new" value="{$NEW}"/></td>
+        <td align="left">&nbsp;</td>
         <td width="20%" align="right">{$module.LABEL}: </td>
         <td colspan="2" width="20%" align="left" nowrap>{$module.INPUT}</td>
     </tr>
