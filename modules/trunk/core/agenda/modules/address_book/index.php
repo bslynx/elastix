@@ -273,7 +273,7 @@ function new_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $pDB
     $smarty->assign("SAVE", $arrLang["Save"]);
     $smarty->assign("CANCEL", $arrLang["Cancel"]);
     $smarty->assign("title", $arrLang["Address Book"]);
-    $smarty->assign("icon", "images/list.png");
+    $smarty->assign("icon", "modules/$module_name/images/address_book.png");
 
     $smarty->assign("new_contact", $arrLang["New Contact"]);
     $smarty->assign("address_from_csv", $arrLang["Address Book from CSV"]);
@@ -464,7 +464,7 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
 
     $arrGrid = array(   "title"    => $arrLang["Address Book"],
                         "url"      => array('menu' => $module_name, 'filter' => $pattern, 'select_directory_type' => $directory_type),
-                        "icon"     => "images/list.png",
+                        "icon"     => "modules/$module_name/images/address_book.png",
                         "width"    => "99%",
                         "start"    => ($total==0) ? 0 : $offset + 1,
                         "end"      => $end,
