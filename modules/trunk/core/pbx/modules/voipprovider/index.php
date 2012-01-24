@@ -473,6 +473,8 @@ function reportVoIPProvider($smarty, $module_name, $local_templates_dir, &$pDB, 
     $oGrid->setTitle(_tr("VoIP Provider"));
     $oGrid->setNameFile_Export("VoIP_Provider");
     $oGrid->setURL($url);
+    $oGrid->addNew("new_account",_tr("New Account"));
+    $oGrid->deleteList("Are you sure you wish to delete the accounts selected.?","delete",_tr("Delete"));
 
     $totalVoipProviders = $pVoIPProvider->getNumVoIPProvider($filter_field, $filter_value);
 
@@ -531,8 +533,7 @@ function reportVoIPProvider($smarty, $module_name, $local_templates_dir, &$pDB, 
             }
         }
 
-        $arrColumns  = array("<input type='submit' name='delete' value='"._tr("Delete")."' class='button' onclick=\" return confirmSubmit('"._tr("Are you sure you wish to delete the accounts selected.")."');\" />",
-                             _tr("Account Name"), _tr("VoIP Provider"), _tr("Outbound CallerID"), _tr("Type Trunk"), _tr("Status"), _tr("Edit"));
+        $arrColumns  = array("", _tr("Account Name"), _tr("VoIP Provider"), _tr("Outbound CallerID"), _tr("Type Trunk"), _tr("Status"), _tr("Edit"));
     }
 
     $oGrid->setColumns($arrColumns);
@@ -542,7 +543,6 @@ function reportVoIPProvider($smarty, $module_name, $local_templates_dir, &$pDB, 
     $arrFormFilterprueba = createFieldFilter();
     $oFilterForm = new paloForm($smarty, $arrFormFilterprueba);
     $smarty->assign("SHOW", _tr("Show"));
-    $smarty->assign("NEW_ACCOUNT", _tr("New Account"));
     $smarty->assign("Module_name", $module_name);
 
     $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/filter.tpl","",$_POST);
