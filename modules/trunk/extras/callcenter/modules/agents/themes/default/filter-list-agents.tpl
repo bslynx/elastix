@@ -2,7 +2,6 @@
 <tr>
 	<td class="letra12" width="20%" align="right"><b>{$LABEL_STATE}:</b></td>
     <td>{html_options name=cbo_estado id=cbo_estado options=$estados selected=$estado_sel onchange='submit();'}</td>
-    <td align="right"><a href="?menu={$MODULE_NAME}&amp;action=new_agent"><b>{$LABEL_CREATE_AGENT}&nbsp;&raquo;</b></a></td>
 </tr>
 <tr>
     <td class='letra12' width='20%' align="right"><b>{$LABEL_WITH_SELECTION}:</b></td>

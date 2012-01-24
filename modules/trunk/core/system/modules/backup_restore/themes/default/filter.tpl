@@ -1,21 +1,15 @@
-<table width="99%" border="0" cellspacing="0" cellpadding="0" align="center">
+<table width="99%" border="0" cellspacing="0" cellpadding="4" align="center">
 <tr>
-  <td>
-    <input class="button" type="submit" name="backup" value="{$BACKUP}">
-  </td>
-  <td align="right">
+  <td align="right" width="13%">
     <input class="button" type="submit" name="automatic"  value="{$AUTOMATIC}">
   </td>
-  <td>
+  <td align="left" width="87%">
     <select name="time">
         <option value="DISABLED" {$SEL_DISABLED}>{$DISABLED}</option>
         <option value="DAILY" {$SEL_DAILY}>{$DAILY}</option>
         <option value="MONTHLY" {$SEL_MONTHLY}>{$MONTHLY}</option>
         <option value="WEEKLY" {$SEL_WEEKLY}>{$WEEKLY}</option>
     </select>
-  </td>
-  <td align="right">
-    <input class="button" type="submit" name="view_form_FTP" value="{$FTP_BACKUP}">
   </td>
 <!--
   <td>

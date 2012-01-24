@@ -1,4 +1,4 @@
-<?php
+// <?php
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
@@ -455,7 +455,7 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
     }
     if($directory_type=='external'){
         $picture = $arrLang["picture"];
-        $name = "<input type='submit' name='delete' value='{$arrLang["Delete"]}' class='button' onclick=\" return confirmSubmit('{$arrLang["Are you sure you wish to delete the contact."]}');\" />";
+        $oGrid->deleteList(_tr("Are you sure you wish to delete the contact."),"delete",_tr("Delete"));
     }
     else {
         $name = "";
@@ -487,7 +487,7 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
                                                     "property1" => "")
                                         )
                     );
-
+    $oGrid->addNew("new",_tr("New Contact"));
     $oGrid->showFilter(trim($htmlFilter));
     $contenidoModulo = $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
     return $contenidoModulo;

@@ -113,14 +113,14 @@ function listRepositories($smarty, $module_name, $local_templates_dir,$arrConf) 
                             1 => array("name"      => $arrLang["Name"], 
                                        "property1" => "")));
 
+    $oGrid->customAction('submit_aceptar',_tr('Save/Update'));
     $oGrid->showFilter( "
-      <table border='0' cellpadding='0' callspacing='0' width='100%' height='44'> 
+      <table border='0' cellpadding='4' callspacing='0' width='100%' height='44'>
 	   <tr class='letra12'>
-		<td>
-		      <input type='submit' name='submit_aceptar' value='{$arrLang['Save/Update']}' class='button' /> &nbsp;&nbsp;&nbsp;
+		<td width='50%' align='left'>
 		      <input type='button' name='default' value='{$arrLang['Default']}' class='button' onclick='defaultValues($total)' />
 		</td>
-		<td width='200'>Repo:&nbsp;&nbsp;
+		<td width='50%' align='right'>Repo:&nbsp;&nbsp;
 		    <select name='typeRepository' onchange='javascript:submit();'> 
 			  <option value='main' {$option['main']}>{$arrLang['Main']}</option>
 			  <option value='others' {$option['others']}>{$arrLang['Others']}</option>

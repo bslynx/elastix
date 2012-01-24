@@ -240,7 +240,7 @@ function reportMonitoring($smarty, $module_name, $local_templates_dir, &$pDB, $p
         $offset = $oGrid->calculateOffset();
 
 	if($esAdministrador)
-	    $buttonDelete = "<input type='submit' onClick=\"return confirmSubmit('"._tr("message_alert")."');\" name='submit_eliminar' value='"._tr("Delete")."' class='button' />";
+        $oGrid->deleteList(_tr("message_alert"),'submit_eliminar',_tr("Delete"));
 	else
 	    $buttonDelete = "";
         $arrColumns = array($buttonDelete, _tr("Date"), _tr("Time"), _tr("Source"), _tr("Destination"),_tr("Duration"),_tr("Type"),_tr("Message"));
@@ -323,7 +323,6 @@ function reportMonitoring($smarty, $module_name, $local_templates_dir, &$pDB, $p
     $_POST["filter_value_userfield"] = $filter_userfield;
     $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/filter.tpl","",$_POST);
     //end section filter
-
     $oGrid->showFilter(trim($htmlFilter));
     $content = $oGrid->fetchGrid();
     

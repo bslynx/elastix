@@ -177,6 +177,7 @@ function listarArchivos($module_name, $smarty, $local_templates_dir, $sDirectori
     $htmlFilter = $oForm->fetchForm("$local_templates_dir/new.tpl", _tr("File Editor"), $_POST);
 
     $oGrid = new paloSantoGrid($smarty);
+    $oGrid->addNew("?menu=$module_name&action=new",_tr("New File"),true);
     $oGrid->showFilter($htmlFilter);
     return $oGrid->fetchGrid($arrGrid, $arrDatosGrid, $arrLang);
 }

@@ -1,4 +1,4 @@
-<table width="100%" border="0" cellspacing="0" cellpadding="0">
+<table width="100%" border="0" cellspacing="0" cellpadding="4">
     <tr>
         <td width="10%">&nbsp;</td>
         <td width="15%" align="right">{$name_company.LABEL}:</td>

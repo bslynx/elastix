@@ -175,7 +175,7 @@ function report_backup_restore($smarty, $module_name, $local_templates_dir, $arr
                      "start"    => ($total==0) ? 0 : $offset + 1,
                      "end"      => $end,
                      "total"    => $total,
-                     "columns"  => array(0 => array("name"      => "<input type='submit' name='delete_backup' value='{$arrLang["Delete"]}' class='button' onclick=\" return confirmSubmit('{$arrLang["Are you sure you wish to delete backup (s)?"]}');\" />",
+                     "columns"  => array(0 => array("name"      => "",
                                                     "property1" => ""),
                                          1 => array("name"      => $arrLang["Name Backup"],
                                                     "property1" => ""),
@@ -201,11 +201,13 @@ function report_backup_restore($smarty, $module_name, $local_templates_dir, $arr
     $smarty->assign("MONTHLY", $arrLang["MONTHLY"]);
     $smarty->assign("WEEKLY", $arrLang["WEEKLY"]);
     $smarty->assign("DISABLED",$arrLang["DISABLED"]);
-    $smarty->assign("BACKUP", $arrLang["Backup"]);
+   // $smarty->assign("BACKUP", $arrLang["Backup"]);
     $smarty->assign("UPLOAD", $arrLang["Upload"]);
     $smarty->assign("FTP_BACKUP", $arrLang["FTP Backup"]);
+    $oGrid->addNew("backup",_tr("Backup"));
+    $oGrid->deleteList(_tr("Are you sure you wish to delete backup (s)?"),'delete_backup',_tr("Delete"));
+	$oGrid->customAction("view_form_FTP",_tr("FTP Backup"));
     $htmlFilter = $smarty->fetch("$local_templates_dir/filter.tpl");
-
     $oGrid->showFilter(trim($htmlFilter));
     $contenidoModulo = $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
 
@@ -258,7 +260,7 @@ function automatic_backup($smarty, $module_name, $local_templates_dir, $arrLang,
                      "start"    => ($total==0) ? 0 : $offset + 1,
                      "end"      => $end,
                      "total"    => $total,
-                     "columns"  => array(0 => array("name"      => "<input type='submit' name='delete_backup' value='{$arrLang["Delete"]}' class='button' onclick=\" return confirmSubmit('{$arrLang["Are you sure you wish to delete backup (s)?"]}');\" />",
+                     "columns"  => array(0 => array("name"      => "",
                                                     "property1" => ""),
                                          1 => array("name"      => $arrLang["Name Backup"],
                                                     "property1" => ""),
@@ -284,11 +286,12 @@ function automatic_backup($smarty, $module_name, $local_templates_dir, $arrLang,
     $smarty->assign("MONTHLY", $arrLang["MONTHLY"]);
     $smarty->assign("WEEKLY", $arrLang["WEEKLY"]);
     $smarty->assign("DISABLED",$arrLang["DISABLED"]);
-    $smarty->assign("BACKUP", $arrLang["Backup"]);
+   // $smarty->assign("BACKUP", $arrLang["Backup"]);
     $smarty->assign("UPLOAD", $arrLang["Upload"]);
     $smarty->assign("FTP_BACKUP", $arrLang["FTP Backup"]);
+	$oGrid->addNew("backup",_tr("Backup"));
+    $oGrid->deleteList(_tr("Are you sure you wish to delete backup (s)?"),'delete_backup',_tr("Delete"));
     $htmlFilter = $smarty->fetch("$local_templates_dir/filter.tpl");
-
     $oGrid->showFilter(trim($htmlFilter));
     //if there is data in database
     $result = $pFTPBackup->getStatusAutomaticBackupById();

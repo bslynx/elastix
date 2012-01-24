@@ -126,10 +126,10 @@ function listBreaks(&$smarty, $module_name, &$pDB, $local_templates_dir)
         $smarty->assign("mb_message", _tr("Failed to fetch breaks")."<br/>".$pDB->errMsg);
         $arrBreaks = array();
     }
-    $arrCols = array(
-        "<input type=\"submit\" class=\"button\" name=\"activate\" value=\""._tr('Activate')."\" /> ".
-        "<input type=\"submit\" class=\"button\" name=\"deactivate\" value=\""._tr('Desactivate')."\" />", 
-        _tr("Name Break"), _tr("Description Break"), _tr("Status"), _tr("Options"),);
+	$arrCols = array("<input type=\"submit\" class=\"button\" name=\"activate\" value=\""._tr('Activate')."\" /> ".
+		"<input type=\"submit\" class=\"button\" name=\"deactivate\" value=\""._tr('Desactivate')."\" />",
+	    _tr("Name Break"), _tr("Description Break"), _tr("Status"), _tr("Options"),);
+
     function listBreaks_formatHTML($break, $param)
     {
         return array(
@@ -153,7 +153,7 @@ function listBreaks(&$smarty, $module_name, &$pDB, $local_templates_dir)
     global $arrLang;
     $end = count($arrBreaks); $start = ($end == 0) ? 0 : 1;
     $oGrid = new paloSantoGrid($smarty);
-    $oGrid->showFilter("<a href=\"?menu={$module_name}&amp;action=new\"><b>"._tr('Create New Break').'&nbsp;&raquo;</b></a>');
+    $oGrid->addNew("?menu=$module_name&action=new",_tr('Create New Break'),true);
     $url = construirURL(array('menu' => $module_name), array('nav', 'start'));
     $sContenido = $oGrid->fetchGrid(
         array(

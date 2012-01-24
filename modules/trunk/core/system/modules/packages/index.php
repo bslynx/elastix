@@ -158,6 +158,7 @@ function listPackages($smarty, $module_name, $local_templates_dir,$arrConf) {
     $smarty->assign("UpdatingRepositories",$arrLang['Updating Repositories']);
     $smarty->assign("InstallPackage",$arrLang['Installing Package']);
     $smarty->assign("accionEnProceso",$arrLang['There is an action in process']);
+
     $contenidoFiltro = $smarty->fetch("file:$local_templates_dir/new.tpl");
     $oGrid->showFilter($contenidoFiltro);
     /*Fin Parte del Filtro*/

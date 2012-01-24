@@ -208,8 +208,8 @@ function reportBillingRates($smarty, $module_name, $local_templates_dir, &$pDB, 
     $smarty->assign("Date_close",_tr("Date close"));
     $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/filter.tpl","",$_POST);
     //end section filter
-
-    $oGrid->showFilter(trim($htmlFilter));
+    $oGrid->customAction("import_rate",_tr("import_rate"));
+    
     $content = $oGrid->fetchGrid();
 
     return $content;

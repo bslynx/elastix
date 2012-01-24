@@ -96,7 +96,7 @@ function _moduleContent(&$smarty, $module_name)
         $extension = "[[:digit:]]+";
 
     $smarty->assign("menu","voicemail");
-    $smarty->assign("Filter",$arrLang['Filter']);
+    $smarty->assign("Filter",$arrLang['Show']);
     $smarty->assign("CONFIG",$arrLang["Configuration"]);
     //formulario para el filtro
     $arrFormElements = createFieldFormVoiceList($arrLang);
@@ -377,7 +377,7 @@ contenido;
                      "start"   => ($total==0) ? 0 : $offset + 1,
                      "end"     => $end,
                      "total"   => $total,
-                     "columns" => array(0 => array("name"      => "<input type='submit' onClick=\"return confirmSubmit('{$arrLang["Are you sure you wish to delete voicemails?"]}');\" name='submit_eliminar' value='{$arrLang["Delete"]}' class='button' />",
+                     "columns" => array(0 => array("name"      => "",
                                                    "property1" => ""),
                                         1 => array("name"      => $arrLang["Date"],
                                                    "property1" => ""),
@@ -395,6 +395,7 @@ contenido;
                     );
 
     $oGrid = new paloSantoGrid($smarty);
+    $oGrid->deleteList(_tr("Are you sure you wish to delete voicemails?"),"submit_eliminar",_tr("Delete"));
     $oGrid->showFilter($htmlFilter);
     $contenidoModulo  = $oGrid->fetchGrid($arrGrid, $arrVoiceData,$arrLang);
     if (strpos($contenidoModulo, '<form') === FALSE)

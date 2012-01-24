@@ -118,7 +118,7 @@ function viewFormDomain($smarty, $module_name, $local_templates_dir, &$pDB, $arr
     $limitInferior = "";
     $limitSuperior = "";
     $oGrid->setLimit($limit);
-
+    $oGrid->addNew("submit_create_domain",_tr('Create Domain'));
     if(is_array($arrDomains) && $end>0){
 	$oGrid->setTotal($end);
 	$offset = $oGrid->calculateOffset();
@@ -143,9 +143,6 @@ function viewFormDomain($smarty, $module_name, $local_templates_dir, &$pDB, $arr
     }
 
     $oGrid->setData($arrData);
-    $oGrid->showFilter(
-              "<form style='margin-bottom:0;' method='POST' action='?menu=email_domains'>" .
-              "<input type='submit' name='submit_create_domain' value='{$arrLang['Create Domain']}' class='button'></form>");
     $content = $oGrid->fetchGrid();
     return $content;
 }

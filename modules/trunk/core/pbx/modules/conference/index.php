@@ -176,7 +176,7 @@ function report_conference($smarty, $module_name, $local_templates_dir, $pDB, $a
 
     $oFilterForm = new paloForm($smarty, $arrFormElements);
     $smarty->assign("SHOW", $arrLang["Show"]);
-    $smarty->assign("NEW_CONFERENCE", $arrLang["New Conference"]);
+   // $smarty->assign("NEW_CONFERENCE", $arrLang["New Conference"]);
 
     $startDate = $endDate = date("Y-m-d H:i:s");
 
@@ -264,9 +264,7 @@ function report_conference($smarty, $module_name, $local_templates_dir, $pDB, $a
                         "end"      => $end,
                         "total"    => $total,
                         'columns'   =>  array(
-                            array(
-                                'name' => "<input type='submit' name='delete_conference' value='{$arrLang["Delete"]}' class='button' onclick=\" return confirmSubmit('{$arrLang["Are you sure you wish to delete conference (es)?"]}');\" />"
-                            ),
+                            array('name' => ""),
                             array("name"      => $arrLang["Conference Name"],),
                             array("name"      => $arrLang["Conference #"],),
                             array('name'        => 'Period'),
@@ -280,6 +278,8 @@ function report_conference($smarty, $module_name, $local_templates_dir, $pDB, $a
         $arrGrid['columns'][] = array('name' => $arrLang['# Docs']);
         $arrGrid['columns'][] = array('name' => $arrLang['Options']);
     }
+    $oGrid->addNew("new_conference",_tr('New Conference'));
+    $oGrid->deleteList(_tr("Are you sure you wish to delete conference (es)?"),"delete_conference",_tr("Delete"));
     $oGrid->showFilter(trim($htmlFilter));
     $contenidoModulo = $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
 

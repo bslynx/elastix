@@ -66,7 +66,7 @@ function _moduleContent(&$smarty, $module_name)
     $errMsg = "";
     $contenidoModulo = "";
     $arrData = array();
-    
+
 
     $virtual_postfix = FALSE; // indica si se debe escribir el archivo /etc/postfix/virtual
 
@@ -117,12 +117,12 @@ function viewFormAccount($smarty, $module_name, $local_templates_dir, &$pDB, $ar
     $pEmail = new paloEmail($pDB);
     $oGrid = new paloSantoGrid($smarty);
     $id_domain=0;
-    
+
     if (isset($_POST['domain'])) $id_domain=$_POST['domain'];
     if (isset($_GET['id_domain'])) $id_domain=$_GET['id_domain'];
 
     $_POST['domain']=$id_domain;
-    
+
     $arrDominios    = array("0"=>'-- '.$arrLang["Select a domain"].' --');
 
     $arrDomains = $pEmail->getDomains();
@@ -131,11 +131,11 @@ function viewFormAccount($smarty, $module_name, $local_templates_dir, &$pDB, $ar
     }
 
     $arrFormElements = createFieldFormAccount($arrLang, $arrDominios);
-    
+
     $oFilterForm = new paloForm($smarty, $arrFormElements);
     $smarty->assign("SHOW", $arrLang["Show"]);
     $smarty->assign("CREATE_ACCOUNT", $arrLang["Create Account"]);
-    
+
 
 
    // $oGrid->pagingShow(true);
@@ -189,6 +189,7 @@ function viewFormAccount($smarty, $module_name, $local_templates_dir, &$pDB, $ar
     $arrColumns = array(_tr("Account Name"),_tr("Used Space"),);
     $oGrid->setColumns($arrColumns);
     $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/accounts_filter.tpl", "", $_POST);
+    $oGrid->addNew("submit_create_account",_tr("Create Account"));
     $oGrid->showFilter(trim($htmlFilter));
     $content = $oGrid->fetchGrid();
     return $content;
@@ -377,7 +378,7 @@ function saveOneAccount($smarty, &$pDB, $arrLang, $isFromFile)
     $arrFormElements = createFieldFormNewAccount($arrLang);
     $noCambioPass = FALSE;
     $oForm = new paloForm($smarty, $arrFormElements);
-    
+
     $password1   = getParameter("password1");
     $password2   = getParameter("password2");
     $id_domain   = getParameter("id_domain");
@@ -408,7 +409,7 @@ function saveOneAccount($smarty, &$pDB, $arrLang, $isFromFile)
 	    $smarty->assign("mb_message", $strErrorMsg);
 	}
 	$content = false;
-    }elseif(!preg_match("/^[a-z0-9]+([\._\-]?[a-z0-9]+[_\-]?)*$/",$address) && isset($address) && $address!=""){ 
+    }elseif(!preg_match("/^[a-z0-9]+([\._\-]?[a-z0-9]+[_\-]?)*$/",$address) && isset($address) && $address!=""){
 	if(!$isFromFile){
 	    $smarty->assign("mb_title", $arrLang["Validation Error"]);
 	    $smarty->assign("mb_message", $arrLang["Wrong format for username"]);
@@ -720,7 +721,7 @@ function obtener_quota_usuario($username,$module_name,$arrLang)
             if (! $q_total == 0){
                 $q_percent = number_format((100*$q_used/$q_total),2);
                 $tamano_usado="$quota[used] KB / <a href='?menu=$module_name&action=viewFormEditQuota&username=$username' title='$edit_quota'>$quota[qmax] KB</a> ($q_percent%)";
-            } 
+            }
             else {
                 $tamano_usado=$arrLang["Could not obtain used disc space"];
             }

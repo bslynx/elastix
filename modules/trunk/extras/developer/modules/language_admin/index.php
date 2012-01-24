@@ -239,6 +239,7 @@ function showLanguages($smarty, $module_name, $local_templates_dir, $arrLang, $a
 
     $oGrid  = new paloSantoGrid($smarty);
     $oGrid->addNew("new",_tr("Add"));
+	$oGrid->customAction("save_all",_tr("Save All"));
 
     $offset = $oGrid->getOffSet($limit,$total,$action,$start);
 

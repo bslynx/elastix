@@ -138,18 +138,15 @@ function listarUsuarios($pDB, $smarty, $module_name, $local_templates_dir)
                      "end"      => ($offset+$limit)<=$total ? $offset+$limit : $total,
                      "total"    => $total,
                      "columns"  => array(
-                                        0 => array("name"       => 
-                                            '<input type="submit" class="button" name="delete" value="'.
-                                            htmlentities(_tr('Delete'), ENT_COMPAT, 'UTF-8').
-                                            '" onclick="return confirmSubmit('."'".
-                                                htmlentities(_tr('Are you sure to delete this user?'), ENT_COMPAT, 'UTF-8')."'".')" />'),
+                                        0 => array("name"       => ""),
                                         1 => array("name"       => _tr('Name')),
                                         2 => array("name"       => _tr('Options')),
                                         )
                     );
     
     $oGrid = new paloSantoGrid($smarty);
-    $oGrid->showFilter($smarty->fetch("$local_templates_dir/filter-list-users.tpl"));
+    $oGrid->addNew("?menu=$module_name&action=new_user",_tr('New ECCP User'),true);
+    $oGrid->deleteList(_tr('Are you sure to delete this user?'),"delete",_tr('Delete'));
     $sContenido = $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
     if (strpos($sContenido, '<form') === FALSE)
         $sContenido = "<form  method=\"POST\" style=\"margin-bottom:0;\" action=\"$url\">$sContenido</form>";

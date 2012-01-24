@@ -304,6 +304,7 @@ function listAgent($pDB, $smarty, $module_name, $local_templates_dir)
         'LABEL_DELETE'          =>  _tr('Delete'),
         'MESSAGE_CONTINUE_DELETE' => _tr("Are you sure you wish to continue?"),
     ));
+    $oGrid->addNew("?menu=$module_name&action=new_agent", _tr("New agent"),true);
     $oGrid->showFilter($smarty->fetch("$local_templates_dir/filter-list-agents.tpl"));
     $sContenido = $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
     if (strpos($sContenido, '<form') === FALSE)

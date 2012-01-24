@@ -133,7 +133,7 @@ function listarFaxes(&$smarty, $module_name, $local_templates_dir)
         $paramFiltro['filter']);
 
     $oGrid->setColumns(array(
-        "<input type='submit' name='faxes_delete' class='button' value='"._tr('Delete')."' onclick=\"return confirmSubmit('"._tr('Are you sure you wish to delete fax (es)?')."')\"/>",
+        "",
         _tr('Type'),
         _tr('File'),
         _tr('Company Name'),
@@ -168,6 +168,7 @@ function listarFaxes(&$smarty, $module_name, $local_templates_dir)
     }
 
     $oGrid->setData($arrData);
+    $oGrid->deleteList(_tr('Are you sure you wish to delete fax (es)?'),"faxes_delete",_tr("Delete"));
     $oGrid->showFilter($htmlFilter);
     return $oGrid->fetchGrid();
 }

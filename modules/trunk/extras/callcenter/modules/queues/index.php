@@ -109,10 +109,7 @@ function listarColas($pDB, $smarty, $module_name, $local_templates_dir)
         "end"      => $end,
         "total"    => $end,
         "columns"  => array(
-                        array("name" => 
-                            "<input class=\"button\" type=\"submit\" name=\"activate\" value=\""._tr('Activate')."\" />".
-                            "<input class=\"button\" type=\"submit\" name=\"deactivate\" value=\""._tr('Deactivate')."\" />"
-                        ),
+                        array("name" => "<input class=\"button\" type=\"submit\" name=\"activate\" value=\""._tr('Activate')."\" />". 	"<input class=\"button\" type=\"submit\" name=\"deactivate\" value=\""._tr('Deactivate')."\" />"),
                         array("name" => _tr('Name Queue')),
                         array("name" => _tr('Status')),
                         array("name" => _tr('Options'))
@@ -128,11 +125,11 @@ function listarColas($pDB, $smarty, $module_name, $local_templates_dir)
             "<a href=\"?menu=$module_name&amp;action=edit_queue&amp;id_queue={$tuplaQueue['id']}\">[".htmlentities(_tr('Edit'), ENT_COMPAT, 'UTF-8')."]</a>",
         );
     }
+    $oGrid->addNew("?menu=$module_name&action=new_queue",_tr('Select Queue'),true);
     $oGrid->showFilter(
         '<table width="100%" border="0"><tr>' .
             '<td align="right"><b>'._tr('Status').'</b></td>'.
             '<td align="left"><select name="estatus" onchange="submit();">'.combo(array('' => _tr('all'), 'A' => _tr('active'), 'I' => _tr('inactive')), $sEstado).'</select></td>'.
-            '<td align="right"><b><a href="?menu='.$module_name.'&amp;action=new_queue">'._tr('Select Queue').'&nbsp;&raquo;</a></b></td>'.
         '</tr></table>'
     );
     $sContenido = $oGrid->fetchGrid($arrGrid, $arrData, $arrLang);

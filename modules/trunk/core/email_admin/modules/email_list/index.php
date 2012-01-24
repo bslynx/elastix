@@ -132,9 +132,8 @@ function reportEmailList($smarty, $module_name, $local_templates_dir, &$pDB, $ar
     $offset = $oGrid->calculateOffset();
     $url    = "?menu=$module_name&id_domain=$id_domain";
     $oGrid->setURL($url);
+	$button_eliminar="";
     $arrResult = $pEmailList->getEmailList($id_domain,$limit,$offset);
-    $button_eliminar = "<input class=\"button\" type=\"submit\" name=\"delete\" value=\""._tr("Delete")."\" ".
-                       " onclick=\" return confirmSubmit('"._tr("Are you sure you wish to delete the Email List(s).")."?');\" >";
     $arrColumns = array($button_eliminar,_tr("List name"),_tr("Membership"),_tr("Action"));
     $oGrid->setColumns($arrColumns);
     $arrData = null;
@@ -151,11 +150,13 @@ function reportEmailList($smarty, $module_name, $local_templates_dir, &$pDB, $ar
     }
     $oGrid->setData($arrData);
     //begin section filter
-    $smarty->assign("NEW_EMAILLIST", _tr("New Email list"));
+    //ya no se usa esa variable smarty
+    //$smarty->assign("NEW_EMAILLIST", _tr("New Email list"));
 
     $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/filter.tpl","",$_POST);
     //end section filter
-
+    $oGrid->addNew("new_emaillist",_tr("New Email list"));
+	$oGrid->deleteList(_tr("Are you sure you wish to delete the Email List(s)."),"delete",_tr("Delete"));
     $oGrid->showFilter(trim($htmlFilter));
     $content = $oGrid->fetchGrid();
     if (strpos($content, '<form') === FALSE)
