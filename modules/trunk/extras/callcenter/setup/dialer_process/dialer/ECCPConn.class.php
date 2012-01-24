@@ -1524,6 +1524,7 @@ LISTA_EXTENSIONES;
         if (!preg_match('|^Agent/(\d+)$|', $sAgente, $regs))
             return NULL;
         $sNumAgente = $regs[1];
+        $this->_tuberia->AMIEventProcess_agregarIntentoLoginAgente($sAgente, $sExtension);
         $r = $this->_ami->Originate(
             $sExtension,        // channel
             NULL, NULL, NULL,   // extension, context, priority
@@ -1533,8 +1534,8 @@ LISTA_EXTENSIONES;
             TRUE,               // async
             'ECCP:1.0:'.posix_getpid().':AgentLogin:'.$sAgente     // action-id
             );
-        if ($r['Response'] == 'Success')
-            $this->_tuberia->msg_AMIEventProcess_agregarIntentoLoginAgente($sAgente, $sExtension);
+        if ($r['Response'] != 'Success')
+            $this->_tuberia->AMIEventProcess_cancelarIntentoLoginAgente($sAgente);
         return $r;
     }
 

@@ -69,12 +69,12 @@ class AMIEventProcess extends TuberiaProcess
             $this->_tuberia->registrarManejador('CampaignProcess', $k, array($this, "rpc_$k"));
 
         // Registro de manejadores de eventos desde ECCPProcess
-        foreach (array('agregarIntentoLoginAgente', 'idNuevaSesionAgente', 
-            'idNuevoBreakAgente', 'quitarBreakAgente', 'idNuevoHoldAgente',
-            'quitarHoldAgente') as $k)
+        foreach (array('idNuevaSesionAgente', 'idNuevoBreakAgente',
+            'quitarBreakAgente', 'idNuevoHoldAgente', 'quitarHoldAgente') as $k)
             $this->_tuberia->registrarManejador('ECCPProcess', $k, array($this, "msg_$k"));
-        foreach (array('infoSeguimientoAgente', 'reportarInfoLlamadaAtendida',
-            'reportarInfoLlamadasCampania') as $k)
+        foreach (array('agregarIntentoLoginAgente', 'infoSeguimientoAgente', 
+            'reportarInfoLlamadaAtendida', 'reportarInfoLlamadasCampania',
+            'cancelarIntentoLoginAgente') as $k)
             $this->_tuberia->registrarManejador('ECCPProcess', $k, array($this, "rpc_$k"));
 
         // Registro de manejadores de eventos desde HubProcess
@@ -174,6 +174,14 @@ class AMIEventProcess extends TuberiaProcess
     {
         $a = $this->_listaAgentes->buscar('agentchannel', $sAgente);
         if (!is_null($a)) $a->iniciarLoginAgente($sExtension);
+        return !is_null($a);
+    }
+    
+    private function _cancelarIntentoLoginAgente($sAgente)
+    {
+        $a = $this->_listaAgentes->buscar('agentchannel', $sAgente);
+        if (!is_null($a)) $a->respuestaLoginAgente('Failure', NULL, NULL);
+        return !is_null($a);
     }
     
     private function _idNuevaSesionAgente($sAgente, $id_sesion)
@@ -775,6 +783,26 @@ class AMIEventProcess extends TuberiaProcess
             array($this, '_nuevasLlamadasMarcar'), $datos));
     }
 
+    public function rpc_agregarIntentoLoginAgente($sFuente, $sDestino, 
+        $sNombreMensaje, $iTimestamp, $datos)
+    {
+        if ($this->DEBUG) {
+            $this->_log->output('DEBUG: '.__METHOD__.' recibido: '.print_r($datos, 1));
+        }
+        $this->_tuberia->enviarRespuesta($sFuente, call_user_func_array(
+            array($this, '_agregarIntentoLoginAgente'), $datos));
+    }
+    
+    public function rpc_cancelarIntentoLoginAgente($sFuente, $sDestino, 
+        $sNombreMensaje, $iTimestamp, $datos)
+    {
+        if ($this->DEBUG) {
+            $this->_log->output('DEBUG: '.__METHOD__.' recibido: '.print_r($datos, 1));
+        }
+        $this->_tuberia->enviarRespuesta($sFuente, call_user_func_array(
+            array($this, '_cancelarIntentoLoginAgente'), $datos));
+    }
+    
     public function rpc_infoSeguimientoAgente($sFuente, $sDestino, 
         $sNombreMensaje, $iTimestamp, $datos)
     {
@@ -851,15 +879,6 @@ class AMIEventProcess extends TuberiaProcess
             $this->_log->output('DEBUG: '.__METHOD__.' recibido: '.print_r($datos, 1));
         }
         call_user_func_array(array($this, '_avisoInicioOriginate'), $datos);
-    }
-    
-    public function msg_agregarIntentoLoginAgente($sFuente, $sDestino, 
-        $sNombreMensaje, $iTimestamp, $datos)
-    {
-        if ($this->DEBUG) {
-            $this->_log->output('DEBUG: '.__METHOD__.' recibido: '.print_r($datos, 1));
-        }
-        call_user_func_array(array($this, '_agregarIntentoLoginAgente'), $datos);
     }
     
     public function msg_idNuevaSesionAgente($sFuente, $sDestino, 
