@@ -602,12 +602,13 @@ function reportRules($smarty, $module_name, $local_templates_dir, &$pDB, $arrCon
     }elseif($accion == "previous"){
 	$start = $start - 2*$limit;
     }
-    $button_eliminar = "<input class=\"button\" type=\"submit\" name=\"delete\" value=\""._tr("Delete")."\" ".
-                       " onclick=\"return confirmSubmit('"._tr("Are you sure you wish to delete the Rule")."?');\" >";
+
     if($first_time)
         $arrColumns = array("",_tr("Order"),_tr("Traffic"),_tr("Target"),_tr("Interface"),_tr("IP Source"),_tr("IP Destiny"),_tr("Protocol"),_tr("Details"));
-    else
-        $arrColumns = array($button_eliminar,_tr("Order"),_tr("Traffic"),_tr("Target"),_tr("Interface"),_tr("IP Source"),_tr("IP Destiny"),_tr("Protocol"),_tr("Details"),"","");
+    else{
+	$oGrid->deleteList("Are you sure you wish to delete the Rule?","delete",_tr("Delete"));
+        $arrColumns = array("",_tr("Order"),_tr("Traffic"),_tr("Target"),_tr("Interface"),_tr("IP Source"),_tr("IP Destiny"),_tr("Protocol"),_tr("Details"),"","");
+    }
     $oGrid->setColumns($arrColumns);
     if(is_array($arrResult) && $total>0){
         foreach($arrResult as $key => $value){
@@ -695,7 +696,6 @@ function reportRules($smarty, $module_name, $local_templates_dir, &$pDB, $arrCon
 
     }
     $oGrid->setData($arrData);
-    $smarty->assign("new", _tr("New Rule"));
     $smarty->assign("desactivate", _tr("Desactivate FireWall"));
     if($first_time){
         $mensaje = _tr("The firewall is totally desactivated. It is recommended to activate the firewall rules");
@@ -706,6 +706,7 @@ function reportRules($smarty, $module_name, $local_templates_dir, &$pDB, $arrCon
         $mensaje = _tr("You have made changes to the definition of firewall rules, for this to take effect in the system press the next button");
         $mensaje2 = _tr("Save Changes");
         $smarty->assign("DISPLAY_BUTTON", "");
+	$oGrid->addNew("new",_tr("New Rule"));
     }
     $smarty->assign("exec", $mensaje2);
     if($pRules->isExecutedInSystem()){

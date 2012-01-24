@@ -92,6 +92,9 @@ function reportPuertos($smarty, $module_name, $local_templates_dir, &$pDB, $arrC
     $field_pattern = getParameter("filter_txt");
     //begin grid parameters
     $oGrid  = new paloSantoGrid($smarty);
+    $oGrid->addNew("new",_tr("Define Port"));
+    $oGrid->deleteList("Are you sure you wish to delete the port(s).?","delete",_tr("Delete"));
+
     $totalPuertos = $pPuertos->ObtainNumPuertos($field_type, $field_pattern);
 
     $limit  = 20;
@@ -112,8 +115,7 @@ function reportPuertos($smarty, $module_name, $local_templates_dir, &$pDB, $arrC
 
     $arrData = null;
     $arrResult = $pPuertos->ObtainPuertos($limit, $offset, $field_type, $field_pattern);
-    $button_eliminar = "<input class=\"button\" type=\"submit\" name=\"delete\" value=\""._tr("Delete")."\" ".
-                       " onclick=\" return confirmSubmit('"._tr("Are you sure you wish to delete the port(s).")."?');\" >";
+    $button_eliminar = "";
     $arrColumns = array($button_eliminar,_tr("Name"),_tr("Protocol"),_tr("Details"),_tr("Option"));
     $oGrid->setColumns($arrColumns);
     if( is_array($arrResult) && $total>0 ){
@@ -138,7 +140,6 @@ function reportPuertos($smarty, $module_name, $local_templates_dir, &$pDB, $arrC
     //begin section filter
     $arrFormFilterPuertos = createFieldForm();
     $oFilterForm = new paloForm($smarty, $arrFormFilterPuertos);
-    $smarty->assign("New", _tr("Define Port"));
     $smarty->assign("SHOW", _tr("Show"));
 
     $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/filter.tpl","",$_POST);
