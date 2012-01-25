@@ -544,6 +544,7 @@ function oneClickEvent()
 		<div id="neo-cmenu-cpallet" class="neo-cmenutableft"><img src="themes/{$THEMENAME}/images/cpallet.png" width="19" height="21" alt="color" /></div>
 		<div id="neo-cmenu-search" class="neo-cmenutab"><img src="themes/{$THEMENAME}/images/searchw.png" width="19" height="21" alt="user_search" border="0" /></div>
 		<div id="neo-cmenu-info" class="neo-cmenutab"><img src="themes/{$THEMENAME}/images/information.png" width="19" height="21" alt="user_info" border="0" /></div>
+		<div id="neo-cmenu-addons" class="neo-cmenutab"><a href="index.php?menu=addons"><img src="themes/{$THEMENAME}/images/toolbar_addons.png" width="19" height="21" alt="elastix_addons" border="0" /></a></div>
 		<div id="neo-cmenu-user" class="neo-cmenutab"><img src="themes/{$THEMENAME}/images/user.png" width="19" height="21" alt="user" border="0" /></div>
 	  </div>
 	</div>
