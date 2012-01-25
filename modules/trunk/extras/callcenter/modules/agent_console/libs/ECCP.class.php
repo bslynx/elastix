@@ -524,5 +524,15 @@ class ECCP
         $xml_response = $this->send_request($xml_request);
         return $xml_response->getcampaignqueuewait_response;
     }
+
+    public function getagentqueues($sAgentNumber = NULL)
+    {
+        $xml_request = new SimpleXMLElement("<request />");
+        $xml_cmdRequest = $xml_request->addChild('getagentqueues');
+        $xml_cmdRequest->addChild('agent_number', is_null($sAgentNumber) ? $this->_agentNumber : $sAgentNumber);
+        $xml_response = $this->send_request($xml_request);
+        return $xml_response->getagentqueues_response;
+    }
+    
 }
 ?>

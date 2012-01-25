@@ -1,7 +1,7 @@
 Protocolo ECCP v0.1
 -------------------
-Revisión 4
-Estatus: Alfa
+Revisión 5
+Estatus: Beta
 
 Objetivo
 --------
@@ -587,18 +587,11 @@ Nota: no debe de confundirse este evento con el requerimiento loginagent.
 Elementos informativos:
 * agent: Agente que ha podido logonearse. Este identificador está de la forma 
   'Agent/9000'.
-* queues: Lista de colas a la que pertenece el agente. Este elemento contiene
-  múltiples elementos 'queue', que contienen cada uno una cola a la que 
-  pertenece el agente.
 
 Ejemplo:
 <event>
     <agentloggedin>
         <agent>Agent/9000</agent>
-        <queues>
-            <queue>8001</queue>
-            <queue>8000</queue>
-        </queues>
     </agentloggedin>
 </event>
 
@@ -613,18 +606,11 @@ Nota: no debe de confundirse este evento con el requerimiento logoutagent.
 Elementos informativos:
 * agent: Agente que ha sido deslogoneado. Este identificador está de la forma 
   'Agent/9000'.
-* queues: Lista de colas a la que pertenece el agente. Este elemento contiene
-  múltiples elementos 'queue', que contienen cada uno una cola a la que 
-  pertenece el agente.
 
 Ejemplo:
 <event>
     <agentloggedout>
         <agent>Agent/9000</agent>
-        <queues>
-            <queue>8001</queue>
-            <queue>8000</queue>
-        </queues>
     </agentloggedout>
 </event>
 
@@ -2458,4 +2444,50 @@ Para llamada agendada duplicada en misma fecha y hora y número telefónico
             <message>Found duplicate scheduled call</message>
         </failure>
     </schedulecall_response>
+</response>
+
+
+Requerimiento "getagentqueues"
+
+Este requerimiento lista las colas a las que está suscrito un agente. Esta 
+información era anteriormente reportada por los eventos agentloggedin y 
+agentloggedout pero fue extraída a un requerimiento separado por razones de 
+eficiencia de implementación
+
+Atributos o argumentos:
+* agent_number: Agente que se interroga. Este identificador está de la forma 
+  'Agent/9000'.
+
+Respuesta:
+* queues: Lista de colas a la que pertenece el agente. Este elemento contiene
+  múltiples elementos 'queue', que contienen cada uno una cola a la que 
+  pertenece el agente.
+
+Ejemplo:
+<request id="4">
+    <getagentqueues>
+        <agent_number>Agent/9000</agent_number>
+    </getagentqueues>
+</request>
+
+Respuesta:
+Para caso de éxito:
+
+<response id="4">
+    <getagentqueues_response>
+        <queues>
+            <queue>8001</queue>
+            <queue>8000</queue>
+        </queues>
+    </getagentqueues_response>
+</response>
+
+En caso de que no exista el agente:
+<response id="4">
+    <getagentqueues_response>
+        <failure>
+            <code>404</code>
+            <message>Specified agent not found</message>
+        </failure>
+    </getagentqueues_response>
 </response>

@@ -236,51 +236,6 @@ class ECCPProcess extends TuberiaProcess
     }
     
     // Método que lista las colas a las cuales está suscrito un agente
-    private function _listarColasAgente($sAgente)
-    {
-        /* Por ahora se asume que $sAgente es de la forma Agent/9000 y que 
-         * aparece de esta misma manera en el reporte de "queue show" 
-         *  5000 has 0 calls (max unlimited) in 'ringall' strategy (0s holdtime, 0s talktime), W:0, C:0, A:0, SL:0.0% within 60s
-         *     No Members
-         *     No Callers
-         *  
-         *  8001 has 0 calls (max unlimited) in 'ringall' strategy (0s holdtime, 0s talktime), W:0, C:0, A:0, SL:0.0% within 60s
-         *     Members: 
-         *        Agent/9000 (Unavailable) has taken no calls yet
-         *     No Callers
-         *  
-         *  8000 has 0 calls (max unlimited) in 'ringall' strategy (0s holdtime, 0s talktime), W:0, C:0, A:0, SL:0.0% within 60s
-         *     Members: 
-         *        Agent/9000 (Unavailable) has taken no calls yet
-         *     No Callers
-         *
-         */
-        $respuestaCola = $this->_ami->Command('queue show');
-        if (isset($respuestaCola['data'])) {
-            $listaColas = array();
-            $lineasRespuesta = explode("\n", $respuestaCola['data']);
-            $sColaActual = NULL;
-            foreach ($lineasRespuesta as $sLinea) {
-                $regs = NULL;
-                //if (ereg('^([[:digit:]]+)[[:space:]]+has[[:space:]]+[[:digit:]]+[[:space:]]+calls', $sLinea, $regs)) {
-                if (preg_match('/^(\d+) has \d+ calls/', $sLinea, $regs)) {
-                   // Se ha encontrado el inicio de una descripción de cola
-                    $sColaActual = $regs[1];
-                //} elseif (ereg('^[[:space:]]+(Agent/[[:digit:]]+)', $sLinea, $regs)) {
-                } elseif (preg_match('|^\s+(\w+/\d+)|', $sLinea, $regs)) {
-                    if (!is_null($sColaActual) && $sAgente == $regs[1]) {
-                        // Se ha encontrado el agente en una cola en particular
-                        $listaColas[] = $sColaActual;
-                    }
-                }
-            }
-            return $listaColas;
-        } else {
-            $this->_log->output('ERR: lost synch with Asterisk AMI ("queue show" response lacks "data").');
-            return NULL;
-        }
-    }
-
     /**
      * Método de conveniencia para verificar si el agente está en pausa, y 
      * quitar la pausa en caso de encontrarla.
@@ -680,11 +635,8 @@ INFO_FORMULARIOS;
             if (!is_null($id_sesion)) {
                 $this->_tuberia->msg_AMIEventProcess_idNuevaSesionAgente($sAgente, $id_sesion);
 
-                // Reportar todas las colas a la que pertenece un agente
-                $listaColas = $this->_listarColasAgente($sAgente);
-        
                 // Notificar a todas las conexiones abiertas
-                $this->_multiplex->notificarEvento_AgentLogin($sAgente, $listaColas, TRUE);
+                $this->_multiplex->notificarEvento_AgentLogin($sAgente, TRUE);
             }
         }
     }
@@ -708,11 +660,8 @@ INFO_FORMULARIOS;
         if (!is_null($id_break))
             $this->lanzarEventoPauseEnd($sAgente, $id_break, 'break');
 
-        // Reportar todas las colas a la que pertenece un agente
-        $listaColas = $this->_listarColasAgente($sAgente);
-
         // Notificar a todas las conexiones abiertas
-        $this->_multiplex->notificarEvento_AgentLogoff($sAgente, $listaColas);
+        $this->_multiplex->notificarEvento_AgentLogoff($sAgente);
     }
 
     public function lanzarEventoPauseEnd($sAgente, $id_audit_break, $pause_class)

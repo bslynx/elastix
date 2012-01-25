@@ -2854,10 +2854,88 @@ Privilege: Command
         return NULL;
     }
 
+    private function Request_getagentqueues($comando)
+    {
+        // Verificar que agente está presente
+        if (!isset($comando->agent_number)) 
+            return $this->_generarRespuestaFallo(400, 'Bad request');
+        $sAgente = (string)$comando->agent_number;
+
+        $xml_response = new SimpleXMLElement('<response />');
+        $xml_getagentqueuesResponse = $xml_response->addChild('getagentqueues_response');
+
+        // El siguiente código asume formato Agent/9000
+        if ($sAgente == 'any') {
+            $sAgente = NULL;
+        } elseif (!preg_match('|^Agent/(\d+)$|', $sAgente, $regs)) {
+            $this->_agregarRespuestaFallo($xml_getagentqueuesResponse, 417, 'Invalid agent number');
+            return $xml_response;
+        }
+
+        // Verificar que la extensión y el agente son válidos en el sistema
+        $listaAgentes = $this->_listarAgentes();
+        if (!in_array($sAgente, array_keys($listaAgentes))) {
+            $this->_agregarRespuestaFallo($xml_getagentqueuesResponse, 404, 'Specified agent not found');
+            return $xml_response;
+        }
+        
+        $listaColas = $this->_listarColasAgente($sAgente);
+        $xml_agentQueues = $xml_getagentqueuesResponse->addChild('queues');
+
+        // Reportar también las colas a las que está suscrito el agente
+        if (is_array($listaColas)) foreach ($listaColas as $sCola) {
+            $xml_agentQueues->addChild('queue', str_replace('&', '&amp;', $sCola));
+        }
+
+        return $xml_response;
+    }
+
+    private function _listarColasAgente($sAgente)
+    {
+        /* Por ahora se asume que $sAgente es de la forma Agent/9000 y que 
+         * aparece de esta misma manera en el reporte de "queue show" 
+         *  5000 has 0 calls (max unlimited) in 'ringall' strategy (0s holdtime, 0s talktime), W:0, C:0, A:0, SL:0.0% within 60s
+         *     No Members
+         *     No Callers
+         *  
+         *  8001 has 0 calls (max unlimited) in 'ringall' strategy (0s holdtime, 0s talktime), W:0, C:0, A:0, SL:0.0% within 60s
+         *     Members: 
+         *        Agent/9000 (Unavailable) has taken no calls yet
+         *     No Callers
+         *  
+         *  8000 has 0 calls (max unlimited) in 'ringall' strategy (0s holdtime, 0s talktime), W:0, C:0, A:0, SL:0.0% within 60s
+         *     Members: 
+         *        Agent/9000 (Unavailable) has taken no calls yet
+         *     No Callers
+         *
+         */
+        $respuestaCola = $this->_ami->Command('queue show');
+        if (isset($respuestaCola['data'])) {
+            $listaColas = array();
+            $lineasRespuesta = explode("\n", $respuestaCola['data']);
+            $sColaActual = NULL;
+            foreach ($lineasRespuesta as $sLinea) {
+                $regs = NULL;
+                if (preg_match('/^(\d+) has \d+ calls/', $sLinea, $regs)) {
+                   // Se ha encontrado el inicio de una descripción de cola
+                    $sColaActual = $regs[1];
+                } elseif (preg_match('|^\s+(\w+/\d+)|', $sLinea, $regs)) {
+                    if (!is_null($sColaActual) && $sAgente == $regs[1]) {
+                        // Se ha encontrado el agente en una cola en particular
+                        $listaColas[] = $sColaActual;
+                    }
+                }
+            }
+            return $listaColas;
+        } else {
+            $this->_log->output('ERR: lost synch with Asterisk AMI ("queue show" response lacks "data").');
+            return NULL;
+        }
+    }
 
     /***************************** EVENTOS *****************************/
     
-    function notificarEvento_AgentLogin($sAgente, $listaColas, $bExitoLogin)
+    function notificarEvento_AgentLogin($sAgente, $bExitoLogin)
     {
         if (is_null($this->_sUsuarioECCP)) return;
         if (!is_null($this->_sAgenteFiltrado) && $this->_sAgenteFiltrado != $sAgente) return;
@@ -2867,20 +2945,12 @@ Privilege: Command
             ? $xml_response->addChild('agentloggedin')
             : $xml_response->addChild('agentfailedlogin');
         $xml_agentLoggedIn->addChild('agent', str_replace('&', '&amp;', $sAgente));
-        if ($bExitoLogin) {
-            $xml_agentQueues = $xml_agentLoggedIn->addChild('queues');
 
-            // Reportar también las colas a las que está suscrito el agente
-            if (is_array($listaColas)) foreach ($listaColas as $sCola) {
-                $xml_agentQueues->addChild('queue', str_replace('&', '&amp;', $sCola));
-            }
-        }
-        
         $s = $xml_response->asXML();
         $this->multiplexSrv->encolarDatosEscribir($this->sKey, $s);
     }
 
-    function notificarEvento_AgentLogoff($sAgente, $listaColas)
+    function notificarEvento_AgentLogoff($sAgente)
     {
         if (is_null($this->_sUsuarioECCP)) return;
         if (!is_null($this->_sAgenteFiltrado) && $this->_sAgenteFiltrado != $sAgente) return;
@@ -2888,13 +2958,7 @@ Privilege: Command
         $xml_response = new SimpleXMLElement('<event />');
         $xml_agentLoggedIn = $xml_response->addChild('agentloggedout');
         $xml_agentLoggedIn->addChild('agent', str_replace('&', '&amp;', $sAgente));
-        $xml_agentQueues = $xml_agentLoggedIn->addChild('queues');
 
-        // Reportar también las colas a las que está suscrito el agente
-        if (is_array($listaColas)) foreach ($listaColas as $sCola) {
-            $xml_agentQueues->addChild('queue', str_replace('&', '&amp;', $sCola));
-        }
-        
         $s = $xml_response->asXML();
         $this->multiplexSrv->encolarDatosEscribir($this->sKey, $s);
     }

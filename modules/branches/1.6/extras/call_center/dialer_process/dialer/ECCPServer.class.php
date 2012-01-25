@@ -110,20 +110,20 @@ class ECCPServer extends MultiplexServer
         }
     }
 
-    function notificarEvento_AgentLogin($sAgente, $listaColas, $bExitoLogin)
+    function notificarEvento_AgentLogin($sAgente, $bExitoLogin)
     {
         foreach ($this->_listaConn as &$oConn) {
             if (method_exists($oConn, 'notificarEvento_AgentLogin')) {
-                $oConn->notificarEvento_AgentLogin($sAgente, $listaColas, $bExitoLogin);
+                $oConn->notificarEvento_AgentLogin($sAgente, $bExitoLogin);
             }
         }
     }
 
-    function notificarEvento_AgentLogoff($sAgente, $listaColas)
+    function notificarEvento_AgentLogoff($sAgente)
     {
         foreach ($this->_listaConn as &$oConn) {
             if (method_exists($oConn, 'notificarEvento_AgentLogoff')) {
-                $oConn->notificarEvento_AgentLogoff($sAgente, $listaColas);
+                $oConn->notificarEvento_AgentLogoff($sAgente);
             }
         }
     }

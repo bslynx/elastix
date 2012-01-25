@@ -1,3 +1,9 @@
+* Dialer (ECCP): protocol change: the agentloggedin and agentloggedout events
+  no longer report agent membership to queues. The effort required to parse
+  the output of "queue show" scales linearly with the number of agents in 
+  queues, and also with the number of queues defined, resulting in noticeable
+  lags in ECCP performance. A new request "getagentqueues" has been added in
+  case a client really needs this information.
 * Dialer: (almost) complete rewrite of the central code.
   During a deployment with a moderately large number of agents, several design
   flaws were uncovered in the dialer code. The largest of such design flaws was
