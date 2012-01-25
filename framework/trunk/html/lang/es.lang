@@ -233,5 +233,14 @@ $arrLang=array(
 "Loading Note" => "Cargando Nota",
 "Click here to leave a note." => "Click aquí para dejar una nota.",
 "Your session has expired. Press 'Accept' to return to the login page." => "Su sesion ha expirado. Presione 'Aceptar' para regresar a la pagina de ingreso.",
+"No records match the filter criteria" => "Ningun registro coincide con el criterio de filtrado seleccionado",
+"New Row" => "Nueva Fila",
+"Custom Action" => "Accion Personalizada",
+"Delete Selected" => "Eliminar Seleccionado",
+"Page" => "Página",
+"of" => "de",
+"records" => "registros",
+"Apply Filter" => "Aplicar Filtro",
+"Download" => "Descargar"
 );
 ?>

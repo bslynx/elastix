@@ -220,6 +220,15 @@ $arrLang=array(
 "Saving Note" => "Saving Note",
 "Loading Note" => "Loading Note",
 "Click here to leave a note." => "Click here to leave a note.",
-"Your session has expired. Press 'Accept' to return to the login page." => "Your session has expired. Press 'Accept' to return to the login page."
+"Your session has expired. Press 'Accept' to return to the login page." => "Your session has expired. Press 'Accept' to return to the login page.",
+"No records match the filter criteria" => "No records match the filter criteria",
+"New Row" => "New Row",
+"Custom Action" => "Custom Action",
+"Delete Selected" => "Delete Selected",
+"Page" => "Page",
+"of" => "of",
+"records" => "records",
+"Apply Filter" => "Apply Filter",
+"Download" => "Download"
 );
 ?>
