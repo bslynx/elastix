@@ -66,19 +66,25 @@ a array with the field "total" containing the total of records.
 */
     function getAddressBook($limit=NULL, $offset=NULL, $field_name=NULL, $field_pattern=NULL, $count=FALSE, $iduser=NULL)
     {
-    //Defining the fields to get. If the param $count is true, then we will get the result of the sql function count(), else, we will get all fields in the table.
-    $fields=($count)?"count(id) as total":"*";
-
-    //Begin to build the query.
+	//Defining the fields to get. If the param $count is true, then we will get the result of the sql function count(), else, we will get all fields in the table.
+	$fields=($count)?"count(id) as total":"*";
+	//Begin to build the query.
         $query   = "SELECT $fields FROM contact ";
-
         $strWhere = "";
-
-        if(!is_null($field_name) and !is_null($field_pattern))
-            $strWhere .= " $field_name like $field_pattern and (iduser=$iduser or status='isPublic') ";
-        if($field_name=="telefono")
-            $strWhere .= " or extension like $field_pattern and (iduser=$iduser or status='isPublic') ";
-
+	$arrParams = array();
+        if(!is_null($field_name) and !is_null($field_pattern)){
+	    $arrFilters = array("id","name","last_name","telefono","extension","email","iduser","address","company","notes","status");
+	    if(!in_array($field_name,$arrFilters))
+		$field_name = "id";
+	    $arrParams[] = $field_pattern;
+	    $arrParams[] = $iduser;
+            $strWhere .= " $field_name like ? and (iduser=? or status='isPublic') ";
+	    if($field_name=="telefono"){
+		$strWhere .= " or extension like ? and (iduser=? or status='isPublic') ";
+		$arrParams[] = $field_pattern;
+		$arrParams[] = $iduser;
+	    }
+	}
         // Clausula WHERE aqui
         if(!empty($strWhere)) $query .= "WHERE $strWhere ";
         //else   $query .= "WHERE $strWhere";
@@ -86,45 +92,65 @@ a array with the field "total" containing the total of records.
         $query .= " ORDER BY last_name, name";
 
         // Limit
-        if(!is_null($limit))
+        if(!is_null($limit)){
+	    $limit = (int)$limit;
             $query .= " LIMIT $limit ";
+	}
 
-    if(!is_null($offset) and $offset > 0)
-        $query .= " OFFSET $offset";
-        $result=$this->_DB->fetchTable($query, true);
+	if(!is_null($offset) and $offset > 0){
+	    $offset = (int)$offset;
+	    $query .= " OFFSET $offset";
+	}
+        $result=$this->_DB->fetchTable($query, true, $arrParams);
 
         return $result;
     }
 
     function getAddressBookByCsv($limit=NULL, $offset=NULL, $field_name=NULL, $field_pattern=NULL, $count=FALSE, $iduser=NULL)
     {
-    //Defining the fields to get. If the param $count is true, then we will get the result of the sql function count(), else, we will get all fields in the table.
-    $fields=($count)?"count(id) as total":"*";
+	//Defining the fields to get. If the param $count is true, then we will get the result of the sql function count(), else, we will get all fields in the table.
+	$fields=($count)?"count(id) as total":"*";
 
-    //Begin to build the query.
+	//Begin to build the query.
         $query   = "SELECT $fields FROM contact ";
 
         $strWhere = "";
-
-        if(!is_null($field_name) and !is_null($field_pattern))
-            $strWhere .= " $field_name like $field_pattern and (iduser=$iduser  or status='isPublic') ";
-        if($field_name=="telefono")
-            $strWhere .= " or extension like $field_pattern and (iduser=$iduser  or status='isPublic') ";
+	$arrParams = array();
+        if(!is_null($field_name) and !is_null($field_pattern)){
+	    $arrFilters = array("id","name","last_name","telefono","extension","email","iduser","address","company","notes","status");
+	    if(!in_array($field_name,$arrFilters))
+		$field_name = "id";
+	    $arrParams[] = $field_pattern;
+	    $arrParams[] = $iduser;
+            $strWhere .= " $field_name like ? and (iduser=?  or status='isPublic') ";
+	    if($field_name=="telefono"){
+		$strWhere .= " or extension like ? and (iduser=?  or status='isPublic') ";
+		$arrParams[] = $field_pattern;
+		$arrParams[] = $iduser;
+	    }
+	}
 
         // Clausula WHERE aqui
         if(!empty($strWhere)) $query .= "WHERE $strWhere ";
-        else $query .= "WHERE iduser=$iduser or status='isPublic'";
+        else{
+	    $query .= "WHERE iduser=? or status='isPublic'";
+	    $arrParams[] = $iduser;
+	}
 
         //ORDER BY
         $query .= " ORDER BY last_name, name";
 
         // Limit
-        if(!is_null($limit))
+        if(!is_null($limit)){
+	    $limit = (int)$limit;
             $query .= " LIMIT $limit ";
+	}
 
-    if(!is_null($offset) and $offset > 0)
-        $query .= " OFFSET $offset";
-        $result=$this->_DB->fetchTable($query, true);
+	if(!is_null($offset) and $offset > 0){
+	    $offset = (int)$offset;
+	    $query .= " OFFSET $offset";
+	}
+        $result=$this->_DB->fetchTable($query, true, $arrParams);
 
         return $result;
     }
@@ -167,7 +193,8 @@ a array with the field "total" containing the total of records.
     {
         //$queryUpdate = $this->_DB->construirUpdate('contact', $data,$where);
 //        die($queryUpdate);
-        $queryUpdate = "update contact set name=?, last_name=?, telefono=?, email=?, iduser=?, picture=?, address=?, company=?, notes=?, status=?  where id=$id";
+        $queryUpdate = "update contact set name=?, last_name=?, telefono=?, email=?, iduser=?, picture=?, address=?, company=?, notes=?, status=?  where id=?";
+	$data[] = $id;
         $result = $this->_DB->genQuery($queryUpdate, $data);
 
         return $result;
@@ -176,10 +203,10 @@ a array with the field "total" containing the total of records.
     function existContact($name, $last_name, $telefono)
     {
         $query =     " SELECT count(*) as total FROM contact "
-                    ." WHERE name='$name' and last_name='$last_name'"
-                    ." and telefono='$telefono'";
-
-        $result=$this->_DB->getFirstRowQuery($query, true);
+                    ." WHERE name=? and last_name=?"
+                    ." and telefono=?";
+	$arrParam = array($name,$last_name,$telefono);
+        $result=$this->_DB->getFirstRowQuery($query, true, $arrParam);
         if(!$result)
             $this->errMsg = $this->_DB->errMsg;
         return $result;
@@ -272,8 +299,8 @@ a array with the field "total" containing the total of records.
     {
         $pDB = new paloDB($dsn);
 
-        $query = "SELECT dial, description FROM devices WHERE id=$id";
-        $result = $pDB->getFirstRowQuery($query, TRUE);
+        $query = "SELECT dial, description FROM devices WHERE id=?";
+        $result = $pDB->getFirstRowQuery($query, TRUE, array($id));
         if($result != FALSE)
             return $result;
         else{
@@ -291,13 +318,17 @@ a array with the field "total" containing the total of records.
         $query   = "SELECT $fields FROM devices ";
 
         $strWhere = "";
-
+	$arrParam = array();
         if(!is_null($field_name) and !is_null($field_pattern))
         {
-            if($field_name=='name')
-                $strWhere .= " description like $field_pattern ";
-            else if($field_name=='telefono')
-                $strWhere .= " id like $field_pattern ";
+            if($field_name=='name'){
+                $strWhere .= " description like ? ";
+		$arrParam[] = $field_pattern;
+	    }
+            else if($field_name=='telefono'){
+                $strWhere .= " id like ? ";
+		$arrParam[] = $field_pattern;
+	    }
         }
 
         // Clausula WHERE aqui
@@ -307,17 +338,21 @@ a array with the field "total" containing the total of records.
         $query .= " ORDER BY  description";
 
         // Limit
-        if(!is_null($limit))
+        if(!is_null($limit)){
+	    $limit = (int)$limit;
             $query .= " LIMIT $limit ";
+	}
 
-        if(!is_null($offset) and $offset > 0)
+        if(!is_null($offset) and $offset > 0){
+	    $offset = (int)$offset;
             $query .= " OFFSET $offset";
+	}
 
 
         $pDB = new paloDB($dsn);
         if($pDB->connStatus)
             return false;
-        $result = $pDB->fetchTable($query,true); //se consulta a la base asterisk
+        $result = $pDB->fetchTable($query,true,$arrParam); //se consulta a la base asterisk
 
         return $result;
     }

@@ -1,4 +1,4 @@
-// <?php
+<?php
 /* vim: set expandtab tabstop=4 softtabstop=4 shiftwidth=4:
   Codificación: UTF-8
   +----------------------------------------------------------------------+
@@ -373,7 +373,7 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
         $field      = $_POST['field'];
         if (!in_array($field, $allowSelection))
             $field = "name";
-        $pattern    = $pDB->DBCAMPO('%'.$_POST['pattern'].'%');
+        $pattern    = "%$_POST[pattern]%";;
     }
 
     $startDate = $endDate = date("Y-m-d H:i:s");
@@ -454,6 +454,7 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
         }
     }
     if($directory_type=='external'){
+	$name = "";
         $picture = $arrLang["picture"];
         $oGrid->deleteList(_tr("Are you sure you wish to delete the contact."),"delete",_tr("Delete"));
     }
