@@ -125,7 +125,7 @@ function viewFormVacations($smarty, $module_name, $local_templates_dir, &$pDB, &
 	    $id = $rowsVacations['id'];
 	}else{
 	    $_DATA['subject'] = isset($_POST['subject'])?$_POST['subject']:_tr("Auto-Reply: Out of the office");
-	    $_DATA['body']    = isset($_POST['body'])?$_POST['body']:_tr("I am sorry I am currently out of the office until {END_DATE}.\n\n----\nBest Regards.");
+	    $_DATA['body']    = isset($_POST['body'])?$_POST['body']:_tr("I will be out of the office until {END_DATE}.\n\n----\nBest Regards.");
 	    $_DATA['ini_date'] = isset($_POST['ini_date'])?$_POST['ini_date']:date("d M Y");
 	    $_DATA['end_date'] = isset($_POST['end_date'])?$_POST['end_date']:date("d M Y");
 	}
@@ -137,7 +137,7 @@ function viewFormVacations($smarty, $module_name, $local_templates_dir, &$pDB, &
 	$_DATA['ini_date'] = isset($_POST['ini_date'])?$_POST['ini_date']:date("d M Y");
 	$_DATA['end_date'] = isset($_POST['end_date'])?$_POST['end_date']:date("d M Y");
 	$_DATA['subject'] = isset($_POST['subject'])?$_POST['subject']:_tr("Auto-Reply: Out of the office");
-	$_DATA['body']    = isset($_POST['body'])?$_POST['body']:_tr("I am sorry I am currently out of the office until {END_DATE}.\n\n----\nBest Regards.");
+	$_DATA['body']    = isset($_POST['body'])?$_POST['body']:_tr("I will be out of the office until {END_DATE}.\n\n----\nBest Regards.");
     }
     $smarty->assign("ID", $id); //persistence id with input hidden in tpl
 
@@ -471,7 +471,7 @@ function showAllEmails($smarty, $module_name, $local_templates_dir, &$pDB, &$pDB
 		      $value['subject'] = _tr("Auto-Reply: Out of the office");
 
 		  if(!isset($value['body']) || $value['body'] == "")
-		      $value['body'] = _tr("I am sorry I am currently out of the office until {END_DATE}.\n\n----\nBest Regards.");
+		      $value['body'] = _tr("I will be out of the office until {END_DATE}.\n\n----\nBest Regards.");
 
 		  $value['ini_date'] = isset($value['ini_date'])?$value['ini_date']:date("d M Y");
 		  $value['end_date'] = isset($value['end_date'])?$value['end_date']:date("d M Y");
