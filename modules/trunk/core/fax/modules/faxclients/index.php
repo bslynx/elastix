@@ -52,6 +52,7 @@ function _moduleContent(&$smarty, $module_name)
         'EMAIL_RELAY_MSG'   =>  _tr('These IPs are allowed to send faxes through Elastix.  You must insert one IP per row.  We recommend keeping localhost and 127.0.0.1  in the configuration because some processes could need them.'),
         'title'             =>  _tr('Clients allowed to send faxes'),
     ));
+    $smarty->assign("icon", "/modules/$module_name/images/fax_fax_clients.png");
 
     if (isset($_POST['update_hosts']) ) {
         $val = new PaloValidar();

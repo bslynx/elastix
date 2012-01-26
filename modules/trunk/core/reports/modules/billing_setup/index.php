@@ -181,7 +181,8 @@ function _moduleContent(&$smarty, $module_name)
     
     
     $arrGrid = array("title"    => $arrLang["Trunk Bill Configuration"],
-                     "width"    => "99%",
+                     "icon"     => "/modules/$module_name/images/reports_billing_setup.png",
+		     "width"    => "99%",
                      "start"    => ($end==0) ? 0 : 1,
                      "end"      => $end,
                      "total"    => $end,

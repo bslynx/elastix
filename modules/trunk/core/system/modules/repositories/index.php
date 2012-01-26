@@ -103,7 +103,7 @@ function listRepositories($smarty, $module_name, $local_templates_dir,$arrConf) 
 
     $arrGrid = array("title"    => $arrLang["Repositories"],
         "url"      => array('menu' => $module_name),
-        "icon"     => "modules/repositories/images/list.png",
+        "icon"     => "modules/repositories/images/system_updates_repositories.png",
         "width"    => "99%",
         "start"    => ($total==0) ? 0 : $offset + 1,
         "end"      => $end,

@@ -122,7 +122,7 @@ function reportDhcpClientlist($smarty, $module_name, $local_templates_dir, &$pDB
     $buttonDelete = "<input type='submit' name='delete_dhcpclient' value='{$arrLang["Delete"]}' class='button' onclick=\" return confirmSubmit('{$arrLang["Are you sure you wish to delete the Ip."]}');\" />";
 
     $arrGrid = array("title"    => $arrLang["DHCP Client List"],
-                        "icon"     => "images/list.png",
+                        "icon"     => "modules/$module_name/images/system_network_dhcp_client_list.png",
                         "width"    => "99%",
                         "start"    => ($total==0) ? 0 : $offset + 1,
                         "end"      => $end,
@@ -206,7 +206,7 @@ function viewFormDhcpClientlist($smarty, $module_name, $local_templates_dir, &$p
     $smarty->assign("EDIT", $arrLang["Edit"]);
     $smarty->assign("CANCEL", $arrLang["Cancel"]);
     $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
-    $smarty->assign("icon", "images/list.png");
+    $smarty->assign("icon", "modules/$module_name/images/system_network_dhcp_client_list.png");
 
     $htmlForm = $oForm->fetchForm("$local_templates_dir/form.tpl",$arrLang["View Details"], $_DATA);
     $content = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";

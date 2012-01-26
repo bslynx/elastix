@@ -160,7 +160,7 @@ function do_listarAddonsHTML($smarty, $module_name, $local_templates_dir)
 {
 	$smarty->assign(array(
         'title'     	   =>  _tr('Addon Market'),
-        'icon'      	   =>  'modules/'.$module_name.'/images/module_icon_addons.png',
+        'icon'      	   =>  'modules/'.$module_name.'/images/addons.png',
 	'filter_by' 	   =>  _tr('Filter by'),
 	'available' 	   =>  _tr('Available'),
 	'installed' 	   =>  _tr('Installed'),

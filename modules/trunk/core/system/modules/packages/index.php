@@ -117,7 +117,7 @@ function listPackages($smarty, $module_name, $local_templates_dir,$arrConf) {
         }
     }
     $arrGrid = array("title"    => $arrLang["Packages"],
-        "icon"     => "images/list.png",
+        "icon"     => "/modules/$module_name/images/system_updates_packages.png",
         "width"    => "99%",
         "start"    => ($total==0) ? 0 : $offset + 1,
         "end"      => $end,

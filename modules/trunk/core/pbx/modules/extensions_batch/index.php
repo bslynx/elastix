@@ -80,6 +80,7 @@ function _moduleContent(&$smarty, $module_name)
 
     //Sirve para todos los casos
     $smarty->assign("MODULE_NAME", $module_name);
+    $smarty->assign("icon","modules/$module_name/images/pbx_batch_of_extensions.png");
     $smarty->assign("SAVE", $arrLang["Save"]);
     $smarty->assign("DOWNLOAD", $arrLang["Download Extensions"]);
     $smarty->assign("label_file", $arrLang["File"]);

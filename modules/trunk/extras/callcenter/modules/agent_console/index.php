@@ -148,7 +148,7 @@ function manejarLogin_HTML($module_name, &$smarty, $sDirLocalPlantillas)
     // Acciones para mostrar el formulario, fuera de cualquier acción AJAX
     $smarty->assign(array(
         'FRAMEWORK_TIENE_TITULO_MODULO' => existeSoporteTituloFramework(),
-        'icon'                          => 'images/call.png',
+        'icon'                          => 'modules/'.$module_name.'/images/call_center.png',
         'title'                         =>  _tr('Agent Console'),
         'WELCOME_AGENT'         =>  _tr('Welcome to Agent Console'),
         'ENTER_USER_PASSWORD'   =>  _tr('Please select your agent number and your extension'),
@@ -456,7 +456,7 @@ function manejarSesionActiva_HTML($module_name, &$smarty, $sDirLocalPlantillas, 
     for ($i = 0; $i < 60; $i++) { $ii = sprintf('%02d', $i); $comboMinuto[$ii] = $ii; }
     $smarty->assign(array(
         'FRAMEWORK_TIENE_TITULO_MODULO' => existeSoporteTituloFramework(),
-        'icon'                          => 'images/call.png',
+        'icon'                          => 'modules/'.$module_name.'/images/call_center.png',
         'title'                         =>  _tr('Agent Console').': '.
             $_SESSION['callcenter']['agente_nombre'],
         'BTN_COLGAR_LLAMADA'            =>  _tr('Hangup'),

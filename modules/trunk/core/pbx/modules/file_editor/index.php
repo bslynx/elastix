@@ -146,7 +146,7 @@ function listarArchivos($module_name, $smarty, $local_templates_dir, $sDirectori
     $arrGrid = array(
         "title"    => _tr("File Editor"),
         "url"      => array('menu' => $module_name, 'file' => $sSubStrArchivo),
-        "icon"     => "images/kfaxview.png",
+        "icon"     => "/modules/$module_name/images/pbx_tools_asterisk_file_editor.png",
         "width"    => "99%",
         "start"    => $inicio,
         "end"      => $fin,

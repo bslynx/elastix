@@ -277,7 +277,7 @@ function buildReport($arrData, $smarty, $module_name, $endpoint_mask)
             'navpost' => $nav,
             'startpost' => $start,
             ),
-        "icon"     => "images/endpoint.png",
+        "icon"     => "/modules/$module_name/images/pbx_endpoint_configurator.png",
         "width"    => "99%",
         "start"    => ($total==0) ? 0 : $offset + 1,
         "end"      => $end,

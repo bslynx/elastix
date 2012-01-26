@@ -121,7 +121,7 @@ function viewFormSendFax($smarty, $module_name, $local_templates_dir, &$pDB, $ar
     $smarty->assign("EDIT", $arrLang["Edit"]);
     $smarty->assign("CANCEL", $arrLang["Cancel"]);
     $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
-    $smarty->assign("icon", "/modules/faxnew/images/kfaxview.png");
+    $smarty->assign("icon", "/modules/$module_name/images/fax_virtual_fax_send_fax.png");
     //News
     $smarty->assign("file_upload", $arrLang["File Upload"]);
     $smarty->assign("text_area", $arrLang["Text Information"]);

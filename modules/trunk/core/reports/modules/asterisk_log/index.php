@@ -255,7 +255,7 @@ function report_AsteriskLogs($smarty, $module_name, $local_templates_dir, $arrLa
 
     $arrGrid = array("title"    => $arrLang["Asterisk Logs"],
                         "url"      => $url,
-                        "icon"     => "images/list.png",
+                        "icon"     => "/modules/$module_name/images/reports_asterisk_logs.png",
                         "width"    => "99%",
                         "start"    => ($totalBytes==0) ? 0 : 1 + (int)($offset / 128),
                         "end"      => (int)($offset / 128) + $iNumLineasPorPagina,

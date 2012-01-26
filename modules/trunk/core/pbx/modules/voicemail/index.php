@@ -372,7 +372,7 @@ contenido;
 
     $arrGrid = array("title"   => $arrLang["Voicemail List"],
                      "url"     => $url,
-                     "icon"    => "images/record.png",
+                     "icon"    => "/modules/$module_name/images/pbx_voicemail.png",
                      "width"   => "99%",
                      "start"   => ($total==0) ? 0 : $offset + 1,
                      "end"     => $end,

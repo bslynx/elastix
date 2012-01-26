@@ -96,6 +96,7 @@ function report_AccessAudit($smarty, $module_name, $local_templates_dir)
 
     $oGrid  = new paloSantoGrid($smarty);
     $oGrid->setTitle(_tr("Audit"));
+    $oGrid->setIcon("modules/$module_name/images/security_audit.png");
     $oGrid->pagingShow(true); // show paging section.
     $oGrid->enableExport();   // enable export.
     $oGrid->setNameFile_Export(_tr("Access audit"));

@@ -88,7 +88,7 @@ function formCurrency($smarty, $module_name, $local_templates_dir, &$pDB, $arrCo
 
     $smarty->assign("SAVE", $arrLang["Save"]);
     $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
-    $smarty->assign("icon", "images/list.png");
+    $smarty->assign("icon", "modules/$module_name/images/system_preferences_currency.png");
     $_POST['currency'] = $curr;
 
     $htmlForm = $oForm->fetchForm("$local_templates_dir/form.tpl",$arrLang["Currency"], $_POST);

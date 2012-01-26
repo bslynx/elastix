@@ -170,7 +170,7 @@ function report_backup_restore($smarty, $module_name, $local_templates_dir, $arr
 
     $arrGrid = array("title"    => $arrLang["Backup List"],
                      "url"      => array('menu' => $module_name),
-                     "icon"     => "images/list.png",
+                     "icon"     => "/modules/$module_name/images/system_backup_restore.png",
                      "width"    => "99%",
                      "start"    => ($total==0) ? 0 : $offset + 1,
                      "end"      => $end,
@@ -255,7 +255,7 @@ function automatic_backup($smarty, $module_name, $local_templates_dir, $arrLang,
 
     $arrGrid = array("title"    => $arrLang["Backup List"],
                      "url"      => array('menu' => $module_name),
-                     "icon"     => "images/list.png",
+                     "icon"     => "/modules/$module_name/images/system_backup_restore.png",
                      "width"    => "99%",
                      "start"    => ($total==0) ? 0 : $offset + 1,
                      "end"      => $end,
@@ -2195,7 +2195,7 @@ function viewFormFTPBackup($smarty, $module_name, $local_templates_dir, &$pDB, $
     $smarty->assign("DOWNLOAD", $arrLang["Download"]);
     $smarty->assign("TITLE", $arrLang["TITLE"]);
     $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
-    $smarty->assign("icon", "images/list.png");
+    $smarty->assign("icon", "modules/$module_name/images/system_backup_restore.png");
     
     $dir = $arrConf['dir'];
     $array_new = $pFTPBackup->obtainFiles($dir);

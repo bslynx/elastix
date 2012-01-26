@@ -125,7 +125,7 @@ function _moduleContent(&$smarty, $module_name)
         $smarty->assign("CANCEL", $arrLang["Cancel"]);
         $smarty->assign("SAVE", $arrLang["Save"]);
         $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
-	$smarty->assign("icon","modules/network_parameters/images/network.png");
+	$smarty->assign("icon","modules/network_parameters/images/system_network_network_parameters.png");
         $strReturn = $oForm->fetchForm("$local_templates_dir/network.tpl", $arrLang["Network Parameters"], $arrNetworkData);
 
     } else if(isset($_POST['save_network_changes'])) {
@@ -158,7 +158,7 @@ function _moduleContent(&$smarty, $module_name)
             $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);    
             $strReturn=$oForm->fetchForm("$local_templates_dir/network.tpl", $arrLang["Network Parameters"], $_POST);
         }
-	$smarty->assign("icon","modules/network_parameters/images/network.png");
+	$smarty->assign("icon","modules/network_parameters/images/system_network_network_parameters.png");
         // Se aplasto el boton de grabar los cambios en la red
 
     } else if(isset($_POST['cancel_interfase_edit'])) {
@@ -170,7 +170,7 @@ function _moduleContent(&$smarty, $module_name)
         $oForm = new paloForm($smarty, $arrFormInterfase);
 
         if($oForm->validateForm($_POST)) {
-	    $smarty->assign("icon","modules/network_parameters/images/network.png");
+	    $smarty->assign("icon","modules/network_parameters/images/system_network_network_parameters.png");
             if($pNet->escribirConfiguracionInterfaseRed($_POST['dev_id'], $_POST['type'], $_POST['ip'], $_POST['mask'])) {
                 header("Location: index.php?menu=network");
             } else {
@@ -190,7 +190,7 @@ function _moduleContent(&$smarty, $module_name)
             $smarty->assign("APPLY_CHANGES", $arrLang["Apply changes"]);
             $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
             $smarty->assign("EDIT_PARAMETERS", $arrLang["Edit Network Parameters"]);
-	    $smarty->assign("icon","images/pci.png");
+	    $smarty->assign("icon","/modules/$module_name/images/system_hardware_detector.png");
             $smarty->assign("CONFIRM_EDIT", $arrLang["Are you sure you want to edit network parameters?"]);
             $strReturn=$oForm->fetchForm("$local_templates_dir/network_edit_interfase.tpl", "{$arrLang['Edit Interface']} \"Ethernet ??\"", $_POST);
         }
@@ -212,7 +212,7 @@ function _moduleContent(&$smarty, $module_name)
         $smarty->assign("APPLY_CHANGES", $arrLang["Apply changes"]);
         $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
         $smarty->assign("EDIT_PARAMETERS", $arrLang["Edit Network Parameters"]);
-	$smarty->assign("icon","images/pci.png");
+	$smarty->assign("icon","/modules/$module_name/images/system_hardware_detector.png");
         $smarty->assign("CONFIRM_EDIT", $arrLang["Are you sure you want to edit network parameters?"]);
         $strReturn = $oForm->fetchForm("$local_templates_dir/network_edit_interfase.tpl", "{$arrLang['Edit Interface']} \"" . $arrEth['Name'] . "\"", $arrInterfaseData);
     } else {
@@ -249,7 +249,7 @@ function _moduleContent(&$smarty, $module_name)
         $oGrid = new paloSantoGrid($smarty);
 
         $arrGrid = array("title"    => $arrLang["Ethernet Interfaces List"],
-                         "icon"     => "images/pci.png",
+                         "icon"     => "/modules/$module_name/images/system_hardware_detector.png",
                          "width"    => "99%",
                          "start"    => "1",
                          "end"      => $end,
@@ -274,7 +274,7 @@ function _moduleContent(&$smarty, $module_name)
         $smarty->assign("ETHERNET_INTERFASES_LIST", $htmlGrid);
         $smarty->assign("EDIT_PARAMETERS", $arrLang["Edit Network Parameters"]);
         $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
-	$smarty->assign("icon","modules/network_parameters/images/network.png");
+	$smarty->assign("icon","modules/network_parameters/images/system_network_network_parameters.png");
         // DISPLAY
         $strReturn = $oForm->fetchForm("$local_templates_dir/network.tpl", $arrLang["Network Parameters"], $arrNetworkData);
     }

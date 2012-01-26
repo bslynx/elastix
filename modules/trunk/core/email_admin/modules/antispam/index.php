@@ -133,7 +133,7 @@ function formAntispam($smarty, $module_name, $local_templates_dir, $arrLang, $ar
     $smarty->assign("LEGEND", $arrLang["Legend"]);
     $smarty->assign("UPDATE", $arrLang["Save"]);
     $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
-    $smarty->assign("icon", "images/list.png");
+    $smarty->assign("icon", "modules/$module_name/images/email_antispam.png");
 
 
     $objAntispam = new paloSantoAntispam($arrConfModule['path_postfix'], $arrConfModule['path_spamassassin'],$arrConfModule['file_master_cf'], $arrConfModule['file_local_cf']);

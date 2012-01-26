@@ -288,7 +288,7 @@ function showApplets_Admin()
     $oForm = new paloForm($smarty,array());
 
     $arrApplets = $oPalo->getApplets_User($_SESSION["elastix_user"]);
-
+    $smarty->assign("icon","modules/$module_name/images/system_dashboard.png");
     $smarty->assign("applets",$arrApplets);
     $smarty->assign("SAVE", $arrLang["Save"]);
     $smarty->assign("CANCEL", $arrLang["Cancel"]);

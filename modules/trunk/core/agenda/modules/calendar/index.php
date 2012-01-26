@@ -205,7 +205,7 @@ function viewCalendar($smarty, $module_name, $local_templates_dir, &$pDB, $arrCo
     $smarty->assign("visibility_emails",$visibility_emails);
     $smarty->assign("Export_Calendar",$arrLang["Export_Calendar"]);
     $smarty->assign("ical",$icalFile);
-    $smarty->assign("icon", "images/list.png");
+    $smarty->assign("icon", "modules/$module_name/images/agenda_calendar.png");
     $smarty->assign("visibility_alert", $visibility_alert);
     $smarty->assign("LBL_EDIT", $arrLang["Edit Event"]);
     $smarty->assign("LBL_LOADING", $arrLang["Loading"]);

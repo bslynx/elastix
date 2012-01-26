@@ -585,7 +585,7 @@ function reportRules($smarty, $module_name, $local_templates_dir, &$pDB, $arrCon
     $oGrid->setLimit($limit);
     $oGrid->setTotal($total);
     $oGrid->setTitle(_tr("FireWall Rules"));
-    $oGrid->setIcon("/modules/$module_name/images/firewall.png");
+    $oGrid->setIcon("/modules/$module_name/images/security_firewall_rules.png");
     $oGrid->pagingShow(true);
     $offset = $oGrid->calculateOffset();
     $url    = "?menu=$module_name";

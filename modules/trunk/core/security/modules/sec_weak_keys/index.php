@@ -100,6 +100,7 @@ function reportWeakKeys($smarty, $module_name, $local_templates_dir, &$pDB, $arr
     $oGrid->enableExport();   // enable csv export.
     $oGrid->pagingShow(true); // show paging section.
     $oGrid->setTitle(_tr("Weak Secrets"));
+    $oGrid->setIcon("modules/$module_name/images/security_weak_keys.png");
     $oGrid->setNameFile_Export(_tr("Weak Secrets"));
     if($oGrid->isExportAction()){
         $limit = $total;

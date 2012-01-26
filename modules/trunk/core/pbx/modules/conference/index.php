@@ -258,7 +258,7 @@ function report_conference($smarty, $module_name, $local_templates_dir, $pDB, $a
 
     $arrGrid = array("title"    => $arrLang["Conference"],
                         "url"      => $url,
-                        "icon"     => "images/conference.png",
+                        "icon"     => "/modules/$module_name/images/pbx_conference.png",
                         "width"    => "99%",
                         "start"    => ($total==0) ? 0 : $offset + 1,
                         "end"      => $end,
@@ -297,7 +297,7 @@ function new_conference($smarty, $module_name, $local_templates_dir, $pDB, $arrL
     $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
     $smarty->assign("SAVE", $arrLang["Save"]);
     $smarty->assign("CANCEL", $arrLang["Cancel"]);
-    $smarty->assign("icon","images/conference.png");
+    $smarty->assign("icon","/modules/$module_name/images/pbx_conference.png");
     $smarty->assign("announce", $arrLang["Announce"]);
     $smarty->assign("record", $arrLang["Record"]);
     $smarty->assign("listen_only", $arrLang["Listen Only"]);
@@ -619,7 +619,7 @@ function show_callers($smarty, $module_name, $local_templates_dir, $pDB, $arrLan
     $total = count($arrCallers);
 
     $arrGrid = array("title"    => $arrLang["Conference"],
-                        "icon"     => "images/conference.png",
+                        "icon"     => "/modules/$module_name/images/pbx_conference.png",
                         "width"    => "99%",
                         "start"    => 1,
                         "end"      => $total,

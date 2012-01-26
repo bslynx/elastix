@@ -55,7 +55,7 @@ function _moduleContent(&$smarty, $module_name)
     $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
 
     $smarty->assign("title",$arrLang["Channels Usage Report"]);
-    $smarty->assign("icon","images/bardoc.png");
+    $smarty->assign("icon","modules/$module_name/images/reports_channel_usage.png");
 
     if (isset($_GET['image'])) {
         $_GET['image'] = (int)$_GET['image'];

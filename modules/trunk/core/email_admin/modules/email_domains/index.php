@@ -111,6 +111,7 @@ function viewFormDomain($smarty, $module_name, $local_templates_dir, &$pDB, $arr
     $url = array("menu" => $module_name);
     $oGrid->setURL($url);
     $oGrid->setTitle(_tr("Domain List"));
+    $oGrid->setIcon("modules/$module_name/images/email_domains.png");
     $arrColumns = array(_tr("Domain"),_tr("Number of Accounts"),);
     $oGrid->setColumns($arrColumns);
     $total = 0;

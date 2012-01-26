@@ -84,7 +84,7 @@ function viewFormFestival($smarty, $module_name, $local_templates_dir, $arrConf)
     else
         $_DATA["status"] = "off";
     $smarty->assign("SAVE", _tr("Save"));
-    $smarty->assign("icon", "modules/$module_name/images/text-to-speech-icon-large.png");
+    $smarty->assign("icon", "modules/$module_name/images/pbx_tools_festival.png");
     $htmlForm = $oForm->fetchForm("$local_templates_dir/form.tpl",_tr("Festival"), $_DATA);
     $content = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";
 

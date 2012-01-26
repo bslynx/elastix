@@ -78,7 +78,7 @@ function _moduleContent(&$smarty, $module_name)
     $arrDefault['fax_master']=get_key_settings($pDBSetting,"fax_master");
     $smarty->assign("FAXMASTER_MSG", $arrLang["Write the email address which will receive the notifications of received messages, errors and activity summary of the Fax Server"]);
 
-    
+    $smarty->assign("icon", "/modules/$module_name/images/fax_fax_master.png"); 
     $smarty->assign("APPLY_CHANGES", $arrLang["Save"]);
     $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
     $strReturn = $oForm->fetchForm("$local_templates_dir/fax_master.tpl", $arrLang["Fax Master Configuration"], $arrDefault);

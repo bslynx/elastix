@@ -164,6 +164,7 @@ function reportMonitoring($smarty, $module_name, $local_templates_dir, &$pDB, $p
     //begin grid parameters
     $oGrid  = new paloSantoGrid($smarty);
     $oGrid->setTitle(_tr("Monitoring"));
+    $oGrid->setIcon("modules/$module_name/images/pbx_monitoring.png");
     $oGrid->pagingShow(true); // show paging section.
 
     $oGrid->enableExport();   // enable export.

@@ -95,7 +95,7 @@ function listFax($smarty, $module_name, $local_templates_dir)
     putSession($session);
 
     $arrGrid = array("title"    => $arrLang["Virtual Fax List"],
-                     "icon"     => "/modules/$module_name/images/kfaxview.png",
+                     "icon"     => "/modules/$module_name/images/fax_virtual_fax_list.png",
                      "width"    => "99%",
                      "start"    => ($end==0) ? 0 : 1,
                      "end"      => $end,

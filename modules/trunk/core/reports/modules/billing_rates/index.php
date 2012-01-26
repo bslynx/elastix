@@ -136,6 +136,7 @@ function reportBillingRates($smarty, $module_name, $local_templates_dir, &$pDB, 
     //$oGrid->enableExport();   // enable csv export.
     $oGrid->pagingShow(true); // show paging section.
     $oGrid->setTitle(_tr("Billing Rates"));
+    $oGrid->setIcon("modules/$module_name/images/reports_billing_rates.png");
     $oGrid->setNameFile_Export("Billing_Rates");
     $oGrid->setURL($url);
     $oGrid->addNew("new_rate",_tr("create_rate"));
