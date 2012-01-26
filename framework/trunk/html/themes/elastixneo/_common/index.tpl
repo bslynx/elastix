@@ -11,6 +11,8 @@
 		<link rel="stylesheet" media="screen" type="text/css" href="themes/{$THEMENAME}/content.css" />
 		<link rel="stylesheet" media="screen" type="text/css" href="themes/{$THEMENAME}/applet.css" />
 		<link rel="stylesheet" media="screen" type="text/css" href="themes/{$THEMENAME}/sticky_note.css" />
+		<link rel="stylesheet" media="screen" type="text/css" href="themes/{$THEMENAME}/table.css" />
+
         <!--[if lte IE 8]><link rel="stylesheet" media="screen" type="text/css" href="themes/{$THEMENAME}/ie.css" /><![endif]-->
 	{$HEADER_LIBS_JQUERY}
         <script type='text/javascript' src="libs/js/base.js"></script>
