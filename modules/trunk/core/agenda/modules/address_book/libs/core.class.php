@@ -383,7 +383,7 @@ class core_AddressBook
 	    }
 	    else{
 		$field_name = "name";
-		$field_pattern = "'%%'";
+		$field_pattern = "%%";
 	    }
             $rs = $addressBook->getAddressBook(
                 NULL, NULL, 
