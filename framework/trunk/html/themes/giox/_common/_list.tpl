@@ -1,11 +1,41 @@
 <form  method="POST" style="margin-bottom:0;" action="{$url}">
     <table width="{$width}" align="center" border="0" cellpadding="0" cellspacing="0">
-    {if !empty($contentFilter)}
-    <tr>
-        <td><table width="100%" border="0" cellspacing="0" cellpadding="0" class="filterForm"><tr><td>{$contentFilter}</td></tr></table>
-        </td>
-    </tr>
-    {/if}
+        {if !empty($contentFilter) ||  $addNewShow || $customActionShow}
+            <tr>
+                <td>
+                    <table width="100%" border="0" cellspacing="0" cellpadding="0" class="filterForm">
+                        <tr>
+                            {if $addNewShow}
+                                {if !$addNewLink}
+                                    <td width="160px" align="left">
+                                        <input type="submit" name="{$addNewTask}" value="{$addNewAlt}" class="button" />
+                                    </td>
+                                {/if}
+                            {/if}
+                            {if $customActionShow}
+                                {if !$customActionLink}
+                                    <td width="160px">
+                                        <input type="submit" name="{$customActionTask}" value="{$customActionAlt}" class="button" />
+                                    </td>
+                                {/if}
+                            {/if}
+                            <td>{$contentFilter}</td>
+                            {if $addNewLink}
+                                {if $addNewShow}
+                                    <td align="right">
+                                        <b><a href="{$addNewTask}" class="neo-table-action">{$addNewAlt}>></a></b>
+                                    </td>
+                                {else}
+                                    <td align="right">
+                                        <b><a href="{$customActionTask}" class="button">{$customActionAlt}>></a><b>
+                                    </td>
+                                {/if}
+                            {/if}
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        {/if}
     <tr>
         <td>
         <table class="table_data" align="center" cellspacing="0" cellpadding="0" width="100%">
@@ -58,9 +88,17 @@
             </td>
             </tr>
             <tr class="table_title_row">
-            {section name=columnNum loop=$numColumns start=0 step=1}
-            <td class="table_title_row">{$header[$smarty.section.columnNum.index].name}&nbsp;</td>
-            {/section}
+                {section name=columnNum loop=$numColumns start=0 step=1}
+                    {if $smarty.section.columnNum.first}
+                        {if $header[$smarty.section.columnNum.index].name == "" and $deleteListShow}
+                            <td class="table_title_row"> <input type="submit" name="{$deleteListTask}" value="{$deleteListAlt}" onclick="return confirmSubmit('{$deleteListMSG}')" class="button" /> </td>
+                        {else}
+                            <td class="table_title_row">&nbsp;</td>
+                        {/if}
+                    {else}
+                        <td class="table_title_row">{$header[$smarty.section.columnNum.index].name}&nbsp;</td>
+                    {/if}
+                {/section}
             </tr>
             {foreach from=$arrData key=k item=data name=filas}
                 {if $data.ctrl eq 'separator_line'}
