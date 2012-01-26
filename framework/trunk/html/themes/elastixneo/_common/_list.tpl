@@ -1,4 +1,4 @@
-<form id="#idformgrid" method="POST" style="margin-bottom:0;" action="{$url}">
+<form id="idformgrid" method="POST" style="margin-bottom:0;" action="{$url}">
     <div class="neo-table-header-row">
         {if $addNewShow}
             {if $addNewLink}
@@ -135,15 +135,11 @@
                     <tr class="neo-table-data-row">
                         {if $smarty.foreach.filas.last}
                             {section name=columnNum loop=$numColumns start=0 step=1}
-                                <td class="neo-table-data-row table_data_last_row">
-                                    {if $data[$smarty.section.columnNum.index] eq ''}&nbsp;{/if}{$data[$smarty.section.columnNum.index]}
-                                </td>
+                                <td class="neo-table-data-row table_data_last_row">{if $data[$smarty.section.columnNum.index] eq ''}&nbsp;{/if}{$data[$smarty.section.columnNum.index]}</td>
                             {/section}
                         {else}
                             {section name=columnNum loop=$numColumns start=0 step=1}
-                                <td class="neo-table-data-row table_data">
-                                    {if $data[$smarty.section.columnNum.index] eq ''}&nbsp;{/if}{$data[$smarty.section.columnNum.index]}
-                                </td>
+                                <td class="neo-table-data-row table_data">{if $data[$smarty.section.columnNum.index] eq ''}&nbsp;{/if}{$data[$smarty.section.columnNum.index]}</td>
                             {/section}
                         {/if}
                     </tr>
