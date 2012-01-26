@@ -397,7 +397,7 @@ function _moduleContent(&$smarty, $module_name)
         }
 
         $arrGrid = array("title"    => $arrLang["User List"],
-                         "icon"     => "images/user.png",
+                         "icon"     => "/modules/userlist/images/system_users.png",
                          "width"    => "99%",
                          "start"    => ($end==0) ? 0 : 1,
                          "end"      => $end,

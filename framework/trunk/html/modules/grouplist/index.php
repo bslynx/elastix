@@ -93,7 +93,7 @@ function _moduleContent(&$smarty, $module_name)
     $smarty->assign("SAVE", $arrLang["Save"]);
     $smarty->assign("EDIT", $arrLang["Edit"]);
     $smarty->assign("DELETE", $arrLang["Delete"]);
-    $smarty->assign("icon","images/user.png");
+    $smarty->assign("icon","modules/$module_name/images/system_groups.png");
     $smarty->assign("CONFIRM_CONTINUE", $arrLang["Are you sure you wish to continue?"]);
     if(isset($_POST['submit_create_group'])) {
         // Implementar
@@ -291,7 +291,7 @@ function _moduleContent(&$smarty, $module_name)
         }
 
         $arrGrid = array("title"    => $arrLang["Group List"],
-                         "icon"     => "images/user.png",
+                         "icon"     => "/modules/$module_name/images/system_groups.png",
                          "width"    => "99%",
                          "start"    => ($end==0) ? 0 : 1,
                          "end"      => $end,

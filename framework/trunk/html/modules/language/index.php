@@ -115,7 +115,7 @@ function _moduleContent(&$smarty, $module_name)
         $smarty->assign("CAMBIAR", $arrLang["Save"]);
         $smarty->assign("MSG_ERROR",$msgError);
         $smarty->assign("conectiondb",$conexionDB);
-
+	$smarty->assign("icon","modules/$module_name/images/system_preferencies_language.png");
         $contenido = $oForm->fetchForm("$local_templates_dir/language.tpl", $arrLang["Language"], $arrDefaultRate);
     }
     return $contenido;
