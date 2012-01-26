@@ -281,7 +281,7 @@ class core_AddressBook
      * @param   integer   $limit              (Optional) limit records or all if omitted
      * @return  array     Array with the information of the contact list (address book).
      */
-    function listAddressBook($addressBookType, $offset, $limit)
+    function listAddressBook($addressBookType, $offset, $limit, $id_contact=NULL, $withLink=FALSE)
     {
         global $arrConf;
 
@@ -305,11 +305,25 @@ class core_AddressBook
         $dbAddressBook = $this->_getDB($arrConf['dsn_conn_database']);
 
         $addressBook = new paloAdressBook($dbAddressBook);
-
+	if($withLink){
+	    if($_SERVER["SERVER_PORT"] == 443)
+		$location = "https://";
+	    else
+		$location = "http://";
+	    $location .= $_SERVER["SERVER_ADDR"].$_SERVER["PHP_SELF"];
+	}
         switch ($addressBookType) {
         case 'internal':
             // Contar número de elementos de la agenda interna
-            $rs = $addressBook->getDeviceFreePBX($this->_astDSN, NULL, NULL, NULL, NULL, TRUE);
+	    if(isset($id_contact)){
+		$field_name = "telefono";
+		$field_pattern = $id_contact;
+	    }
+	    else{
+		$field_name = NULL;
+		$field_pattern = NULL;
+	    }
+            $rs = $addressBook->getDeviceFreePBX($this->_astDSN, NULL, NULL, $field_name, $field_pattern, TRUE);
             if (!is_array($rs)) {
                 $this->errMsg["fc"] = 'DBERROR';
                 $this->errMsg["fm"] = 'Database operation failed';
@@ -321,7 +335,7 @@ class core_AddressBook
             if (!isset($limit)) $limit = $iNumTotal;
 
             // Recuperar la agenda interna
-            $agendaInterna = $addressBook->getDeviceFreePBX($this->_astDSN, $limit, $offset);
+            $agendaInterna = $addressBook->getDeviceFreePBX($this->_astDSN, $limit, $offset, $field_name, $field_pattern);
             if (!is_array($agendaInterna)) {
                 $this->errMsg["fc"] = 'DBERROR';
                 $this->errMsg["fm"] = 'Database operation failed';
@@ -331,12 +345,27 @@ class core_AddressBook
             }
             $listaEmails = $addressBook->getMailsFromVoicemail();
             foreach ($agendaInterna as $tuplaAgenda) {
-                $extension[] = array(
-                    'id'    =>  $tuplaAgenda['id'],
-                    'phone' =>  $tuplaAgenda['id'],
-                    'name'  =>  $tuplaAgenda['description'],
-                    'email' =>  ((isset($listaEmails[$tuplaAgenda['id']]) && trim($listaEmails[$tuplaAgenda['id']]) != '') ? $listaEmails[$tuplaAgenda['id']] : NULL),
-                );
+		if(!$withLink){
+		    $extension[] = array(
+			'id'    =>  $tuplaAgenda['id'],
+			'phone' =>  $tuplaAgenda['id'],
+			'name'  =>  $tuplaAgenda['description'],
+			'email' =>  ((isset($listaEmails[$tuplaAgenda['id']]) && trim($listaEmails[$tuplaAgenda['id']]) != '') ? $listaEmails[$tuplaAgenda['id']] : NULL),
+		    );
+		}
+		else{
+		    if(!isset($id_contact))
+			$hypermedia = "$location/$tuplaAgenda[id]";
+		    else
+			$hypermedia = $location;
+		    $extension[] = array(
+			'id'    =>  $tuplaAgenda['id'],
+			'phone' =>  $tuplaAgenda['id'],
+			'name'  =>  $tuplaAgenda['description'],
+			'email' =>  ((isset($listaEmails[$tuplaAgenda['id']]) && trim($listaEmails[$tuplaAgenda['id']]) != '') ? $listaEmails[$tuplaAgenda['id']] : NULL),
+			'url' => $hypermedia,
+		    );
+		}
             }
             break;
         case 'external':
@@ -348,9 +377,17 @@ class core_AddressBook
              * diseño de la función getAddressBook, se requiere poner un filtro 
              * de mentira, porque de lo contrario, la función ignora id_user, y
              * devuelve los contactos de todos los usuarios. */ 
+	    if(isset($id_contact)){
+		$field_name = "id";
+		$field_pattern = $id_contact;
+	    }
+	    else{
+		$field_name = "name";
+		$field_pattern = "'%%'";
+	    }
             $rs = $addressBook->getAddressBook(
                 NULL, NULL, 
-                'name', "'%%'",
+                $field_name, $field_pattern,
                 TRUE, $id_user);
 
             if (!is_array($rs)) {
@@ -369,7 +406,7 @@ class core_AddressBook
              * contactos de todos los usuarios. */ 
             $agendaExterna = $addressBook->getAddressBook(
                 $limit, $offset, 
-                'name', "'%%'", 
+                $field_name, $field_pattern, 
                 FALSE, $id_user);
             if (!is_array($agendaExterna)) {
                 $this->errMsg["fc"] = 'DBERROR';
@@ -379,14 +416,31 @@ class core_AddressBook
                 return false;
             }
             foreach ($agendaExterna as $tuplaAgenda) {
-                $extension[] = array(
-                    'id'            =>  $tuplaAgenda['id'],
-                    'phone'         =>  $tuplaAgenda['telefono'],
-                    'name'          =>  $tuplaAgenda['name'].' '.$tuplaAgenda['last_name'],
-                    'first_name'    =>  $tuplaAgenda['name'],
-                    'last_name'     =>  $tuplaAgenda['last_name'],
-                    'email'         =>  (trim($tuplaAgenda['email']) == '' ? NULL : $tuplaAgenda['email']),
-                );
+		if(!$withLink){
+		    $extension[] = array(
+			'id'            =>  $tuplaAgenda['id'],
+			'phone'         =>  $tuplaAgenda['telefono'],
+			'name'          =>  $tuplaAgenda['name'].' '.$tuplaAgenda['last_name'],
+			'first_name'    =>  $tuplaAgenda['name'],
+			'last_name'     =>  $tuplaAgenda['last_name'],
+			'email'         =>  (trim($tuplaAgenda['email']) == '' ? NULL : $tuplaAgenda['email']),
+		    );
+		}
+		else{
+		    if(!isset($id_contact))
+			$hypermedia = "$location/$tuplaAgenda[id]";
+		    else
+			$hypermedia = $location;
+		    $extension[] = array(
+			'id'            =>  $tuplaAgenda['id'],
+			'phone'         =>  $tuplaAgenda['telefono'],
+			'name'          =>  $tuplaAgenda['name'].' '.$tuplaAgenda['last_name'],
+			'first_name'    =>  $tuplaAgenda['name'],
+			'last_name'     =>  $tuplaAgenda['last_name'],
+			'email'         =>  (trim($tuplaAgenda['email']) == '' ? NULL : $tuplaAgenda['email']),
+			'url'	=>  $hypermedia,
+		    );
+		}
             }
             break;
         }
@@ -405,7 +459,7 @@ class core_AddressBook
      * @param   string    $email            (Optional) Email of the new contact
      * @return  boolean   True if the contact was successfully added, or false if an error exists
      */
-    function addAddressBookContact($phone, $first_name, $last_name, $email)
+    function addAddressBookContact($phone, $first_name, $last_name, $email, $getIdInserted=FALSE)
     {
         global $arrConf;
 
@@ -444,6 +498,66 @@ class core_AddressBook
         );
         $result = $addressBook->addContact($data);
         if (!$result) {
+            $this->errMsg["fc"] = 'DBERROR';
+            $this->errMsg["fm"] = 'Database operation failed';
+            $this->errMsg["fd"] = 'Unable to write data to external phonebook - '.$addressBook->_DB->errMsg;
+            $this->errMsg["cn"] = get_class($addressBook);
+            return false;
+        }
+	if($getIdInserted)
+	    return $dbAddressBook->getLastInsertId();
+	else
+	    return true;
+    }
+
+    function updateContact($id, $phone, $first_name, $last_name, $email)
+    {
+	global $arrConf;
+
+        if (!$this->_checkUserAuthorized('address_book')) return false;
+
+        $dbAddressBook = $this->_getDB($arrConf['dsn_conn_database']);
+        $addressBook = new paloAdressBook($dbAddressBook);
+
+        // Obtener el ID del usuario logoneado
+        $id_user = $this->_leerIdUser();
+        if (is_null($id_user)) return false;
+
+	$contactData = $addressBook->contactData($id,$id_user);
+	if(!is_array($contactData) || count($contactData) == 0){
+	    $this->errMsg["fc"] = 'PARAMERROR';
+            $this->errMsg["fm"] = 'Invalid id contact';
+            $this->errMsg["fd"] = 'Contact do not exist';
+            $this->errMsg["cn"] = get_class($this);
+            return false;
+	}
+
+	if (isset($phone) && !preg_match('/^\d+$/', $phone)) {
+            $this->errMsg["fc"] = 'PARAMERROR';
+            $this->errMsg["fm"] = 'Invalid format';
+            $this->errMsg["fd"] = 'Invalid phone, must be numeric string';
+            $this->errMsg["cn"] = get_class($this);
+            return false;
+        }
+
+	$first_name = (isset($first_name))?$first_name:$contactData["name"];
+	$last_name = (isset($last_name))?$last_name:$contactData["last_name"];
+	$phone = (isset($phone))?$phone:$contactData["telefono"];
+	$email = (isset($email))?$email:$contactData["email"];
+	$data = array(
+            $first_name,
+            $last_name,
+            $phone,
+            $email,
+            $id_user,
+            $contactData["picture"],   // picture
+            $contactData["address"],   // address
+            $contactData["company"],   // company
+            $contactData["notes"],   // notes
+            $contactData["status"],    // status
+        );
+	$result = $addressBook->updateContact($data,$id);
+	if (!$result) {
             $this->errMsg["fc"] = 'DBERROR';
             $this->errMsg["fm"] = 'Database operation failed';
             $this->errMsg["fd"] = 'Unable to write data to external phonebook - '.$addressBook->_DB->errMsg;
