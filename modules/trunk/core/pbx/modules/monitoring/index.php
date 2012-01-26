@@ -242,8 +242,10 @@ function reportMonitoring($smarty, $module_name, $local_templates_dir, &$pDB, $p
 
 	if($esAdministrador)
         $oGrid->deleteList(_tr("message_alert"),'submit_eliminar',_tr("Delete"));
+            $buttonDelete = "";
 	else
 	    $buttonDelete = "";
+
         $arrColumns = array($buttonDelete, _tr("Date"), _tr("Time"), _tr("Source"), _tr("Destination"),_tr("Duration"),_tr("Type"),_tr("Message"));
         $oGrid->setColumns($arrColumns);
         
