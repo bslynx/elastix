@@ -90,14 +90,14 @@ function listRepositories($smarty, $module_name, $local_templates_dir,$arrConf) 
     $end    = ($offset+$limit)<=$total ? $offset+$limit : $total;
     $arrData = array();
     $version = $oRepositories->obtenerVersionDistro();
+    $arch = $oRepositories->obtenerArquitectura();
     if (is_array($arrRepositorios)) {
         for($i=$offset;$i<$end;$i++){
             $activo = "";
             if($arrRepositorios[$i]['activo'])
                 $activo="checked='checked'";
              $arrData[] = array(
-                            "<input $activo name='repo-".$arrRepositorios[$i]['id']."' type='checkbox' id='repo-$i' />",
-                            str_replace("\$releasever",$version,$arrRepositorios[$i]['name']),);
+                            "<input $activo name='repo-".$arrRepositorios[$i]['id']."' type='checkbox' id='repo-$i' />",$valor = str_replace(array("\$releasever","\$basearch"),array($version,$arch),$arrRepositorios[$i]['name']),);
         }
     }
 
@@ -118,7 +118,7 @@ function listRepositories($smarty, $module_name, $local_templates_dir,$arrConf) 
       <table border='0' cellpadding='4' callspacing='0' width='100%' height='44'>
 	   <tr class='letra12'>
 		<td width='50%' align='left'>
-		      <input type='button' name='default' value='{$arrLang['Default']}' class='button' onclick='defaultValues($total)' />
+		      <input type='button' name='default' value='{$arrLang['Default']}' class='button' onclick='defaultValues($total,$version,\"$arch\")' />
 		</td>
 		<td width='50%' align='right'>Repo:&nbsp;&nbsp;
 		    <select name='typeRepository' onchange='javascript:submit();'> 
