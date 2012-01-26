@@ -66,6 +66,49 @@ class paloSantoGrid {
         $this->arrHeaders = array();
         $this->arrData    = array();
         $this->url        = "";
+
+        $this->addNewShow = 0;
+        $this->addNewLink = 0;
+        $this->addNewTask = "add";  
+        $this->addNewAlt  = "New Row";
+
+        $this->customActionShow = 0;
+        $this->customActionLink = 0;
+        $this->customActionTask = "task";  
+        $this->customActionAlt  = "Custom Action";
+        $this->customActionIMG  = "";
+
+        $this->deleteListShow = 0;
+        $this->deleteListLink = 0;
+        $this->deleteListMSG  = "";
+        $this->deleteListTask = "remove";  
+        $this->deleteListAlt  = "Delete Selected";
+    }
+
+    function addNew($task="add", $alt="New Row", $asLink=false)
+    {
+        $this->addNewShow = 1;
+        $this->addNewTask = $task;  
+        $this->addNewAlt  = $alt;
+        $this->addNewLink = (int)$asLink;
+    }
+
+    function customAction($task="task", $alt="Custom Action", $img="",  $asLink=false)
+    {
+        $this->customActionShow = 1;
+        $this->customActionTask = $task;  
+        $this->customActionAlt  = $alt;
+        $this->customActionIMG  = $img;
+        $this->customActionLink = (int)$asLink;
+    }
+
+    function deleteList($msg="" , $task="remove", $alt="Delete Selected",  $asLink=false)
+    {
+        $this->deleteListShow = 1;
+        $this->deleteListMSG  = $msg;
+        $this->deleteListTask = $task;  
+        $this->deleteListAlt  = $alt;
+        $this->deleteListLink = (int)$asLink;
     }
 
     function pagingShow($show)
@@ -255,6 +298,23 @@ class paloSantoGrid {
     {
         $this->smarty->assign("pagingShow",$this->pagingShow);
 
+        $this->smarty->assign("addNewShow",$this->addNewShow);
+        $this->smarty->assign("addNewLink",$this->addNewLink);
+        $this->smarty->assign("addNewTask",$this->addNewTask);
+        $this->smarty->assign("addNewAlt" ,_tr($this->addNewAlt));
+
+        $this->smarty->assign("customActionShow",$this->customActionShow);
+        $this->smarty->assign("customActionLink",$this->customActionLink);
+        $this->smarty->assign("customActionTask" ,$this->customActionTask);
+        $this->smarty->assign("customActionAlt",$this->customActionAlt);
+        $this->smarty->assign("customActionIMG" ,_tr($this->customActionIMG));
+
+        $this->smarty->assign("deleteListShow",$this->deleteListShow);
+        $this->smarty->assign("deleteListLink",$this->deleteListLink);
+        $this->smarty->assign("deleteListMSG" ,$this->deleteListMSG);
+        $this->smarty->assign("deleteListTask",$this->deleteListTask);
+        $this->smarty->assign("deleteListAlt" ,_tr($this->deleteListAlt));
+
         $this->smarty->assign("title", $this->getTitle());
         $this->smarty->assign("icon",  $this->getIcon());
         $this->smarty->assign("width", $this->getWidth());
@@ -263,20 +323,32 @@ class paloSantoGrid {
         $this->smarty->assign("end",   $this->end);
         $this->smarty->assign("total", $this->total);
 
+        $numPage = ($this->limit==0)?0:ceil($this->total / $this->limit);
+        $this->smarty->assign("numPage",$numPage);
+
+        $currentPage = ($this->limit==0 || $this->start==0)?0:(floor($this->start / $this->limit) + 1);
+        $this->smarty->assign("currentPage",$currentPage);
+
         if(!empty($this->url))
             $this->smarty->assign("url",   $this->url);
 
         $numColumns = count($this->getColumns());
+        $numData    = count($this->getData());
         $this->smarty->assign("numColumns", $numColumns);
         $this->smarty->assign("header",     $this->getColumns());
         $this->smarty->assign("arrData",    $this->getData());
+        $this->smarty->assign("numData",    $numData);
 
         $this->smarty->assign("enableExport", $this->enableExport);
 
         //dar el valor a las etiquetas segun el idioma
-        $etiquetas = array('Export','Start','Previous','Next','End');
+        $etiquetas = array('Export','Start','Previous','Next','End','Page','of','records');
         foreach ($etiquetas as $etiqueta)
             $this->smarty->assign("lbl$etiqueta", _tr($etiqueta));
+
+        $this->smarty->assign("NO_DATA_FOUND", _tr("No records match the filter criteria"));
+        $this->smarty->assign("FILTER_GRID"  , _tr("Apply Filter"));
+        $this->smarty->assign("DOWNLOAD_GRID", _tr("Download"));
 
         return $this->smarty->fetch($this->tplFile);
     }
@@ -289,7 +361,27 @@ class paloSantoGrid {
     function calculatePagination()
     {
         $accion = getParameter("nav");
-        $start  = getParameter("start");
+
+        if($accion == "bypage"){
+            $numPage = ($this->getLimit()==0)?0:ceil($this->getTotal() / $this->getLimit());
+
+            $page  = getParameter("page");
+            if(preg_match("/[0-9]+/",$page)==0)// no es un número
+                $page = 1;        
+
+            if( $page > $numPage) // se está solicitando una pagina mayor a las que existen
+                $page = $numPage;
+            
+            $start = ( ( ($page - 1) * $this->getLimit() ) + 1 ) - $this->getLimit();
+
+            $accion = "next";
+            if($start + $this->getLimit() <= 1){
+                $accion = null; 
+                $start = null;
+            }                
+        }
+        else
+            $start  = getParameter("start");
 
         $this->setOffsetValue($this->getOffSet($this->getLimit(),$this->getTotal(),$accion,$start));
         $this->setEnd(($this->getOffsetValue() + $this->getLimit()) <= $this->getTotal() ? $this->getOffsetValue() + $this->getLimit() : $this->getTotal());
