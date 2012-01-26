@@ -240,9 +240,10 @@ function reportMonitoring($smarty, $module_name, $local_templates_dir, &$pDB, $p
         $oGrid->setTotal($total);
         $offset = $oGrid->calculateOffset();
 
-	if($esAdministrador)
+	if($esAdministrador){
         $oGrid->deleteList(_tr("message_alert"),'submit_eliminar',_tr("Delete"));
             $buttonDelete = "";
+        }
 	else
 	    $buttonDelete = "";
 
