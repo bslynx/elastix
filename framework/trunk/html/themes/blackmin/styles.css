@@ -428,3 +428,14 @@ TD.menudescription {
 .loadingRPMimg{
     padding: 10px;
 }
+
+td a.link_summary_off{
+  text-decoration: none;
+  color:#000000;
+}
+
+td a.link_summary_on{
+  text-decoration: none;
+  color:#0000FF;
+  font-weight:bold;
+}

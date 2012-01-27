@@ -1045,3 +1045,14 @@ div.neo-applet-tdesc {
 .neo-display-none {
 	display: none;
 }
+
+td a.link_summary_off{
+  text-decoration: none;
+  color:#000000;
+}
+
+td a.link_summary_on{
+  text-decoration: none;
+  color:#0000FF;
+  font-weight:bold;
+}

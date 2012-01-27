@@ -130,3 +130,14 @@ tr.neo-table-data-row:hover {
     color:#444;
     text-decoration:none;
 }
+
+td.neo-table-title-row a.link_summary_off{
+  text-decoration: none;
+  color:#FFFFFF;
+}
+
+td.neo-table-title-row a.link_summary_on{
+  text-decoration: none;
+  color:#F5DEB3;
+  font-weight:bold;
+}
