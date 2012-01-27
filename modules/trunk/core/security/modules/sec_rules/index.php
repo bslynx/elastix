@@ -696,19 +696,20 @@ function reportRules($smarty, $module_name, $local_templates_dir, &$pDB, $arrCon
 
     }
     $oGrid->setData($arrData);
-    $smarty->assign("desactivate", _tr("Desactivate FireWall"));
+    //$smarty->assign("desactivate", _tr("Desactivate FireWall"));
     if($first_time){
+        $smarty->assign("mb_message", "<b>"._tr("The firewall is totally desactivated. It is recommended to activate the firewall rules")."</b>");
         $mensaje = _tr("The firewall is totally desactivated. It is recommended to activate the firewall rules");
         $mensaje2 = _tr("Activate FireWall");
-        $smarty->assign("DISPLAY_BUTTON", "display:none;");
+        $oGrid->customAction("exec",$mensaje2);
     }
     else{
+        $oGrid->customAction("desactivate",_tr("Desactivate FireWall"));
+        $oGrid->addNew("new",_tr("New Rule"));
         $mensaje = _tr("You have made changes to the definition of firewall rules, for this to take effect in the system press the next button");
         $mensaje2 = _tr("Save Changes");
-        $smarty->assign("DISPLAY_BUTTON", "");
-	$oGrid->addNew("new",_tr("New Rule"));
     }
-    $smarty->assign("exec", $mensaje2);
+    
     if($pRules->isExecutedInSystem()){
         $smarty->assign("BORDER", "");
         $smarty->assign("DISPLAY", "display:none;");
@@ -718,10 +719,13 @@ function reportRules($smarty, $module_name, $local_templates_dir, &$pDB, $arrCon
         $smarty->assign("BORDER", "border:1px solid; color:#AAAAAA");
         $smarty->assign("DISPLAY", "");
     }
-    $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/filter.tpl","",$_POST);
-    //end section filter
 
-    $oGrid->showFilter(trim($htmlFilter));
+    $smarty->assign("exec", $mensaje2);
+        if(!$first_time){
+        if(!$pRules->isExecutedInSystem()){
+        $smarty->assign("mb_title", "MESSAGE");
+        $smarty->assign("mb_message", "<b>".$mensaje."</b> &nbsp;&nbsp;&nbsp;<form  method='POST' style='margin-bottom:0;' action='?menu_sec_rules'><input class='button' type='submit' name='exec' value='$mensaje2'></form>");}}
+
     $contenidoModulo = $oGrid->fetchGrid();
     if (strpos($contenidoModulo, '<form') === FALSE)
         $contenidoModulo = "<form  method='POST' style='margin-bottom:0;' action=$url>$contenidoModulo</form>";
@@ -800,6 +804,8 @@ function change($pDB)
         $Exito1 = $pRules->updateOrder($actual_id,$neighbor_order);
         $Exito2 = $pRules->updateOrder($neighbor_id,$actual_order);
         if($pRules->isFirstTime()){
+            $smarty->assign("mb_message", "<b>"._tr("The firewall is totally desactivated. It is recommended to activate the firewall rules")."</b>");
+            $oGrid->customAction("exec",$mensaje2);
             $mensaje = _tr("The firewall is totally desactivated. It is recommended to activate the firewall rules");
             $mensaje2 = _tr("Activate FireWall");
         }
