@@ -281,7 +281,7 @@ class core_AddressBook
      * @param   integer   $limit              (Optional) limit records or all if omitted
      * @return  array     Array with the information of the contact list (address book).
      */
-    function listAddressBook($addressBookType, $offset, $limit, $id_contact=NULL, $withLink=FALSE)
+    function listAddressBook($addressBookType, $offset, $limit, $id_contact=NULL)
     {
         global $arrConf;
 
@@ -305,13 +305,6 @@ class core_AddressBook
         $dbAddressBook = $this->_getDB($arrConf['dsn_conn_database']);
 
         $addressBook = new paloAdressBook($dbAddressBook);
-	if($withLink){
-	    if($_SERVER["SERVER_PORT"] == 443)
-		$location = "https://";
-	    else
-		$location = "http://";
-	    $location .= $_SERVER["SERVER_ADDR"].$_SERVER["PHP_SELF"];
-	}
         switch ($addressBookType) {
         case 'internal':
             // Contar número de elementos de la agenda interna
@@ -345,27 +338,12 @@ class core_AddressBook
             }
             $listaEmails = $addressBook->getMailsFromVoicemail();
             foreach ($agendaInterna as $tuplaAgenda) {
-		if(!$withLink){
-		    $extension[] = array(
-			'id'    =>  $tuplaAgenda['id'],
-			'phone' =>  $tuplaAgenda['id'],
-			'name'  =>  $tuplaAgenda['description'],
-			'email' =>  ((isset($listaEmails[$tuplaAgenda['id']]) && trim($listaEmails[$tuplaAgenda['id']]) != '') ? $listaEmails[$tuplaAgenda['id']] : NULL),
-		    );
-		}
-		else{
-		    if(!isset($id_contact))
-			$hypermedia = "$location/$tuplaAgenda[id]";
-		    else
-			$hypermedia = $location;
-		    $extension[] = array(
-			'id'    =>  $tuplaAgenda['id'],
-			'phone' =>  $tuplaAgenda['id'],
-			'name'  =>  $tuplaAgenda['description'],
-			'email' =>  ((isset($listaEmails[$tuplaAgenda['id']]) && trim($listaEmails[$tuplaAgenda['id']]) != '') ? $listaEmails[$tuplaAgenda['id']] : NULL),
-			'url' => $hypermedia,
-		    );
-		}
+		$extension[] = array(
+		    'id'    =>  $tuplaAgenda['id'],
+		    'phone' =>  $tuplaAgenda['id'],
+		    'name'  =>  $tuplaAgenda['description'],
+		    'email' =>  ((isset($listaEmails[$tuplaAgenda['id']]) && trim($listaEmails[$tuplaAgenda['id']]) != '') ? $listaEmails[$tuplaAgenda['id']] : NULL),
+		);
             }
             break;
         case 'external':
@@ -416,31 +394,14 @@ class core_AddressBook
                 return false;
             }
             foreach ($agendaExterna as $tuplaAgenda) {
-		if(!$withLink){
-		    $extension[] = array(
-			'id'            =>  $tuplaAgenda['id'],
-			'phone'         =>  $tuplaAgenda['telefono'],
-			'name'          =>  $tuplaAgenda['name'].' '.$tuplaAgenda['last_name'],
-			'first_name'    =>  $tuplaAgenda['name'],
-			'last_name'     =>  $tuplaAgenda['last_name'],
-			'email'         =>  (trim($tuplaAgenda['email']) == '' ? NULL : $tuplaAgenda['email']),
-		    );
-		}
-		else{
-		    if(!isset($id_contact))
-			$hypermedia = "$location/$tuplaAgenda[id]";
-		    else
-			$hypermedia = $location;
-		    $extension[] = array(
-			'id'            =>  $tuplaAgenda['id'],
-			'phone'         =>  $tuplaAgenda['telefono'],
-			'name'          =>  $tuplaAgenda['name'].' '.$tuplaAgenda['last_name'],
-			'first_name'    =>  $tuplaAgenda['name'],
-			'last_name'     =>  $tuplaAgenda['last_name'],
-			'email'         =>  (trim($tuplaAgenda['email']) == '' ? NULL : $tuplaAgenda['email']),
-			'url'	=>  $hypermedia,
-		    );
-		}
+		$extension[] = array(
+		    'id'            =>  $tuplaAgenda['id'],
+		    'phone'         =>  $tuplaAgenda['telefono'],
+		    'name'          =>  $tuplaAgenda['name'].' '.$tuplaAgenda['last_name'],
+		    'first_name'    =>  $tuplaAgenda['name'],
+		    'last_name'     =>  $tuplaAgenda['last_name'],
+		    'email'         =>  (trim($tuplaAgenda['email']) == '' ? NULL : $tuplaAgenda['email']),
+		);
             }
             break;
         }
