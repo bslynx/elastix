@@ -100,7 +100,7 @@ div.neo-cmenutableft {
 }
 .neo-second-showbox-menu {
 	position:absolute;
-	right: -105px;
+	right: -107px;
 	top:39px;
 	width: 113px;
 	padding: 2px 8px 8px 8px;
@@ -108,6 +108,7 @@ div.neo-cmenutableft {
 	-moz-border-radius: 0px 6px 6px 0px;
 	-webkit-border-radius: 0px 6px 6px 0px;
 	border-radius: 0px 6px 6px 0px;
+	border-top: 1px solid #666;
 	border-bottom: 1px solid #666;
 	border-right: 1px solid #999;
 	border-left: 1px solid #999;

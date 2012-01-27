@@ -304,8 +304,8 @@ $(document).ready(function(){
 	  function () {
 	      if($(this).attr("aria-expanded") == "false"){
 		  var exportPosition = $('#export_button').position();
-		  var top = exportPosition.top + 22;
-		  var left = exportPosition.left - 2;
+		  var top = exportPosition.top + 41;
+		  var left = exportPosition.left - 3;
 		  $("#subMenuExport").css('top',top+"px");
 		  $("#subMenuExport").css('left',left+"px");
 		  $(this).attr("aria-expanded","true");

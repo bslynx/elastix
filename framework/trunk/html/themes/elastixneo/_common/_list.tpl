@@ -52,7 +52,9 @@
 
         {if !empty($contentFilter)}
             <div class="neo-table-header-row-filter" id="neo-tabla-header-row-filter-1">
-                <img src="images/filter.png" align="absmiddle" /> {$FILTER_GRID} <img src="images/icon_arrowdown2.png" align="absmiddle" />
+                <img src="images/filter.png" align="absmiddle" />
+                <label id="neo-table-label-filter" style="cursor:pointer">{$FILTER_GRID_SHOW}</label>
+                <img src="images/icon_arrowdown2.png" align="absmiddle" id="neo-tabla-img-arrow" />
             </div>
         {/if}
 
@@ -199,10 +201,19 @@
         });
     });
 
-    $("[id^=page]").keypress(function(event) {
+    $("[id^=page]").keyup(function(event) {
         if ( event.which == 13 ) {
             event.preventDefault();
             $("#idformgrid").submit();
+        }
+        else{   
+            var id  = $(this).attr("id");
+            var val = $(this).val();
+
+            if(id == "pageup")
+                $("#pagedown").val(val);
+            else if(id == "pagedown")
+                $("#pageup").val(val);
         }
     });
 
@@ -211,12 +222,23 @@
     //   });
 
     $("#neo-tabla-header-row-filter-1").click(function() {
+{/literal}
+        var filter_show = "{$FILTER_GRID_SHOW}";
+        var filter_hide = "{$FILTER_GRID_HIDE}";
+{literal}
+
         if($("#neo-table-header-filterrow").data("neo-table-header-filterrow-status")=="visible") {
             $("#neo-table-header-filterrow").addClass("neo-display-none");
+            $("#neo-tabla-img-arrow").attr("src","images/icon_arrowdown2.png");
+            $("#neo-table-label-filter").text(filter_show);
             $("#neo-table-header-filterrow").data("neo-table-header-filterrow-status", "hidden");
+            $("#neo-tabla-header-row-filter-1").removeClass("exportBackground");
         } else {
             $("#neo-table-header-filterrow").removeClass("neo-display-none");
+            $("#neo-tabla-img-arrow").attr("src","images/icon_arrowup2.png");
+            $("#neo-table-label-filter").text(filter_hide);
             $("#neo-table-header-filterrow").data("neo-table-header-filterrow-status", "visible");
+            $("#neo-tabla-header-row-filter-1").addClass("exportBackground");
         }
     });
 </script>

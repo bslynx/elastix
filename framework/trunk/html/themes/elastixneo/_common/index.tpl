@@ -26,13 +26,15 @@
 		{if !empty($mb_message)}
 		<br />
 	  	<div class="div_msg_errors" id="message_error">
-                    <div style="float:left;">
-                        <b style="color:red;">&nbsp;&nbsp;{$mb_title} </b>
+                    <div style="height:24px">
+                        <div class="div_msg_errors_title">
+                            <b style="color:red;">&nbsp;{$mb_title}</b>
+                        </div>
+                        <div class="div_msg_errors_dismiss">
+                            <input type="button" onclick="hide_message_error();" value="{$md_message_title}"/>
+                        </div>
                     </div>
-                    <div style="text-align:right; padding:5px">
-                        <input type="button" onclick="hide_message_error();" value="{$md_message_title}"/>
-                    </div>
-		    <div style="position:relative; top:-12px; padding: 0px 5px">
+		    <div style="padding:2px 10px 2px 10px">
 			{$mb_message}
 		    </div>
 		</div>

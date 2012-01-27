@@ -1303,11 +1303,24 @@ img.fullwidth {
 }
 
 div.div_msg_errors{
-    background-color: #FFFFFF;
+    background-color: #FFFFFF; 
+    margin-left: 5px;
+    margin-right: 5px;
     border: 1px solid #aaa;
     border-radius:5px 5px 5px 5px;
     -moz-border-radius: 5px 5px 5px 5px;
     -webkit-border-radius: 5px 5px 5px 5px;
+}
+
+div.div_msg_errors_dismiss{
+    width: 100px;
+    float: right;
+    text-align: right;
+    padding: 3px;
+}
+
+div.div_msg_errors_title{
+    float: left;
 }
 
 .frameModule{
