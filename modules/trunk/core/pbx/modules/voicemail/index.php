@@ -85,8 +85,9 @@ function _moduleContent(&$smarty, $module_name)
     $inicio= $fin = $total = 0;
     $extension = $pACL->getUserExtension($_SESSION['elastix_user']); $ext = $extension;
     $esAdministrador = $pACL->isUserAdministratorGroup($_SESSION['elastix_user']);
+    $bandCustom = true;
     if(is_null($ext) || $ext==""){
-	$smarty->assign("DISABLED","DISABLED");
+	$bandCustom = false;
 	if(!$esAdministrador){
 	    $smarty->assign("mb_message", "<b>".$arrLang["contact_admin"]."</b>");
 	    return "";
@@ -97,7 +98,6 @@ function _moduleContent(&$smarty, $module_name)
 
     $smarty->assign("menu","voicemail");
     $smarty->assign("Filter",$arrLang['Show']);
-    $smarty->assign("CONFIG",$arrLang["Configuration"]);
     //formulario para el filtro
     $arrFormElements = createFieldFormVoiceList($arrLang);
     $oFilterForm = new paloForm($smarty, $arrFormElements);
@@ -394,7 +394,8 @@ contenido;
                                         )
                     );
 
-    $oGrid = new paloSantoGrid($smarty);
+    if($bandCustom == true)
+	$oGrid->customAction("config",_tr("Configuration"));
     $oGrid->deleteList(_tr("Are you sure you wish to delete voicemails?"),"submit_eliminar",_tr("Delete"));
     $oGrid->showFilter($htmlFilter);
     $contenidoModulo  = $oGrid->fetchGrid($arrGrid, $arrVoiceData,$arrLang);
