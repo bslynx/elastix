@@ -347,7 +347,8 @@ class paloSantoGrid {
             $this->smarty->assign("lbl$etiqueta", _tr($etiqueta));
 
         $this->smarty->assign("NO_DATA_FOUND", _tr("No records match the filter criteria"));
-        $this->smarty->assign("FILTER_GRID"  , _tr("Apply Filter"));
+        $this->smarty->assign("FILTER_GRID_SHOW"  , _tr("Show Filter"));
+        $this->smarty->assign("FILTER_GRID_HIDE"  , _tr("Hide Filter"));
         $this->smarty->assign("DOWNLOAD_GRID", _tr("Download"));
 
         return $this->smarty->fetch($this->tplFile);
