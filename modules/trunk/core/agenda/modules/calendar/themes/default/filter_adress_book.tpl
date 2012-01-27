@@ -1,19 +1,17 @@
 <table width="99%" border="0" cellspacing="0" cellpadding="0" align="center">
     <tr class="letra12">
-        <form name="form_filter" id="form_filter" method='POST' style='margin-bottom:0;' action='?menu={$module_name}'>
-            <td width="30%" align="right">{$Phone_Directory}:</td>
-            <td width="15%" align="left">
-                <select name="select_directory_type" onchange='report_by_directory_type()'>
-                    <option value="Internal" {$internal_sel}>{$Internal}</option>
-                    <option value="External" {$external_sel}>{$External}</option>
-                </select>
-            </td>
-            <td width="10%" align="right">{$field.LABEL}: </td>
-            <td width="15%" align="left" nowrap>
-                {$field.INPUT} &nbsp;{$pattern.INPUT}&nbsp;&nbsp;
-                <input class="button" type="submit" name="report" value="{$SHOW}">
-            </td>
-        </form>
+	<td width="30%" align="right">{$Phone_Directory}:</td>
+	<td width="15%" align="left">
+	    <select name="select_directory_type" onchange='report_by_directory_type()'>
+		<option value="Internal" {$internal_sel}>{$Internal}</option>
+		<option value="External" {$external_sel}>{$External}</option>
+	    </select>
+	</td>
+	<td width="10%" align="right">{$field.LABEL}: </td>
+	<td width="15%" align="left" nowrap>
+	    {$field.INPUT} &nbsp;{$pattern.INPUT}&nbsp;&nbsp;
+	    <input class="button" type="submit" name="report" value="{$SHOW}">
+	</td>
     </tr>
 </table>
 
@@ -29,8 +27,8 @@
 
         function report_by_directory_type()
         {
-            var form_filter = document.getElementsByName('form_filter')[0];
-            form_filter.submit();
+            var forms = document.getElementsByTagName('form');
+            forms[0].submit();
         }
     </script>
 {/literal}

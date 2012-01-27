@@ -1819,6 +1819,7 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
     $total  = $total_datos;
 
     $oGrid  = new paloSantoGrid($smarty);
+    $oGrid->setLimit($limit);
     $offset = $oGrid->getOffSet($limit,$total,(isset($_GET['nav']))?$_GET['nav']:NULL,(isset($_GET['start']))?$_GET['start']:NULL);
 
     $end    = ($offset+$limit)<=$total ? $offset+$limit : $total;
