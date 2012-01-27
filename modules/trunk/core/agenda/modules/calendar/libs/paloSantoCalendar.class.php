@@ -247,7 +247,7 @@ class paloSantoCalendar {
             if(!$retval){
                 if ($handle = opendir($path)) {
                     while (false !== ($dir = readdir($handle))) {
-                        if (preg_match("/(.*)\.[gsm$|wav$]/", $dir, $regs)) {
+                        if (ereg("(.*)\.[gsm$|wav$]", $dir, $regs)) {
                             $archivos[$regs[1]] = $regs[1];
                         }
                     }
