@@ -88,12 +88,14 @@
             </td>
             </tr>
             <tr class="table_title_row">
-                {section name=columnNum loop=$numColumns start=0 step=1}
+               {section name=columnNum loop=$numColumns start=0 step=1}
                     {if $smarty.section.columnNum.first}
                         {if $header[$smarty.section.columnNum.index].name == "" and $deleteListShow}
                             <td class="table_title_row"> <input type="submit" name="{$deleteListTask}" value="{$deleteListAlt}" onclick="return confirmSubmit('{$deleteListMSG}')" class="button" /> </td>
-                        {else}
+                        {elseif $header[$smarty.section.columnNum.index].name == ""}
                             <td class="table_title_row">&nbsp;</td>
+                        {else}
+                            <td class="table_title_row">{$header[$smarty.section.columnNum.index].name}</td>
                         {/if}
                     {else}
                         <td class="table_title_row">{$header[$smarty.section.columnNum.index].name}&nbsp;</td>
