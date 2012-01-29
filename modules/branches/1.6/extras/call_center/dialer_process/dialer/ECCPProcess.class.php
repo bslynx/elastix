@@ -137,7 +137,10 @@ class ECCPProcess extends TuberiaProcess
         }
 
         // Verificar si la conexión AMI sigue siendo válida
-        if (!is_null($this->_ami) && is_null($this->_ami->sKey)) $this->_ami = NULL;
+        if (!is_null($this->_ami) && is_null($this->_ami->sKey)) {
+            $this->_ami = NULL;
+            $this->_multiplex->setAstConn(NULL);
+        }
         if (is_null($this->_ami)) {
             if (!$this->_iniciarConexionAMI()) {
                 $this->_log->output('ERR: no se puede restaurar conexión a Asterisk, se espera...');
@@ -156,7 +159,7 @@ class ECCPProcess extends TuberiaProcess
         }
 
         // Rutear los mensajes si hay DB
-        if (!is_null($this->_db) && !is_null($this->_ami)) {
+        if (!is_null($this->_db)) {
             // Rutear todos los mensajes pendientes entre tareas y agentes
             if ($this->_multiplex->procesarPaquetes())
                 $this->_multiplex->procesarActividad(0);
@@ -187,7 +190,8 @@ class ECCPProcess extends TuberiaProcess
         if (!is_null($this->_ami)) {
             $this->_log->output('INFO: Desconectando de sesión previa de Asterisk...');
             $this->_ami->disconnect();
-            $this->_ami = NULL;            
+            $this->_ami = NULL;
+            $this->_multiplex->setAstConn(NULL);
         }
         $astman = new AMIClientConn($this->_multiplex, $this->_log);
         //$this->_momentoUltimaConnAsterisk = time();

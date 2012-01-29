@@ -99,13 +99,11 @@ class AMIEventProcess extends TuberiaProcess
         }
 
         // Rutear todos los mensajes pendientes entre tareas
-        if (is_null($this->_config) || !is_null($this->_ami)) {
-            if ($this->_multiplex->procesarPaquetes())
-                $this->_multiplex->procesarActividad(0);
-            else $this->_multiplex->procesarActividad(1);
-            
-            $this->_limpiarLlamadasViejasEspera();
-        }
+        if ($this->_multiplex->procesarPaquetes())
+            $this->_multiplex->procesarActividad(0);
+        else $this->_multiplex->procesarActividad(1);
+        
+        $this->_limpiarLlamadasViejasEspera();
         
     	return TRUE;
     }
@@ -702,10 +700,12 @@ class AMIEventProcess extends TuberiaProcess
     private function _verificarFinalizacionLlamadas()
     {
         if (!$this->_finalizacionConfirmada) {
-            foreach ($this->_listaAgentes as $a) {
-            	if ($a->estado_consola != 'logged-out') return;
+            if (!is_null($this->_ami)) {
+                foreach ($this->_listaAgentes as $a) {
+                	if ($a->estado_consola != 'logged-out') return;
+                }
+                if ($this->_listaLlamadas->numLlamadas() > 0) return;
             }
-            if ($this->_listaLlamadas->numLlamadas() > 0) return;
             $this->_tuberia->msg_CampaignProcess_finalsql();
             $this->_tuberia->msg_HubProcess_finalizacionTerminada();
             $this->_finalizacionConfirmada = TRUE;
@@ -977,7 +977,7 @@ class AMIEventProcess extends TuberiaProcess
         $this->_finalizandoPrograma = TRUE;
         foreach ($this->_listaAgentes as $a) {
         	if ($a->estado_consola != 'logged-out') {
-                $this->_ami->Agentlogoff($a->number);
+                if (!is_null($this->_ami)) $this->_ami->Agentlogoff($a->number);
             }
         }
         $this->_log->output('INFO: esperando a que finalicen todas las llamadas monitoreadas...');

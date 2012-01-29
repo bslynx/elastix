@@ -234,14 +234,14 @@ class CampaignProcess extends TuberiaProcess
         }
 
         // Actualizar la generación de llamadas para las campañas
-        if (!is_null($this->_db) && !is_null($this->_ami)) {
+        if (!is_null($this->_db)) {
             try {
                 if (!$this->_finalizandoPrograma) {
                     // Verificar si se ha cambiado la configuración
                     $this->_verificarCambioConfiguracion();
     
                     if ($this->_ociosoSinEventos) {
-                        $this->_actualizarCampanias();
+                        if (!is_null($this->_ami)) $this->_actualizarCampanias();
                 
                         // Actualizar la información remota en AMIClientConn
                         $this->_actualizarInformacionRemota();
@@ -1552,7 +1552,8 @@ PETICION_LLAMADAS_AGENTE;
     
     private function _actualizarCanalRemoto($sAgentNum, $tipo_llamada, $uniqueid)
     {
-    	$sCanalRemoto = NULL;
+    	if (is_null($this->_ami)) return;
+        $sCanalRemoto = NULL;
         $r = $this->_ami->Command('agent show online');
         if (is_array($r) && isset($r['data'])) {
             $lineasRespuesta = explode("\n", $r['data']);
@@ -1584,7 +1585,7 @@ PETICION_LLAMADAS_AGENTE;
             	$this->_log->output('DEBUG: '.__METHOD__.': el siguiente agente '.
                     'no tiene más llamadas agendadas: '.$sAgente);
             }
-            if ($infoSeguimiento['num_pausas'] == 1) {
+            if ($infoSeguimiento['num_pausas'] == 1 && !is_null($this->_ami)) {
             	$r = $this->_ami->QueuePause(NULL, $sAgente, 'false');
             }
             $this->_tuberia->msg_AMIEventProcess_quitarReservaAgente($sAgente);

@@ -1328,6 +1328,9 @@ LEER_CAMPANIA;
      */
     private function Request_loginagent($comando)
     {
+        if (is_null($this->_ami))
+            return $this->_generarRespuestaFallo(500, 'No AMI connection');
+
         if (is_null($this->_sUsuarioECCP))
             return $this->_generarRespuestaFallo(401, 'Unauthorized');
 
@@ -1566,6 +1569,9 @@ LISTA_EXTENSIONES;
      */
     private function Request_logoutagent($comando)
     {
+        if (is_null($this->_ami))
+            return $this->_generarRespuestaFallo(500, 'No AMI connection');
+
         if (is_null($this->_sUsuarioECCP))
             return $this->_generarRespuestaFallo(401, 'Unauthorized');
 
@@ -1625,6 +1631,9 @@ LISTA_EXTENSIONES;
 
     private function Request_pauseagent($comando)
     {
+        if (is_null($this->_ami))
+            return $this->_generarRespuestaFallo(500, 'No AMI connection');
+
         if (is_null($this->_sUsuarioECCP))
             return $this->_generarRespuestaFallo(401, 'Unauthorized');
 
@@ -1727,6 +1736,9 @@ LISTA_EXTENSIONES;
 
     private function Request_unpauseagent($comando)
     {
+        if (is_null($this->_ami))
+            return $this->_generarRespuestaFallo(500, 'No AMI connection');
+
         if (is_null($this->_sUsuarioECCP))
             return $this->_generarRespuestaFallo(401, 'Unauthorized');
 
@@ -1812,6 +1824,9 @@ LISTA_EXTENSIONES;
      */
     private function Request_getagentstatus($comando)
     {
+        if (is_null($this->_ami))
+            return $this->_generarRespuestaFallo(500, 'No AMI connection');
+
         $iTimestampInicio = microtime(TRUE);
 
         if (is_null($this->_sUsuarioECCP))
@@ -1921,6 +1936,9 @@ LISTA_EXTENSIONES;
 
     private function Request_hangup($comando)
     {
+        if (is_null($this->_ami))
+            return $this->_generarRespuestaFallo(500, 'No AMI connection');
+
         if (is_null($this->_sUsuarioECCP))
             return $this->_generarRespuestaFallo(401, 'Unauthorized');
 
@@ -1980,6 +1998,9 @@ LISTA_EXTENSIONES;
     
     private function Request_getcampaignstatus($comando)
     {
+        if (is_null($this->_ami))
+            return $this->_generarRespuestaFallo(500, 'No AMI connection');
+
         if (is_null($this->_sUsuarioECCP))
             return $this->_generarRespuestaFallo(401, 'Unauthorized');
 
@@ -2189,6 +2210,9 @@ LEER_RESUMEN_CAMPANIA;
 
     private function Request_schedulecall($comando)
     {
+        if (is_null($this->_ami))
+            return $this->_generarRespuestaFallo(500, 'No AMI connection');
+
         if (is_null($this->_sUsuarioECCP))
             return $this->_generarRespuestaFallo(401, 'Unauthorized');
 
@@ -2465,6 +2489,9 @@ SQL_INSERTAR_AGENDAMIENTO;
 
     private function Request_transfercall($comando)
     {
+        if (is_null($this->_ami))
+            return $this->_generarRespuestaFallo(500, 'No AMI connection');
+
         if (is_null($this->_sUsuarioECCP))
             return $this->_generarRespuestaFallo(401, 'Unauthorized');
 
@@ -2529,6 +2556,9 @@ SQL_INSERTAR_AGENDAMIENTO;
 
     private function Request_hold($comando)
     {
+        if (is_null($this->_ami))
+            return $this->_generarRespuestaFallo(500, 'No AMI connection');
+
         if (is_null($this->_sUsuarioECCP))
             return $this->_generarRespuestaFallo(401, 'Unauthorized');
 
@@ -2698,6 +2728,9 @@ SQL_INSERTAR_AGENDAMIENTO;
 
     private function Request_unhold($comando)
     {
+        if (is_null($this->_ami))
+            return $this->_generarRespuestaFallo(500, 'No AMI connection');
+
         if (is_null($this->_sUsuarioECCP))
             return $this->_generarRespuestaFallo(401, 'Unauthorized');
 
@@ -2856,6 +2889,9 @@ Privilege: Command
 
     private function Request_getagentqueues($comando)
     {
+        if (is_null($this->_ami))
+            return $this->_generarRespuestaFallo(500, 'No AMI connection');
+
         // Verificar que agente está presente
         if (!isset($comando->agent_number)) 
             return $this->_generarRespuestaFallo(400, 'Bad request');
