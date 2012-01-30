@@ -242,6 +242,9 @@ $arrLang=array(
 "records" => "registros",
 "Apply Filter" => "Aplicar Filtro",
 "Download" => "Descargar",
-"WARNING" => "ADVERTENCIA"
+"WARNING" => "ADVERTENCIA",
+"Show Filter" => "Mostrar Filtro",
+"Hide Filter" => "Ocultar Filtro",
+"More Options" => "Mas Opciones"
 );
 ?>
