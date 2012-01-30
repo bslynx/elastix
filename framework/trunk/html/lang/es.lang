@@ -245,6 +245,6 @@ $arrLang=array(
 "WARNING" => "ADVERTENCIA",
 "Show Filter" => "Mostrar Filtro",
 "Hide Filter" => "Ocultar Filtro",
-"More Options" => "Mas Opciones"
+"More Options" => "Más Opciones"
 );
 ?>
