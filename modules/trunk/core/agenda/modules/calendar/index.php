@@ -1801,7 +1801,7 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
         $field      = $_POST['field'];
         if (!in_array($field, $allowSelection))
             $field = "name";
-        $pattern    = $pDB->DBCAMPO('%'.$_POST['pattern'].'%');
+        $pattern = '%'.$_POST['pattern'].'%';
     }
 
     $startDate = $endDate = date("Y-m-d H:i:s");
