@@ -111,7 +111,7 @@ class PaloSantoConsola
                 /* Privilegio de localhost - se puede recuperar la clave del
                  * agente sin tener que pedirla explícitamente */                
                 $tupla = $dbConnCC->getFirstRowQuery(
-                    'SELECT eccp_password FROM agent WHERE number = ?', 
+                    'SELECT eccp_password FROM agent WHERE number = ? AND estatus="A"', 
                     FALSE, array($sAgentNumber));
                 if (!is_array($tupla))
                     throw new ECCPConnFailedException(_tr('Failed to retrieve agent password'));
