@@ -323,7 +323,7 @@ class paloSantoGrid {
         $this->smarty->assign("end",   $this->end);
         $this->smarty->assign("total", $this->total);
 
-        $numPage = ($this->limit==0)?0:ceil($this->total / $this->limit);
+        $numPage = ($this->F==0)?0:ceil($this->total / $this->limit);
         $this->smarty->assign("numPage",$numPage);
 
         $currentPage = ($this->limit==0 || $this->start==0)?0:(floor($this->start / $this->limit) + 1);
