@@ -52,8 +52,8 @@
 
         {if !empty($contentFilter)}
             <div class="neo-table-header-row-filter" id="neo-tabla-header-row-filter-1">
-                <img src="images/filter.png" align="absmiddle" />
-                <label id="neo-table-label-filter" style="cursor:pointer">{$FILTER_GRID_SHOW}</label>
+                {if $AS_OPTION eq 0} <img src="images/filter.png" align="absmiddle" /> {/if}
+                <label id="neo-table-label-filter" style="cursor:pointer">{if $AS_OPTION} {$MORE_OPTIONS} {else} {$FILTER_GRID_SHOW} {/if}</label>
                 <img src="images/icon_arrowdown2.png" align="absmiddle" id="neo-tabla-img-arrow" />
             </div>
         {/if}
@@ -198,15 +198,20 @@
         $("#neo-table1").colResizable({
             liveDrag:true,
             marginLeft:"1px",
+            onDrag: onDrag,
         });
     });
+
+    var onDrag = function(){
+
+    }
 
     $("[id^=page]").keyup(function(event) {
         if ( event.which == 13 ) {
             event.preventDefault();
             $("#idformgrid").submit();
         }
-        else{   
+        else{
             var id  = $(this).attr("id");
             var val = $(this).val();
 
@@ -223,8 +228,13 @@
 
     $("#neo-tabla-header-row-filter-1").click(function() {
 {/literal}
+    {if $AS_OPTION}
+        var filter_show = "{$MORE_OPTIONS}";
+        var filter_hide = "{$MORE_OPTIONS}";
+    {else}
         var filter_show = "{$FILTER_GRID_SHOW}";
         var filter_hide = "{$FILTER_GRID_HIDE}";
+    {/if}
 {literal}
 
         if($("#neo-table-header-filterrow").data("neo-table-header-filterrow-status")=="visible") {
