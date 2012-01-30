@@ -64,6 +64,12 @@
 	position:relative;
 	margin: 16px 0px 0px 0px;
 	width: 950px;
+	text-align: justify;
+}
+
+.neo-addons-row-location {
+    width: 950px;
+    text-align: justify;
 }
 
 .neo-addons-row-author{
