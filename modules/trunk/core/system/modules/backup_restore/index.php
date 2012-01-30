@@ -208,7 +208,7 @@ function report_backup_restore($smarty, $module_name, $local_templates_dir, $arr
     $oGrid->deleteList(_tr("Are you sure you wish to delete backup (s)?"),'delete_backup',_tr("Delete"));
 	$oGrid->customAction("view_form_FTP",_tr("FTP Backup"));
     $htmlFilter = $smarty->fetch("$local_templates_dir/filter.tpl");
-    $oGrid->showFilter(trim($htmlFilter));
+    $oGrid->showFilter(trim($htmlFilter),true);
     $contenidoModulo = $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
 
     return $contenidoModulo;
