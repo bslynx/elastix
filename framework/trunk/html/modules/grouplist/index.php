@@ -264,7 +264,23 @@ function _moduleContent(&$smarty, $module_name)
             }
         }
 
-        $arrGroups = $pACL->getGroups();
+        $nav   = getParameter("nav");
+    $start = getParameter("start");
+
+    $total = $pACL->getNumGroups();
+    $total = ($total == NULL)?0:$total;
+
+    $limit  = 20;
+    $oGrid  = new paloSantoGrid($smarty);
+    $oGrid->setLimit($limit);
+    $oGrid->setTotal($total);
+    $oGrid->pagingShow(true);
+    $oGrid->setURL("?menu=grouplist");
+    $offset = $oGrid->calculateOffset();
+    $end = $oGrid->getEnd();
+
+   $arrGroups = $pACL->getGroupsPaging($limit, $offset);
+
 
         $end = count($arrGroups);
         $arrData = array();
@@ -292,18 +308,14 @@ function _moduleContent(&$smarty, $module_name)
 
         $arrGrid = array("title"    => $arrLang["Group List"],
                          "icon"     => "/modules/$module_name/images/system_groups.png",
-                         "width"    => "99%",
-                         "start"    => ($end==0) ? 0 : 1,
-                         "end"      => $end,
-                         "total"    => $end,
                          "columns"  => array(0 => array("name"      => $arrLang["Group"],
                                                         "property1" => ""),
                                              1 => array("name"      => $arrLang["Description"],
-                                                        "property1" => "")
+                                                       "property1" => "")
                                             )
                         );
 
-        $oGrid = new paloSantoGrid($smarty);
+
         $oGrid->addNew("submit_create_group",_tr("Create New Group"));
         $contenidoModulo = $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
     }
