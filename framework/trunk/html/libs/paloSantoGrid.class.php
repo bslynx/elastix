@@ -69,26 +69,26 @@ class paloSantoGrid {
 
         $this->addNewShow = 0;
         $this->addNewLink = 0;
-        $this->addNewTask = "add";  
+        $this->addNewTask = "add";
         $this->addNewAlt  = "New Row";
 
         $this->customActionShow = 0;
         $this->customActionLink = 0;
-        $this->customActionTask = "task";  
+        $this->customActionTask = "task";
         $this->customActionAlt  = "Custom Action";
         $this->customActionIMG  = "";
 
         $this->deleteListShow = 0;
         $this->deleteListLink = 0;
         $this->deleteListMSG  = "";
-        $this->deleteListTask = "remove";  
+        $this->deleteListTask = "remove";
         $this->deleteListAlt  = "Delete Selected";
     }
 
     function addNew($task="add", $alt="New Row", $asLink=false)
     {
         $this->addNewShow = 1;
-        $this->addNewTask = $task;  
+        $this->addNewTask = $task;
         $this->addNewAlt  = $alt;
         $this->addNewLink = (int)$asLink;
     }
@@ -96,7 +96,7 @@ class paloSantoGrid {
     function customAction($task="task", $alt="Custom Action", $img="",  $asLink=false)
     {
         $this->customActionShow = 1;
-        $this->customActionTask = $task;  
+        $this->customActionTask = $task;
         $this->customActionAlt  = $alt;
         $this->customActionIMG  = $img;
         $this->customActionLink = (int)$asLink;
@@ -106,7 +106,7 @@ class paloSantoGrid {
     {
         $this->deleteListShow = 1;
         $this->deleteListMSG  = $msg;
-        $this->deleteListTask = $task;  
+        $this->deleteListTask = $task;
         $this->deleteListAlt  = $alt;
         $this->deleteListLink = (int)$asLink;
     }
@@ -261,7 +261,7 @@ class paloSantoGrid {
     {
         $pdf= new paloPDF();
         $pdf->setOrientation("L");
-        $pdf->setFormat("A3");            
+        $pdf->setFormat("A3");
         //$pdf->setLogoHeader("themes/elastixwave/images/logo_elastix.gif");
         $pdf->setColorHeader(array(5,68,132));
         $pdf->setColorHeaderTable(array(227,83,50));
@@ -323,7 +323,7 @@ class paloSantoGrid {
         $this->smarty->assign("end",   $this->end);
         $this->smarty->assign("total", $this->total);
 
-        $numPage = ($this->F==0)?0:ceil($this->total / $this->limit);
+        $numPage = ($this->limit==0)?0:ceil($this->total / $this->limit);
         $this->smarty->assign("numPage",$numPage);
 
         $currentPage = ($this->limit==0 || $this->start==0)?0:(floor($this->start / $this->limit) + 1);
@@ -346,16 +346,22 @@ class paloSantoGrid {
         foreach ($etiquetas as $etiqueta)
             $this->smarty->assign("lbl$etiqueta", _tr($etiqueta));
 
-        $this->smarty->assign("NO_DATA_FOUND", _tr("No records match the filter criteria"));
+        $this->smarty->assign("NO_DATA_FOUND"     , _tr("No records match the filter criteria"));
         $this->smarty->assign("FILTER_GRID_SHOW"  , _tr("Show Filter"));
         $this->smarty->assign("FILTER_GRID_HIDE"  , _tr("Hide Filter"));
-        $this->smarty->assign("DOWNLOAD_GRID", _tr("Download"));
+        $this->smarty->assign("MORE_OPTIONS"      , _tr("More Options"));
+        $this->smarty->assign("DOWNLOAD_GRID"     , _tr("Download"));
 
         return $this->smarty->fetch($this->tplFile);
     }
 
-    function showFilter($htmlFilter)
+    function showFilter($htmlFilter,$as_options=false)
     {
+        if($as_options)
+            $this->smarty->assign("AS_OPTION", 1);
+        else
+            $this->smarty->assign("AS_OPTION", 0);
+
         $this->smarty->assign("contentFilter", $htmlFilter);
     }
 
@@ -368,18 +374,18 @@ class paloSantoGrid {
 
             $page  = getParameter("page");
             if(preg_match("/[0-9]+/",$page)==0)// no es un número
-                $page = 1;        
+                $page = 1;
 
             if( $page > $numPage) // se está solicitando una pagina mayor a las que existen
                 $page = $numPage;
-            
+
             $start = ( ( ($page - 1) * $this->getLimit() ) + 1 ) - $this->getLimit();
 
             $accion = "next";
             if($start + $this->getLimit() <= 1){
-                $accion = null; 
+                $accion = null;
                 $start = null;
-            }                
+            }
         }
         else
             $start  = getParameter("start");
@@ -406,9 +412,9 @@ class paloSantoGrid {
             $offset = $start - $limit - 1;
         }
         else if(isset($accion) && $accion=="end") {
-            if(($total%$limit)==0) 
+            if(($total%$limit)==0)
                 $offset = $total - $limit;
-            else 
+            else
                 $offset = $total - $total%$limit;
         }
         else if(isset($accion) && $accion=="start") {
