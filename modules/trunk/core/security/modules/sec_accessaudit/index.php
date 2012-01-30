@@ -137,9 +137,12 @@ function report_AccessAudit($smarty, $module_name, $local_templates_dir)
     if ($iPosSiguiente > count($arrResult) - 1) $iPosSiguiente = count($arrResult) - 1;
     $iOffsetPrevio    = $arrResult[$iPosPrevio]['offset'];
     $iOffsetSiguiente = $arrResult[$iPosSiguiente]['offset'];
-
+    
+    $limit=30;
+    $total=(int)($totalBytes / 128);
     $offset = $iOffsetVerdadero;
-    if (isset($_GET['nav'])) switch ($_GET['nav']) {
+    $nav = getParameter('nav');
+    if ($nav) switch ($nav) {
     case 'start':
         $offset = 0;
         break;
@@ -161,6 +164,35 @@ function report_AccessAudit($smarty, $module_name, $local_templates_dir)
         break;
     case 'previous':
         $offset = $iOffsetPrevio;
+        break;
+        case 'bypage':
+        $numPage = ($limit==0)?0:ceil($total / $limit);
+
+        $page  = getParameter("page");
+        if(preg_match("/[0-9]+/",$page)==0)// no es un número
+            $page = 1;
+
+        if( $page > $numPage) // se está solicitando una pagina mayor a las que existen
+            $page = $numPage;
+
+        $start = ( ( ($page - 1) * $limit ) + 1 ) - $limit;
+
+        //$accion = "next";
+        if($start + $limit <= 1){
+            $accion = null;
+            $start = null;
+        }
+
+        $inicioRango = $page * $iEstimadoBytesPagina;
+
+        $arrResult =$pAccessLogs->ObtainAccessLogs(10 * $iEstimadoBytesPagina, $inicioRango, $field_pattern, NULL, $isExport);
+        $offset = $arrResult[0]['offset'];
+
+        $oGrid->setOffsetValue($offset);
+
+        $oGrid->setEnd(((int)($offset / 128) + $iNumLineasPorPagina) <= $oGrid->getTotal() ? (int)($offset / 128) + $iNumLineasPorPagina : $oGrid->getTotal());
+
+        $oGrid->setStart(($oGrid->getTotal()==0) ? 0 : (1 + (int)($offset / 128)));
         break;
     }
 
@@ -228,6 +260,7 @@ function report_AccessAudit($smarty, $module_name, $local_templates_dir)
     $e = ($t <= $e)?$t:$e;
     $oGrid->setEnd($e+1);
     $oGrid->setTotal($t+1);
+    $oGrid->setLimit(30);
 
     $_POST['offset'] = $offset;
 
