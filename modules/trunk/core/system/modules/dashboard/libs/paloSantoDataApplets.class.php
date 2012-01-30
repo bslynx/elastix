@@ -153,6 +153,7 @@ PLANTILLA_DIRECTORIOS;
 
     function getDataApplet_News()
     {
+        define('MAGPIE_CACHE_DIR', '/tmp/rss-cache');
         $infoRSS = @fetch_rss($this->arrConf['dir_RSS']);
         $sMensaje = magpie_error();
         if (preg_match("/HTTP Error: connection failed/", $sMensaje)) {
