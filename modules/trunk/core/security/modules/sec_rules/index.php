@@ -699,6 +699,7 @@ function reportRules($smarty, $module_name, $local_templates_dir, &$pDB, $arrCon
     //$smarty->assign("desactivate", _tr("Desactivate FireWall"));
     if($first_time){
         $smarty->assign("mb_message", "<b>"._tr("The firewall is totally desactivated. It is recommended to activate the firewall rules")."</b>");
+        $smarty->assign("mb_title",_tr("WARNING"));
         $mensaje = _tr("The firewall is totally desactivated. It is recommended to activate the firewall rules");
         $mensaje2 = _tr("Activate FireWall");
         $oGrid->customAction("exec",$mensaje2);
@@ -805,6 +806,7 @@ function change($pDB)
         $Exito2 = $pRules->updateOrder($neighbor_id,$actual_order);
         if($pRules->isFirstTime()){
             $smarty->assign("mb_message", "<b>"._tr("The firewall is totally desactivated. It is recommended to activate the firewall rules")."</b>");
+            $smarty->assign("mb_title",_tr("WARNING"));
             $oGrid->customAction("exec",$mensaje2);
             $mensaje = _tr("The firewall is totally desactivated. It is recommended to activate the firewall rules");
             $mensaje2 = _tr("Activate FireWall");
