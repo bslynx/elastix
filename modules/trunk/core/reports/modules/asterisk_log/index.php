@@ -36,6 +36,7 @@ function _moduleContent(&$smarty, $module_name)
     //include module files
     include_once "modules/$module_name/configs/default.conf.php";
     include_once "modules/$module_name/libs/paloSantoAsteriskLogs.class.php";
+    include_once "modules/$module_name/libs/LogParser_Full.class.php";
 
     // incluir el archivo de idioma de acuerdo al que este seleccionado
     // si el archivo de idioma no existe incluir el idioma por defecto
@@ -178,8 +179,12 @@ function report_AsteriskLogs($smarty, $module_name, $local_templates_dir, $arrLa
     $iOffsetPrevio = $arrResult[$iPosPrevio]['offset'];
     $iOffsetSiguiente = $arrResult[$iPosSiguiente]['offset'];
 
+    $limit = $iNumLineasPorPagina;
+    $total = (int)($totalBytes / 128);
+
     $offset = $iOffsetVerdadero;
-    if (isset($_GET['nav'])) switch ($_GET['nav']) {
+    $nav = getParameter('nav');
+    if ($nav) switch ($nav) {
     case 'start':
         $offset = 0;
         break;
@@ -198,7 +203,37 @@ function report_AsteriskLogs($smarty, $module_name, $local_templates_dir, $arrLa
     case 'previous':
         $offset = $iOffsetPrevio;
         break;
+    case 'bypage':
+        $numPage = ($limit==0)?0:ceil($total / $limit);
+
+        $page  = getParameter("page");
+        if(preg_match("/[0-9]+/",$page)==0)// no es un número
+            $page = 1;
+
+        if( $page > $numPage) // se está solicitando una pagina mayor a las que existen
+            $page = $numPage;
+
+        $start = ( ( ($page - 1) * $limit ) + 1 ) - $limit;
+
+        //$accion = "next";
+        if($start + $limit <= 1){
+            $accion = null;
+            $start = null;
+        }
+
+        $inicioRango = $page * $iEstimadoBytesPagina;
+
+        $arrResult =$pAsteriskLogs->ObtainAsteriskLogs(10 * $iEstimadoBytesPagina, $inicioRango, $field_pattern);
+        $offset = $arrResult[0]['offset'];
+
+        $oGrid->setOffsetValue($offset);
+
+        $oGrid->setEnd(((int)($offset / 128) + $iNumLineasPorPagina) <= $oGrid->getTotal() ? (int)($offset / 128) + $iNumLineasPorPagina : $oGrid->getTotal());
+
+        $oGrid->setStart(($oGrid->getTotal()==0) ? 0 : (1 + (int)($offset / 128)));
+        break;
     }
+
 
     // Buscar la cadena de texto indicada, y modificar offset si se encuentra
     if (isset($_POST['searchnext'])  && $busqueda != '') {
@@ -272,6 +307,9 @@ function report_AsteriskLogs($smarty, $module_name, $local_templates_dir, $arrLa
                                         )
                     );
 
+    $oGrid->setLimit($limit);
+    $oGrid->setTotal($total);
+    
     $_POST['offset'] = $offset;
     $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/filter.tpl", "", $_POST);
     $oGrid->showFilter(trim($htmlFilter));
