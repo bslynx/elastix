@@ -241,7 +241,7 @@ $arrLang=array(
 "of" => "de",
 "records" => "registros",
 "Apply Filter" => "Aplicar Filtro",
-"Download" => "Descargar"
+"Download" => "Descargar",
 "WARNING" => "ADVERTENCIA"
 );
 ?>

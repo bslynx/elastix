@@ -229,7 +229,7 @@ $arrLang=array(
 "of" => "of",
 "records" => "records",
 "Apply Filter" => "Apply Filter",
-"Download" => "Download"
+"Download" => "Download",
 "WARNING" => "WARNING"
 );
 ?>
