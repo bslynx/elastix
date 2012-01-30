@@ -319,9 +319,10 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
     $id_user      = $pACL->getIdUser($user);
     $extension	  = $pACL->getUserExtension($user);
     if(is_null($extension) || $extension==""){
-	if($pACL->isUserAdministratorGroup($user))
+	if($pACL->isUserAdministratorGroup($user)){
+            $smarty->assign("mb_title", _tr("MESSAGE"));
 	    $smarty->assign("mb_message", "<b>".$arrLang["You don't have extension number associated with user"]."</b>");
-	else
+	}else
 	    $smarty->assign("mb_message", "<b>".$arrLang["contact_admin"]."</b>");
     }
     if(getParametro('select_directory_type') != null && getParametro('select_directory_type')=='external')
