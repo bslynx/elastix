@@ -604,6 +604,7 @@ function reportUserList($arrLang, $pACL, $idUserAccount, $smarty, $userLevel1, $
         if($userLevel1=="admin"){
             if(isset($_POST['id_user']) && $_POST['id_user']=='1') {
                 // No se puede elimiar al usuario admin
+                $smarty->assign("mb_title", $arrLang["ERROR"]);
                 $smarty->assign("mb_message", $arrLang["The admin user cannot be deleted because is the default Elastix administrator. You can delete any other user."]);
             } else {
                 $pACL->deleteUser($_POST['id_user']);
@@ -641,7 +642,10 @@ function reportUserList($arrLang, $pACL, $idUserAccount, $smarty, $userLevel1, $
             $arrTmp[0] = "&nbsp;<a href='?menu=userlist&action=view&id=" . $user[0] . "'>" . $user[1] . "</a>";
             $arrTmp[1] = $user[2];
             $arrTmp[2] = $group;
-            $arrTmp[3] = is_null($user[3])?$arrLang["No extension associated"]:$user[3];
+            if( ($user[3] == '') || is_null($user[3]) )
+                $arrTmp[3] = _tr("No extension associated");
+            else
+                $arrTmp[3] = $user[3];
             $arrData[] = $arrTmp;
             $smarty->assign("usermode","admin");
             $typeUser = "admin";
@@ -651,7 +655,10 @@ function reportUserList($arrLang, $pACL, $idUserAccount, $smarty, $userLevel1, $
                 $arrTmp[0] = "&nbsp;<a href='?menu=userlist&action=view&id=" . $user[0] . "'>" . $user[1] . "</a>";
                 $arrTmp[1] = $user[2];
                 $arrTmp[2] = $group;
-                $arrTmp[3] = is_null($user[3])?$arrLang["No extension associated"]:$user[3];
+                if( ($user[3] == '') || is_null($user[3]) )
+                    $arrTmp[3] = _tr("No extension associated");
+                else
+                    $arrTmp[3] = $user[3];
                 $arrData[] = $arrTmp;
                 $smarty->assign("usermode","other");
                 $typeUser = "other";
