@@ -247,6 +247,7 @@ function _moduleContent(&$smarty, $module_name)
         }
 
         $oGrid = new paloSantoGrid($smarty);
+        $oGrid->pagingShow(false);
 
         $arrGrid = array("title"    => $arrLang["Ethernet Interfaces List"],
                          "icon"     => "/modules/$module_name/images/system_hardware_detector.png",
