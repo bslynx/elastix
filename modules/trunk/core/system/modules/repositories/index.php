@@ -84,10 +84,12 @@ function listRepositories($smarty, $module_name, $local_templates_dir,$arrConf) 
 	$typeRepository = "main";
     $arrRepositorios = $oRepositories->getRepositorios($arrConf['ruta_repos'],$typeRepository,$arrConf["main_repos"]);
     $limit  = 50;
-    $total  = count($arrRepositorios); 
+    $total  = count($arrRepositorios);
     $oGrid  = new paloSantoGrid($smarty);
-    $offset = $oGrid->getOffSet($limit,$total,(isset($_GET['nav']))?$_GET['nav']:NULL,(isset($_GET['start']))?$_GET['start']:NULL);
-    $end    = ($offset+$limit)<=$total ? $offset+$limit : $total;
+    $oGrid->setLimit($limit);
+    $oGrid->setTotal($total);
+    $offset = $oGrid->calculateOffset();
+    $end    = $oGrid->getEnd();
     $arrData = array();
     $version = $oRepositories->obtenerVersionDistro();
     $arch = $oRepositories->obtenerArquitectura();
