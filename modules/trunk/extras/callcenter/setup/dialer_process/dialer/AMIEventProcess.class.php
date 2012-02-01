@@ -186,9 +186,10 @@ class AMIEventProcess extends TuberiaProcess
     {
         $a = $this->_listaAgentes->buscar('agentchannel', $sAgente);
         if (!is_null($a)) {
-            if (!is_null($a->id_sesion)) {
+            if (!is_null($a->id_sesion) && $a->id_sesion != $id_sesion) {
                 $this->_log->output('ERR: '.__METHOD__." - posible carrera, ".
-                    "id_sesion ya asignado para $sAgente, se pierde anterior.");
+                    "id_sesion ya asignado para $sAgente, se pierde anterior. ".
+                    "ID anterior={$a->id_sesion} ID nuevo={$id_sesion}");
             }
             $a->id_sesion = $id_sesion;
         }

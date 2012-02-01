@@ -48,6 +48,8 @@ class ECCPProcess extends TuberiaProcess
      * desconectadas. */
     private $_finalizandoPrograma = FALSE;
 
+    private $_iTimestampInicioProceso;
+
     public function inicioPostDemonio($infoConfig, &$oMainLog)
     {
     	$this->_log = $oMainLog;
@@ -55,6 +57,7 @@ class ECCPProcess extends TuberiaProcess
         $this->_multiplex->setProcess($this);
         $this->_tuberia->registrarMultiplexHijo($this->_multiplex);
         $this->_tuberia->setLog($this->_log);
+        $this->_iTimestampInicioProceso = time();
 
         // Interpretar la configuración del demonio
         $this->_dsn = $this->_interpretarConfiguracion($infoConfig);
@@ -311,11 +314,12 @@ class ECCPProcess extends TuberiaProcess
             // Verificación de sesión activa
             $sPeticionExiste = <<<SQL_EXISTE_AUDIT
 SELECT id FROM audit
-WHERE id_agent = ? AND datetime_end IS NULL AND duration IS NULL AND id_break IS NULL
+WHERE id_agent = ? AND datetime_init >= ? AND datetime_end IS NULL 
+    AND duration IS NULL AND id_break IS NULL
 ORDER BY datetime_init DESC
 SQL_EXISTE_AUDIT;
             $recordset = $this->_db->prepare($sPeticionExiste);
-            $recordset->execute(array($idAgente));
+            $recordset->execute(array($idAgente, date('Y-m-d H:i:s', $this->_iTimestampInicioProceso)));
             $tupla = $recordset->fetch();
             $recordset->closeCursor();
             
@@ -323,6 +327,9 @@ SQL_EXISTE_AUDIT;
             $idAudit = NULL;
             if ($tupla) {
                 $idAudit = $tupla['id'];
+                $this->_log->output('WARN: '.__METHOD__.": id_agente={$idAgente} ".
+                    'inició sesión en '.date('Y-m-d H:i:s', $iTimestampLogin).
+                    " pero hay sesión abierta ID={$idAudit}, se reusa.");
             } else {
                 // Ingreso de sesión del agente
                 $sTimeStamp = date('Y-m-d H:i:s', $iTimestampLogin);
