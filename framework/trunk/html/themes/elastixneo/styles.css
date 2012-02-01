@@ -107,7 +107,7 @@ INPUT.submit {
 }
 INPUT:disabled {
 	background-color: #F2F2F2;
-	color: #E6E6E6;
+	color: #000000;
 	border: #E6E6E6 1px solid;
 }
 /*
@@ -867,7 +867,7 @@ td.botonoff a {
 }
 .filterForm {
     /*border-color: #999;*/
-    color: #aaaaaa;
+    color: #000000;
     /*background-color: #fafafa;
     background-image: url(images/bggrisForm.gif);
     border-top: 1px solid #aaaaaa;*/
