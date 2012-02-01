@@ -392,7 +392,12 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
     $total  = $total_datos;
 
     $oGrid  = new paloSantoGrid($smarty);
-    $offset = $oGrid->getOffSet($limit,$total,(isset($_GET['nav']))?$_GET['nav']:NULL,(isset($_GET['start']))?$_GET['start']:NULL);
+    $oGrid->setLimit($limit);
+    $oGrid->setTotal($total);
+
+    $offset = $oGrid->calculateOffset();
+
+    $inicio = ($total == 0) ? 0 : $offset + 1;
 
     $end    = ($offset+$limit)<=$total ? $offset+$limit : $total;
 
@@ -468,7 +473,7 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
                         "url"      => array('menu' => $module_name, 'filter' => $pattern, 'select_directory_type' => $directory_type),
                         "icon"     => "modules/$module_name/images/address_book.png",
                         "width"    => "99%",
-                        "start"    => ($total==0) ? 0 : $offset + 1,
+                        "start"    => $inicio,
                         "end"      => $end,
                         "total"    => $total,
                         "columns"  => array(0 => array("name"      => $name,
