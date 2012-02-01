@@ -196,7 +196,10 @@ function report_conference($smarty, $module_name, $local_templates_dir, $pDB, $a
     $total  = $total_datos[0];
 
     $oGrid  = new paloSantoGrid($smarty);
-    $offset = $oGrid->getOffSet($limit,$total,(isset($_GET['nav']))?$_GET['nav']:NULL,(isset($_GET['start']))?$_GET['start']:NULL);
+    $oGrid->setLimit($limit);
+    $oGrid->setTotal($total);
+    $offset = $oGrid->calculateOffset();
+    //$offset = $oGrid->getOffSet($limit,$total,(isset($_GET['nav']))?$_GET['nav']:NULL,(isset($_GET['start']))?$_GET['start']:NULL);
 
     $end    = ($offset+$limit)<=$total ? $offset+$limit : $total;
 
