@@ -354,7 +354,10 @@ contenido;
         $total  = count($arrData);
 
         $oGrid  = new paloSantoGrid($smarty);
-        $offset = $oGrid->getOffSet($limit,$total,(isset($_GET['nav']))?$_GET['nav']:NULL,(isset($_GET['start']))?$_GET['start']:NULL);
+        $oGrid->setLimit($limit);
+        $oGrid->setTotal($total);
+
+        $offset = $oGrid->calculateOffset();
 
         $end    = ($offset+$limit)<=$total ? $offset+$limit : $total;
 
