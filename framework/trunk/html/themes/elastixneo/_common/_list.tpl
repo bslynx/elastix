@@ -63,22 +63,28 @@
                 <img src="images/download2.png" align="absmiddle" /> {$DOWNLOAD_GRID} <img src="images/icon_arrowdown2.png" align="absmiddle" />
             </div>
             <div id="subMenuExport" class="subMenu neo-display-none" role="menu" aria-haspopup="true" aria-activedescendant="">
-                <div class="items">
-                    <div class="menuItem" role="menuitem" id="CSV" aria-disabled="false">
-                        <div>
-                            <a href="{$url}&exportcsv=yes&rawmode=yes"><img src="images/csv.gif" border="0" align="absmiddle" title="CSV" />&nbsp;&nbsp;CSV</a>
-                        </div>
-                    </div>
-                    <div class="menuItem" role="menuitem" id="Spread_Sheet" aria-disabled="false">
-                        <div>
-                            <a href="{$url}&exportspreadsheet=yes&rawmode=yes"><img src="images/spreadsheet.gif" border="0" align="absmiddle" title="SPREAD SHEET" />&nbsp;&nbsp;SPREAD SHEET</a>
-                        </div>
-                    </div>
-                    <div class="menuItem" role="menuitem" id="PDF" aria-disabled="false">
-                        <div>
-                            <a href="{$url}&exportpdf=yes&rawmode=yes"><img src="images/pdf.png" border="0" align="absmiddle" title="PDF" />&nbsp;&nbsp;PDF</a>
-                        </div>
-                    </div>
+                 <div class="items">
+                    <a href="{$url}&exportcsv=yes&rawmode=yes">
+			<div class="menuItem" role="menuitem" id="CSV" aria-disabled="false">
+			    <div>
+				<img src="images/csv.gif" border="0" align="absmiddle" title="CSV" />&nbsp;&nbsp;CSV
+			    </div>
+			</div>
+		    </a>
+		    <a href="{$url}&exportspreadsheet=yes&rawmode=yes">
+			<div class="menuItem" role="menuitem" id="Spread_Sheet" aria-disabled="false">
+			    <div>
+				<img src="images/spreadsheet.gif" border="0" align="absmiddle" title="SPREAD SHEET" />&nbsp;&nbsp;Spreadsheet
+			    </div>
+			</div>
+		    </a>
+		    <a href="{$url}&exportpdf=yes&rawmode=yes">
+			<div class="menuItem" role="menuitem" id="PDF" aria-disabled="false">
+			    <div>
+				<img src="images/pdf.png" border="0" align="absmiddle" title="PDF" />&nbsp;&nbsp;PDF
+			    </div>
+			</div>
+		    </a>
                 </div>
             </div>
         {/if}

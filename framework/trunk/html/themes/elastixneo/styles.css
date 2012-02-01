@@ -230,7 +230,7 @@ TD.table_data {
     /*border-color: #888888 !important;*/
     color: #FFFFFF;
 }
-.menuItem div a{
+div#subMenuExport div.items a{
     color: #444444;
     text-decoration: none;
 }
