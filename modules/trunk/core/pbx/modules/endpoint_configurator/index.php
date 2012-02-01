@@ -259,7 +259,10 @@ function buildReport($arrData, $smarty, $module_name, $endpoint_mask)
     $limit  = 20;
     $total  = count($arrData); 
     $oGrid  = new paloSantoGrid($smarty);
-    $offset = $oGrid->getOffSet($limit,$total,$nav,$start);
+    $oGrid->setLimit($limit);
+    $oGrid->setTotal($total);
+    $offset = $oGrid->calculateOffset();
+    //$offset = $oGrid->getOffSet($limit,$total,$nav,$start);
     $end    = ($offset+$limit)<=$total ? $offset+$limit : $total;
     if($devices<=20){
        $devices = pow(2,(32-$devices));
