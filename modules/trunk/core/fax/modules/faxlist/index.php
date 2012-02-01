@@ -71,13 +71,23 @@ function _moduleContent($smarty, $module_name)
 function listFax($smarty, $module_name, $local_templates_dir)
 {
     global $arrLang;
-    $arrData = array();
+    
     $oFax    = new paloFax();
     $arrFax  = $oFax->getFaxList();
+    $nav   = getParameter("nav");
+    $start = getParameter("start");
+    $limit = 25;
+    $total = count($arrFax);
+    $oGrid = new paloSantoGrid($smarty);
+    $oGrid->setLimit($limit);
+    $oGrid->setTotal($total);
+    $oGrid->pagingShow(true);
+    $oGrid->setURL("?menu=faxlist");
+    $offset = $oGrid->calculateOffset();
+    $end    = $oGrid->getEnd();
 
-    $end = count($arrFax);
     $arrFaxStatus = $oFax->getFaxStatus();
- 
+    $arrData = array();
     foreach($arrFax as $fax) {
         $arrTmp    = array();
         $arrTmp[0] = "&nbsp;<a href='?menu=faxnew&action=view&id=".$fax['id']."'>".$fax['name']."</a>";
