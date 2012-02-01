@@ -182,6 +182,11 @@ function report_AsteriskLogs($smarty, $module_name, $local_templates_dir, $arrLa
     $limit = $iNumLineasPorPagina;
     $total = (int)($totalBytes / 128);
 
+
+    $oGrid->setLimit($limit);
+    $oGrid->setTotal($total);
+
+
     $offset = $iOffsetVerdadero;
     $nav = getParameter('nav');
     if ($nav) switch ($nav) {
@@ -215,22 +220,16 @@ function report_AsteriskLogs($smarty, $module_name, $local_templates_dir, $arrLa
 
         $start = ( ( ($page - 1) * $limit ) + 1 ) - $limit;
 
-        //$accion = "next";
         if($start + $limit <= 1){
-            $accion = null;
-            $start = null;
+            $offset = 0;
+            breaK;
         }
 
-        $inicioRango = $page * $iEstimadoBytesPagina;
-
-        $arrResult =$pAsteriskLogs->ObtainAsteriskLogs(10 * $iEstimadoBytesPagina, $inicioRango, $field_pattern);
-        $offset = $arrResult[0]['offset'];
+        $inicioBusqueda = ($page * $iEstimadoBytesPagina) - ($iEstimadoBytesPagina);
+        $arrResult =$pAsteriskLogs->ObtainAsteriskLogs(10 * $iEstimadoBytesPagina, $inicioBusqueda, $field_pattern);
+                $offset = $arrResult[0]['offset'];
 
         $oGrid->setOffsetValue($offset);
-
-        $oGrid->setEnd(((int)($offset / 128) + $iNumLineasPorPagina) <= $oGrid->getTotal() ? (int)($offset / 128) + $iNumLineasPorPagina : $oGrid->getTotal());
-
-        $oGrid->setStart(($oGrid->getTotal()==0) ? 0 : (1 + (int)($offset / 128)));
         break;
     }
 
@@ -283,38 +282,49 @@ function report_AsteriskLogs($smarty, $module_name, $local_templates_dir, $arrLa
             $arrTmp[1] = $value['tipo'];
             $arrTmp[2] = $value['origen'];
             $arrTmp[3] = $value['linea'];
-
             $arrData[] = $arrTmp;
         }
     }
 
-    $arrGrid = array("title"    => $arrLang["Asterisk Logs"],
-                        "url"      => $url,
-                        "icon"     => "/modules/$module_name/images/reports_asterisk_logs.png",
-                        "width"    => "99%",
-                        "start"    => ($totalBytes==0) ? 0 : 1 + (int)($offset / 128),
-                        "end"      => (int)($offset / 128) + $iNumLineasPorPagina,
-                        "total"    => (int)($totalBytes / 128),
-                        "columns"  => array(0 => array("name"      => $arrLang['Date'],
-                                                    "property1" => ""),
-
-                                            1 => array("name"      => $arrLang['Type'],
-                                                    "property1" => ""),
-                                            2 => array("name"      => $arrLang['Source'],
-                                                    "property1" => ""),
-                                            3 => array("name"      => $arrLang['Message'],
-                                                    "property1" => "")
-                                        )
-                    );
-
-    $oGrid->setLimit($limit);
-    $oGrid->setTotal($total);
     
     $_POST['offset'] = $offset;
     $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/filter.tpl", "", $_POST);
     $oGrid->showFilter(trim($htmlFilter));
+    
+
+    $arrGrid = array("title"    => $arrLang["Asterisk Logs"],
+                    "url"      => $url,
+                    "icon"     => "/modules/$module_name/images/reports_asterisk_logs.png",
+                    "width"    => "99%",
+                    "start"    => ($totalBytes==0) ? 0 : 1 + (int)($offset / 128),
+                    "end"      => (int)($offset / 128) + $iNumLineasPorPagina,
+                    "total"    => (int)($totalBytes / 128),
+                    "columns"  => array(0 => array("name"      => $arrLang['Date'],
+                                                "property1" => ""),
+
+                                        1 => array("name"      => $arrLang['Type'],
+                                                "property1" => ""),
+                                        2 => array("name"      => $arrLang['Source'],
+                                                "property1" => ""),
+                                        3 => array("name"      => $arrLang['Message'],
+                                                "property1" => "")
+                                    )
+                );
+
     $contenidoModulo = $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
 
+    /*$current_page=getParameter("page");
+    print($current_page);
+    $contenidoModulo .= "<script type='text/javascript'>
+        var offset = ".$offset.";
+        var limit = ".$limit.";
+        var current_page = ".$current_page.";
+                    alert(current_page);
+            var start = current_page * limit;
+            page = Math.floor(start / limit);
+        $('#pageup').val(page);
+        $('#pagedown').val(page);
+    </script>";*/
     return $contenidoModulo;
 }
 
