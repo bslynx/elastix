@@ -76,12 +76,14 @@ function listPackages($smarty, $module_name, $local_templates_dir,$arrConf) {
 
     $total_paquetes = $oPackages->ObtenerTotalPaquetes($submitInstalado, $arrConf['ruta_yum'], $nombre_paquete);
 
+// Pagination
     $limit = 50;
     $total = $total_paquetes;
     $oGrid = new paloSantoGrid($smarty);
-    $offset = $oGrid->getOffSet($limit,$total,(isset($_GET['nav']))?$_GET['nav']:NULL,(isset($_GET['start']))?$_GET['start']:NULL);
-    $end   = ($offset+$limit)<=$total ? $offset+$limit : $total;
-
+    $oGrid->setLimit($limit);
+    $oGrid->setTotal($total);
+    $offset = $oGrid->calculateOffset();
+    $end    = $oGrid->getEnd();
 
     if($submitInstalado =='all'){
         $arrPaquetes = $oPackages->getAllPackages($arrConf['ruta_yum'],$nombre_paquete);
