@@ -140,20 +140,18 @@ function viewFormAccount($smarty, $module_name, $local_templates_dir, &$pDB, $ar
 
    // $oGrid->pagingShow(true);
     $url = array("menu" => $module_name);
+    if($id_domain == 0)
+       $url = array("menu" => $module_name);
+    else
+       $url = array("menu" => $module_name, "id_domain" => $id_domain);
     $oGrid->setURL($url);
     $oGrid->setTitle(_tr("Email Account List"));
 
-    //$total = 0;
-    //$limit  = 20;
-    //$oGrid->setLimit($limit);
-    // $oGrid->setTotal($total);
-    //$offset = $oGrid->calculateOffset();
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     $arrData = array();
 
-    $end=0;
     if ($id_domain>0){
 	$arrAccounts = $pEmail->getAccountsByDomain($id_domain);
 //username, password, id_domain, quota
@@ -181,17 +179,36 @@ function viewFormAccount($smarty, $module_name, $local_templates_dir, &$pDB, $ar
 	    $arrData[] = $arrTmp;
 	}
     }
+
+    $total = count($arrData); $limit = 20;
+
+    $oGrid->setLimit($limit);
+    $oGrid->setTotal($total);
+    $offset = $oGrid->calculateOffset();
+
+    $inicio = ($total == 0) ? 0 : $offset + 1;
+    $fin = ($offset+$limit) <= $total ? $offset+$limit : $total;
+    $leng = $fin - $inicio;
+
+    $arrDatosGrid = array_slice($arrData, $inicio-1, $leng+1);
+
     $smarty->assign("id_domain",$id_domain);
     $smarty->assign("LINK", "?menu=$module_name&action=export&domain=$id_domain&rawmode=yes");
     $smarty->assign("EXPORT", _tr("Export Accounts"));
 
-    $oGrid->setData($arrData);
-    $arrColumns = array(_tr("Account Name"),_tr("Used Space"),);
-    $oGrid->setColumns($arrColumns);
+    $oGrid->setColumns(array(_tr("Account Name"),_tr("Used Space"),));
+
+    $arrGrid = array(
+        "width"    => "99%",
+        "start"    => $inicio,
+        "end"      => $fin,
+        "total"    => $total,
+            );
+
     $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/accounts_filter.tpl", "", $_POST);
     $oGrid->addNew("submit_create_account",_tr("Create Account"));
     $oGrid->showFilter(trim($htmlFilter));
-    $content = $oGrid->fetchGrid();
+    $content = $oGrid->fetchGrid($arrGrid,$arrDatosGrid,$arrLang);
     return $content;
 }
 
