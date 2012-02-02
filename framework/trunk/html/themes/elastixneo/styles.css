@@ -42,12 +42,26 @@ input[type="text"] {
     border-radius: 5px 5px 5px 5px;
 }
 
-A
-{
+input[type="file"] {
+    -webkit-box-align: baseline;
+    color: inherit;
+    text-align: start;
+    width: 340px;
+}
+
+A {
     FONT-FAMILY: verdana, arial, helvetica, sans-serif;
     FONT-SIZE: 100%;
     COLOR: #0000FF;
 }
+
+A.link1 {
+    color: -webkit-link;
+    text-decoration: underline;
+    cursor: auto;
+    padding-left: 50px;
+}
+
 TD.celda_default {
     FONT-FAMILY: verdana, arial, helvetica, sans-serif;
     FONT-SIZE: 9pt;
@@ -230,7 +244,7 @@ TD.table_data {
     /*border-color: #888888 !important;*/
     color: #FFFFFF;
 }
-div#subMenuExport div.items a{
+.menuItem div a{
     color: #444444;
     text-decoration: none;
 }
@@ -867,6 +881,7 @@ td.botonoff a {
 }
 .filterForm {
     /*border-color: #999;*/
+    /*color: #aaaaaa;*/
     color: #000000;
     /*background-color: #fafafa;
     background-image: url(images/bggrisForm.gif);
