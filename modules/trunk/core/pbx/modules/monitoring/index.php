@@ -26,8 +26,8 @@
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
   $Id: index.php,v 1.3 2007/09/05 00:26:21 gcarrillo Exp $
-  $Id: index.php,v 1.3 2008/04/14 09:22:21 afigueroa Exp $  
-  $Id: index.php,v 2.0 2010/02/03 09:00:00 onavarre Exp $ 
+  $Id: index.php,v 1.3 2008/04/14 09:22:21 afigueroa Exp $
+  $Id: index.php,v 2.0 2010/02/03 09:00:00 onavarre Exp $
   $Id: index.php,v 2.1 2010-03-22 05:03:48 Eduardo Cueva ecueva@palosanto.com Exp $ */
 //include elastix framework
 
@@ -77,12 +77,12 @@ function _moduleContent(&$smarty, $module_name)
     $extension = $pACL->getUserExtension($user);
     $esAdministrador = $pACL->isUserAdministratorGroup($user);
     if($extension=="" || is_null($extension)){
-	if($esAdministrador)
-	    $smarty->assign("mb_message", "<b>"._tr("no_extension")."</b>");
-	else{
-	    $smarty->assign("mb_message", "<b>"._tr("contact_admin")."</b>");
-	    return "";
-	}
+        if($esAdministrador)
+            $smarty->assign("mb_message", "<b>"._tr("no_extension")."</b>");
+        else{
+            $smarty->assign("mb_message", "<b>"._tr("contact_admin")."</b>");
+            return "";
+        }
     }
 
     //actions
@@ -111,43 +111,43 @@ function reportMonitoring($smarty, $module_name, $local_templates_dir, &$pDB, $p
     $pMonitoring = new paloSantoMonitoring($pDB);
     $filter_field = getParameter("filter_field");
     switch($filter_field){
-	case "dst":
-	    $filter_field = "dst";
-	    break;
-	case "userfield":
-	    $filter_field = "userfield";
-	    break;
-	default:
-	    $filter_field = "src";
-	    break;
+        case "dst":
+            $filter_field = "dst";
+            break;
+        case "userfield":
+            $filter_field = "userfield";
+            break;
+        default:
+            $filter_field = "src";
+            break;
     }
     if($filter_field == "userfield"){
-	$filter_value     = getParameter("filter_value_userfield");
-	$filter	          = "";
-	$filter_userfield = $filter_value;
+        $filter_value     = getParameter("filter_value_userfield");
+        $filter           = "";
+        $filter_userfield = $filter_value;
     }
     else{
-	$filter_value	  = getParameter("filter_value");
-	$filter	          = $filter_value;
-	$filter_userfield = "";
+        $filter_value     = getParameter("filter_value");
+        $filter           = $filter_value;
+        $filter_userfield = "";
     }
     switch($filter_value){
-	case "outgoing":
-	      $smarty->assign("SELECTED_2", "Selected");
-	      break;
-	case "queue":
-	      $smarty->assign("SELECTED_3", "Selected");
-	      break;
-	case "group":
-	      $smarty->assign("SELECTED_4", "Selected");
-	      break;
-	default:
-	      $smarty->assign("SELECTED_1", "Selected");
-	      break;
+        case "outgoing":
+              $smarty->assign("SELECTED_2", "Selected");
+              break;
+        case "queue":
+              $smarty->assign("SELECTED_3", "Selected");
+              break;
+        case "group":
+              $smarty->assign("SELECTED_4", "Selected");
+              break;
+        default:
+              $smarty->assign("SELECTED_1", "Selected");
+              break;
     }
     $date_ini = getParameter("date_start");
     $date_end = getParameter("date_end");
-    
+
     $path_record = $arrConf['records_dir'];
 
     $_POST['date_start'] = isset($date_ini)?$date_ini:date("d M Y");
@@ -157,7 +157,7 @@ function reportMonitoring($smarty, $module_name, $local_templates_dir, &$pDB, $p
         echo "ERROR DE ACL: $pACL->errMsg <br>";
     }
 
-    $date_initial = date('Y-m-d',strtotime($_POST['date_start']))." 00:00:00"; 
+    $date_initial = date('Y-m-d',strtotime($_POST['date_start']))." 00:00:00";
     $date_final   = date('Y-m-d',strtotime($_POST['date_end']))." 23:59:59";
 
     $_DATA = $_POST;
@@ -175,33 +175,33 @@ function reportMonitoring($smarty, $module_name, $local_templates_dir, &$pDB, $p
     elseif(!($extension=="" || is_null($extension)))
         $totalMonitoring = $pMonitoring->getNumMonitoring($filter_field, $filter_value, $extension, $date_initial, $date_final);
     else
-	$totalMonitoring = 0;
+        $totalMonitoring = 0;
     $url = array('menu' => $module_name);
     $paramFilter = array(
-       'filter_field' 		=> $filter_field,
-       'filter_value' 		=> $filter,
+       'filter_field'           => $filter_field,
+       'filter_value'           => $filter,
        'filter_value_userfield' => $filter_userfield,
-       'date_start'   		=> $_POST['date_start'],
-       'date_end'     		=> $_POST['date_end']
+       'date_start'             => $_POST['date_start'],
+       'date_end'               => $_POST['date_end']
     );
-    $url = array_merge($url, $paramFilter);         
+    $url = array_merge($url, $paramFilter);
     $oGrid->setURL($url);
 
     $arrData = null;
-    if($oGrid->isExportAction()){ 
+    if($oGrid->isExportAction()){
         $limit = $totalMonitoring;
         $offset = 0;
-        
+
         $arrColumns = array(_tr("Date"), _tr("Time"), _tr("Source"), _tr("Destination"),_tr("Duration"),_tr("Type"),_tr("File"));
         $oGrid->setColumns($arrColumns);
-    
+
         if($esAdministrador)
             $arrResult =$pMonitoring->getMonitoring($limit, $offset, $filter_field, $filter_value, null, $date_initial, $date_final);
         elseif(!($extension=="" || is_null($extension)))
             $arrResult =$pMonitoring->getMonitoring($limit, $offset, $filter_field, $filter_value, $extension, $date_initial, $date_final);
-	else
-	    $arrResult = array();
-  
+        else
+            $arrResult = array();
+
         if(is_array($arrResult) && $totalMonitoring>0){
             foreach($arrResult as $key => $value){
                 $arrTmp[0] = date('d M Y',strtotime($value['calldate']));
@@ -240,76 +240,76 @@ function reportMonitoring($smarty, $module_name, $local_templates_dir, &$pDB, $p
         $oGrid->setTotal($total);
         $offset = $oGrid->calculateOffset();
 
-	if($esAdministrador){
+        if($esAdministrador){
         $oGrid->deleteList(_tr("message_alert"),'submit_eliminar',_tr("Delete"));
             $buttonDelete = "";
         }
-	else
-	    $buttonDelete = "";
+        else
+            $buttonDelete = "";
 
         $arrColumns = array($buttonDelete, _tr("Date"), _tr("Time"), _tr("Source"), _tr("Destination"),_tr("Duration"),_tr("Type"),_tr("Message"));
         $oGrid->setColumns($arrColumns);
-        
+
         if($esAdministrador)
             $arrResult =$pMonitoring->getMonitoring($limit, $offset, $filter_field, $filter_value, null, $date_initial, $date_final);
         elseif(!($extension=="" || is_null($extension)))
             $arrResult =$pMonitoring->getMonitoring($limit, $offset, $filter_field, $filter_value, $extension, $date_initial, $date_final);
-	else
-	    $arrResult = array();
+        else
+            $arrResult = array();
 
-	if(is_array($arrResult) && $total>0){
-	    $src = "";
-	    $dst = "";
-	    foreach($arrResult as $key => $value){
-		if($esAdministrador)
-		    $arrTmp[0] = "<input type='checkbox' name='id_".$value['uniqueid']."' />";
-		else
-		    $arrTmp[0] = "";
-		$arrTmp[1] = date('d M Y',strtotime($value['calldate']));
-		$arrTmp[2] = date('H:i:s',strtotime($value['calldate']));
-		if(!isset($value['src']) || $value['src']=="")
-		    $src = "<font color='gray'>"._tr("unknown")."</font>";
-		else
-		    $src = $value['src'];
-		if(!isset($value['dst']) || $value['dst']=="")
-		    $dst = "<font color='gray'>"._tr("unknown")."</font>";
-		else
-		    $dst = $value['dst'];
-		$arrTmp[3] = $src;
-		$arrTmp[4] = $dst;
-		$arrTmp[5] = "<label title='".$value['duration']." seconds' style='color:green'>".SecToHHMMSS( $value['duration'] )."</label>";
+        if(is_array($arrResult) && $total>0){
+            $src = "";
+            $dst = "";
+            foreach($arrResult as $key => $value){
+                if($esAdministrador)
+                    $arrTmp[0] = "<input type='checkbox' name='id_".$value['uniqueid']."' />";
+                else
+                    $arrTmp[0] = "";
+                $arrTmp[1] = date('d M Y',strtotime($value['calldate']));
+                $arrTmp[2] = date('H:i:s',strtotime($value['calldate']));
+                if(!isset($value['src']) || $value['src']=="")
+                    $src = "<font color='gray'>"._tr("unknown")."</font>";
+                else
+                    $src = $value['src'];
+                if(!isset($value['dst']) || $value['dst']=="")
+                    $dst = "<font color='gray'>"._tr("unknown")."</font>";
+                else
+                    $dst = $value['dst'];
+                $arrTmp[3] = $src;
+                $arrTmp[4] = $dst;
+                $arrTmp[5] = "<label title='".$value['duration']." seconds' style='color:green'>".SecToHHMMSS( $value['duration'] )."</label>";
 
-		//$file = base64_encode($value['userfield']);
-		$file = $value['uniqueid'];
-		$namefile = basename($value['userfield']);
-		$namefile = str_replace("audio:","",$namefile);
-		if ($namefile == 'deleted') {
-		    $arrTmp[6] = _tr('Deleted');
-		} else switch($namefile[0]){
-		      case "O":
-			  $arrTmp[6] = _tr("Outgoing");
-		      break;
-		      case "g":
-			  $arrTmp[6] = _tr("Group");
-		      break;
-		      case "q":
-			  $arrTmp[6] = _tr("Queue");
-		      break;
-		      default :
-			  $arrTmp[6] = _tr("Incoming");
-		      break;
-		}
-		if ($namefile != 'deleted') {
-		    $recordingLink = "<a  href=\"javascript:popUp('index.php?menu=$module_name&action=display_record&id=$file&rawmode=yes',350,100);\">"._tr("Listen")."</a>&nbsp;";
+                //$file = base64_encode($value['userfield']);
+                $file = $value['uniqueid'];
+                $namefile = basename($value['userfield']);
+                $namefile = str_replace("audio:","",$namefile);
+                if ($namefile == 'deleted') {
+                    $arrTmp[6] = _tr('Deleted');
+                } else switch($namefile[0]){
+                      case "O":
+                          $arrTmp[6] = _tr("Outgoing");
+                      break;
+                      case "g":
+                          $arrTmp[6] = _tr("Group");
+                      break;
+                      case "q":
+                          $arrTmp[6] = _tr("Queue");
+                      break;
+                      default :
+                          $arrTmp[6] = _tr("Incoming");
+                      break;
+                }
+                if ($namefile != 'deleted') {
+                    $recordingLink = "<a  href=\"javascript:popUp('index.php?menu=$module_name&action=display_record&id=$file&rawmode=yes',350,100);\">"._tr("Listen")."</a>&nbsp;";
 
-		    $recordingLink .= "<a href='?menu=$module_name&action=download&id=$file&rawmode=yes' >"._tr("Download")."</a>";
-		} else {
-		    $recordingLink = '';
-		}
-		$arrTmp[7] = $recordingLink;
-		$arrData[] = $arrTmp;
-	    }
-	}
+                    $recordingLink .= "<a href='?menu=$module_name&action=download&id=$file&rawmode=yes' >"._tr("Download")."</a>";
+                } else {
+                    $recordingLink = '';
+                }
+                $arrTmp[7] = $recordingLink;
+                $arrData[] = $arrTmp;
+            }
+        }
     }
     $oGrid->setData($arrData);
 
@@ -322,14 +322,14 @@ function reportMonitoring($smarty, $module_name, $local_templates_dir, &$pDB, $p
     $smarty->assign("QUEUE", _tr("Queue"));
     $smarty->assign("GROUP", _tr("Group"));
     $smarty->assign("SHOW", _tr("Show"));
-    $_POST["filter_field"] 	     = $filter_field;
-    $_POST["filter_value"] 	     = $filter;
+    $_POST["filter_field"]           = $filter_field;
+    $_POST["filter_value"]           = $filter;
     $_POST["filter_value_userfield"] = $filter_userfield;
     $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/filter.tpl","",$_POST);
     //end section filter
     $oGrid->showFilter(trim($htmlFilter));
     $content = $oGrid->fetchGrid();
-    
+
     //end grid parameters
 
     return $content;
@@ -339,15 +339,15 @@ function downloadFile($smarty, $module_name, $local_templates_dir, &$pDB, $pACL,
     $record = getParameter("id");
     $pMonitoring = new paloSantoMonitoring($pDB);
     if(!$esAdministrador){
-	if(!$pMonitoring->recordBelongsToUser($record, $extension)){
-	    $smarty->assign("mb_title", _tr("ERROR"));
-	    $smarty->assign("mb_message", _tr("You are not authorized to download this file"));
-	    return reportMonitoring($smarty, $module_name, $local_templates_dir, $pDB, $pACL, $arrConf, $user, $extension, $esAdministrador);
-	}
+        if(!$pMonitoring->recordBelongsToUser($record, $extension)){
+            $smarty->assign("mb_title", _tr("ERROR"));
+            $smarty->assign("mb_message", _tr("You are not authorized to download this file"));
+            return reportMonitoring($smarty, $module_name, $local_templates_dir, $pDB, $pACL, $arrConf, $user, $extension, $esAdministrador);
+        }
     }
     $path_record = $arrConf['records_dir'];
     if (isset($record) && preg_match("/^[[:digit:]]+\.[[:digit:]]+$/",$record)) {
-        
+
         $filebyUid   = $pMonitoring->getAudioByUniqueId($record);
 
         $file = basename($filebyUid['userfield']);
@@ -370,7 +370,7 @@ function downloadFile($smarty, $module_name, $local_templates_dir, &$pDB, $pACL,
         $name = basename($path);
 
     //$extension = strtolower(substr(strrchr($name,"."),1));
-        $extension=substr(strtolower($name), -3); 
+        $extension=substr(strtolower($name), -3);
 
     // This will set the Content-Type to the appropriate setting for the file
         $ctype ='';
@@ -411,15 +411,16 @@ function display_record($smarty, $module_name, $local_templates_dir, &$pDB, $pAC
     $path_record = $arrConf['records_dir'];
     $sContenido="";
     switch($action){
-	case "display_record":
-	    if(!$esAdministrador){
-		if(!$pMonitoring->recordBelongsToUser($file, $extension)){
-		    $sContenido = _tr("You are not authorized to listen this file");
-		}
-	    }
-	    if($sContenido == "")
-		$sContenido=<<<contenido
-                    <embed src='index.php?menu=$module_name&action=download&id=$file&rawmode=yes' width=300, height=20 autoplay=true loop=false></embed><br>
+        case "display_record":
+            if(!$esAdministrador){
+                if(!$pMonitoring->recordBelongsToUser($file, $extension)){
+                    $sContenido = _tr("You are not authorized to listen this file");
+                }
+            }
+            if($sContenido == "")
+                $session_id = session_id();
+                $sContenido=<<<contenido
+                    <embed src='index.php?menu=$module_name&action=download&id=$file&rawmode=yes&elastixSession=$session_id' width=300, height=20 autoplay=true loop=false ></embed><br>
 contenido;
             break;
     }
@@ -431,9 +432,9 @@ contenido;
 function deleteRecord($smarty, $module_name, $local_templates_dir, &$pDB, $pACL, $arrConf, $user, $extension, $esAdministrador)
 {
     if(!$esAdministrador){
-	$smarty->assign("mb_title", _tr("ERROR"));
-	$smarty->assign("mb_message", _tr("You are not authorized to delete any records"));
-	return reportMonitoring($smarty, $module_name, $local_templates_dir, $pDB, $pACL, $arrConf, $user, $extension, $esAdministrador);
+        $smarty->assign("mb_title", _tr("ERROR"));
+        $smarty->assign("mb_message", _tr("You are not authorized to delete any records"));
+        return reportMonitoring($smarty, $module_name, $local_templates_dir, $pDB, $pACL, $arrConf, $user, $extension, $esAdministrador);
     }
     $pMonitoring = new paloSantoMonitoring($pDB);
     $path_record = $arrConf['records_dir'];
@@ -475,9 +476,9 @@ function SecToHHMMSS($sec)
 
 function createFieldFilter(){
     $arrFilter = array(
-	    "src"       => _tr("Source"),
-	    "dst"       => _tr("Destination"),
-	    "userfield" => _tr("Type"),
+            "src"       => _tr("Source"),
+            "dst"       => _tr("Destination"),
+            "userfield" => _tr("Type"),
                     );
 
     $arrFormElements = array(
@@ -516,7 +517,7 @@ function getAction()
         return "save_new";
     else if(getParameter("action")=="display_record")
         return "display_record";
-    else if(getParameter("submit_eliminar")) 
+    else if(getParameter("submit_eliminar"))
         return "delete";
     else if(getParameter("action")=="download")
         return "download";
