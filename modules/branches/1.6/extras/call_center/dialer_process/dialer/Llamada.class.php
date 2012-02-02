@@ -660,7 +660,13 @@ class Llamada
                 $paramActualizar['status'] = 'NoAnswer';
             } else {
             	// Llamada entró a cola pero fue abandonada antes de enlazarse
-                $paramActualizar['status'] = ($this->tipo_llamada == 'incoming') ? 'abandonada' : 'Abandoned';
+                if ($this->tipo_llamada == 'incoming') {
+                	$paramActualizar['status'] = 'abandonada';
+                    $paramActualizar['datetime_end'] = date('Y-m-d H:i:s', $this->timestamp_hangup);
+                } else {
+                    $paramActualizar['status'] = 'Abandoned';
+                    $paramActualizar['end_time'] = date('Y-m-d H:i:s', $this->timestamp_hangup);
+                }
                 $paramActualizar['duration_wait'] = $this->timestamp_hangup - $this->timestamp_enterqueue;
             }
         } else {
