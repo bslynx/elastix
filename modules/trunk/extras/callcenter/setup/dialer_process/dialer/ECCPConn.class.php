@@ -699,8 +699,11 @@ class ECCPConn extends MultiplexConn
 SELECT name, 'outgoing' AS type, datetime_init AS startdate, datetime_end AS enddate,
     daytime_init AS working_time_starttime, daytime_end AS working_time_endtime, 
     queue, retries, trunk, context, max_canales AS maxchan, estatus AS status,
-    script
-FROM campaign WHERE id = ?
+    script, urltemplate, opentype AS urlopentype
+FROM campaign 
+LEFT JOIN campaign_external_url
+    ON campaign.id_url = campaign_external_url.id AND campaign_external_url.active = 1 
+WHERE campaign.id = ?
 LEER_CAMPANIA;
         $recordset = $this->_db->prepare($sPeticionSQL);
         $recordset->execute(array($idCampania));
@@ -774,8 +777,11 @@ LEER_CAMPANIA;
         $sPeticionSQL = <<<LEER_CAMPANIA
 SELECT name, 'incoming' AS type, datetime_init AS startdate, datetime_end AS enddate,
     daytime_init AS working_time_starttime, daytime_end AS working_time_endtime,
-    queue, campaign_entry.estatus AS status, campaign_entry.script, id_form
-FROM campaign_entry, queue_call_entry
+    queue, campaign_entry.estatus AS status, campaign_entry.script, id_form, 
+    urltemplate, opentype AS urlopentype
+FROM (campaign_entry, queue_call_entry)
+LEFT JOIN campaign_external_url
+    ON campaign_entry.id_url = campaign_external_url.id AND campaign_external_url.active = 1 
 WHERE campaign_entry.id = ? AND campaign_entry.id_queue_call_entry = queue_call_entry.id
 LEER_CAMPANIA;
         $recordset = $this->_db->prepare($sPeticionSQL);

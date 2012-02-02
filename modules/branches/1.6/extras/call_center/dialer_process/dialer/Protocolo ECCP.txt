@@ -1209,6 +1209,26 @@ Respuesta:
   Si no aparece, las llamadas se generan a través del plan de marcado de FreePBX
 * status: Uno de los valores 'active', 'inactive', 'finished' (sólo campañas 
   salientes)
+* urltemplate: Si no está vacío, una plantilla para poder construir un URL a una
+  página Web que debe de cargarse cuando la llamada es conectada. La plantilla 
+  de URL puede contener identificadores con nombres entre llaves, como por ejemplo 
+  {HomeAddress}, los cuales deben de ser reemplazados con los verdaderos valores
+  escapados para cada llamada conectada. Los identificadores disponibles son los
+  nombres de los atributos de la llamada (con distinción de mayúsculas y 
+  minúsculas), además de los siguientes atributos por omisión de la llamada:
+  {__AGENT_NUMBER__} Identificador del canal de agente, por ejemplo Agent/9000
+  {__CALL_TYPE__} uno de los valores 'incoming', 'outgoing'
+  {__CAMPAIGN_ID__} ID interno de la campaña en curso
+  {__CALL_ID__} ID interno de la llamada actualmente conectada
+  {__PHONE__} Número marcado o Caller-ID de la llamada conectada
+  {__UNIQUEID__} ID interno de llamada asignado por Asterisk
+  {__QUEUE__} Número de cola a través de la cual se conectó la llamada
+  {__REMOTE_CHANNEL__} Identificador de canal de la llamada conectada
+* urlopentype: La manera recomendada de abrir el URL indicado por urltemplate:
+  window:   El URL debe de abrirse en una ventana nueva del navegador, o equivalente.
+  embedded: El URL debe de abrirse en un marco embebido dentro de la consola.
+  jsonp:    El URL debe interpretarse como código Javascript que debe de 
+            inyectarse en la consola Web.
 * script: Texto a usar como el guión de la campaña. NOTA: en la implementación
   actual, el texto almacenado se genera con un widget de edición que agrega
   estilos HTML/CSS en este campo. El cliente debe estar preparado para mostrar
