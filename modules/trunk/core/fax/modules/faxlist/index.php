@@ -86,6 +86,7 @@ function listFax($smarty, $module_name, $local_templates_dir)
     $offset = $oGrid->calculateOffset();
     $end    = $oGrid->getEnd();
 
+
     $arrFaxStatus = $oFax->getFaxStatus();
     $arrData = array();
     foreach($arrFax as $fax) {
@@ -106,10 +107,10 @@ function listFax($smarty, $module_name, $local_templates_dir)
 
     $arrGrid = array("title"    => $arrLang["Virtual Fax List"],
                      "icon"     => "/modules/$module_name/images/fax_virtual_fax_list.png",
-                     "width"    => "99%",
-                     "start"    => ($end==0) ? 0 : 1,
-                     "end"      => $end,
-                     "total"    => $end,
+  //                  "width"    => "99%",
+  //                  "start"    => ($total==0) ? 0 : $offset + 1,
+  //                  "end"      => $end,
+  //                  "total"    => $total,
                      "columns"  => array(0 => array("name"      => $arrLang["Virtual Fax Name"],
                                                     "property1" => ""),
                                          1 => array("name"      => $arrLang["Fax Extension"], 
@@ -126,8 +127,9 @@ function listFax($smarty, $module_name, $local_templates_dir)
                                                     "property1" => "")
                                         )
                     );
-    $oGrid = new paloSantoGrid($smarty);
-    return $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
+     
+    $contenidoModulo = $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
+    return $contenidoModulo;
 }
 
 function checkFaxStatus($function, $smarty, $module_name, $local_templates_dir, $arrConf, $arrLang)
