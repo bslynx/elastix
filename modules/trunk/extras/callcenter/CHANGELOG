@@ -1,3 +1,5 @@
+* External URL: new module for management of external URLs to be opened on each
+  connected call.
 * Agent Console: when reading ECCP password for agent, only active agents should
   be considered. Fixes Elastix bug #1157.
 * Dialer (ECCP): protocol change: the agentloggedin and agentloggedout events
