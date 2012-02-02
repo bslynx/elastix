@@ -111,9 +111,9 @@ function _moduleContent(&$smarty, $module_name)
         case "getTextToSpeach":
             $content = getTextToSpeach($arrLang,$pDB);
             break;
-	case "display":
-	    $content = viewCalendarById($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
-	    break;
+        case "display":
+            $content = viewCalendarById($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+            break;
         case "phone_numbers":
 
             // Include language file for EN, then for local, and merge the two.
@@ -127,8 +127,8 @@ function _moduleContent(&$smarty, $module_name)
             }
             $arrLang = array_merge($arrLang, $arrLangModule);
 
-	        //solo para obtener los devices (extensiones) creadas.
-            $dsnAsterisk = generarDSNSistema('asteriskuser', 'asterisk');                           
+                //solo para obtener los devices (extensiones) creadas.
+            $dsnAsterisk = generarDSNSistema('asteriskuser', 'asterisk');
             $pDB_addressbook = new paloDB($arrConf['dsn_conn_database3']);
             $pDB_acl = new paloDB($arrConf['dsn_conn_database1']);
             $html = report_adress_book($smarty, $module_name, $local_templates_dir, $pDB_addressbook, $pDB_acl, $arrLang, $dsnAsterisk);
@@ -181,9 +181,9 @@ function viewCalendar($smarty, $module_name, $local_templates_dir, &$pDB, $arrCo
     if(!$festival){
         $smarty->assign("mb_message", $arrLang['Festival is not up']);
     }
-		    // yyyy-mm-dd
+                    // yyyy-mm-dd
     if(!preg_match("/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/",$date_ini))
-	$date_ini = date("M d Y");
+        $date_ini = date("M d Y");
 
                          //D M d Y H:i:s TO (e)
     $dateServer = gmdate("D M d Y H:i:s TO (e)", strtotime($date_ini));//Fri Nov 12 2010 00:00:00 GMT-0500 (ECT)
@@ -217,6 +217,7 @@ function viewCalendar($smarty, $module_name, $local_templates_dir, &$pDB, $arrCo
     $smarty->assign("CreateEvent", $arrLang["Create New Event"]);
     $smarty->assign("Listen", $arrLang["Listen"]);
     $smarty->assign("Listen_here", _tr("Click here to listen"));
+    $smarty->assign("Alert_continue",_tr("Are you sure you wish to continue?"));
 
     $htmlForm = $oForm->fetchForm("$local_templates_dir/form.tpl",$arrLang["Calendar"], $_DATA);
 
@@ -248,19 +249,19 @@ function viewCalendarById($smarty, $module_name, $local_templates_dir, &$pDB, $a
     if(!$festival){
         $smarty->assign("mb_message", $arrLang['Festival is not up']);
     }
-		    // yyyy-mm-dd
+                    // yyyy-mm-dd
     if(!preg_match("/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/",$date_ini))
-	$date_ini = date("M d Y");
+        $date_ini = date("M d Y");
 
     if(!preg_match("/^[1-9][0-9]*$/",$id))
-	$id = "";
+        $id = "";
 
     $id_event = "";
 
                          //D M d Y H:i:s TO (e)
     $dateServer = gmdate("D M d Y H:i:s TO (e)", strtotime($date_ini));//Fri Nov 12 2010 00:00:00 GMT-0500 (ECT)
     $icalFile = $arrLang["Download ical calendar"];
-    
+
 
     $smarty->assign("add_phone",$arrLang["Search in Address Book"]);
     $smarty->assign("SAVE", $arrLang["Save"]);
@@ -320,7 +321,7 @@ function saveEvent($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf,
     $remainerTime       = getParameter("ReminderTime"); // tiempo de recordatorio 10, 20, 30 minutos antes
     $recording          = getParameter("tts");
     // options email notification
-    $notification       = getParameter("notification");      // puede ser on o off 
+    $notification       = getParameter("notification");      // puede ser on o off
     $notification_email = getParameter("notification_email"); // si es notification==off => no se toma en cuenta esta variable
     $list               = getParameter("emails");
 
@@ -367,7 +368,7 @@ function saveEvent($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf,
             }
 
             if($notification == "on"){ // si ingresa emails o contactos
-                $list = htmlspecialchars_decode($list); // codifica los caracteres especiales 
+                $list = htmlspecialchars_decode($list); // codifica los caracteres especiales
                 $notification_email = $list;
             }else{
                 $notification_email = "";
@@ -539,29 +540,29 @@ function sendMails($data, $arrLang, $type, $arrConf,$pDB, $module_name, $idEvent
 
 $msg = "
 <html>
-     <head>   
+     <head>
        <title>$subject</title>
-     </head>   
-     <body>   
+     </head>
+     <body>
          <h1 style='background-color:#A9A9A9; border-bottom:solid 1px #3b6d92; padding:10px 40px; font-size:28px; color:#fcfdff;'> {$arrLang['notification_event']}</h1>
          <div style='margin:0px 40px;'>
-             <div style='color:#000; font-size:26px; padding:15px 0px; margin-bottom:20px;'>   
+             <div style='color:#000; font-size:26px; padding:15px 0px; margin-bottom:20px;'>
                  $subject
-             </div>   
-             <div style='margin-top:20px;'> 
+             </div>
+             <div style='margin-top:20px;'>
                  <span style='font-style:italic; font-weight:bolder; font-size: 16px;'>{$arrLang['Dear User']}: </span>
-             </div>   
+             </div>
              <div style='margin-top:20px; margin-bottom:30px;'>
                  {$arrLang['invitation_event']}:
              </div>
              <div style='margin-top:10px; margin-left:40px;'>
                  <div style='margin-top:10px; font-style:italic; font-weight:bolder;'>{$arrLang['Event']}: </div>
                  <div style='margin:0px 0px 0px 60px'>$event.</div>
-             </div>   
+             </div>
              <div style='margin-top:10px; margin-left:40px;'>
                  <div style='margin-top:10px; font-style:italic; font-weight:bolder;'>{$arrLang['Date']}: </div>
                  <div style='margin:0px 0px 0px 60px'>".date("d M Y",strtotime($start))." - ".date("d M Y",strtotime($end)).".</div>
-             </div>   
+             </div>
              <div style='margin-top:10px; margin-left:40px;'>
                  <div style='margin-top:10px; font-style:italic; font-weight:bolder;'>{$arrLang['time']}: </div>
                  <div style='margin:0px 0px 0px 60px'>".$startarray[1]." - ".$endarray[1].".</div>
@@ -577,9 +578,9 @@ $msg = "
                  <div style='margin-top:10px; font-style:italic; font-weight:bolder;'>{$arrLang['Organizer']}: </div>
                  <div style='margin:0px 0px 0px 60px'>$user_name.</div>
              </div>
-             <div style='margin-top:20px; text-align: center; color: #BEBEBE; font-size: 12px;'>   
-                 <b>{$arrLang['noResponseNotification']}.</b><br />   
-                 <b>{$arrLang['copyrightNotification']}. 2006 - ".date("Y")."</b><br />   
+             <div style='margin-top:20px; text-align: center; color: #BEBEBE; font-size: 12px;'>
+                 <b>{$arrLang['noResponseNotification']}.</b><br />
+                 <b>{$arrLang['copyrightNotification']}. 2006 - ".date("Y")."</b><br />
              </div>
          </div>
      </body>
@@ -597,7 +598,7 @@ $msg = "
     $msg = utf8_decode($msg);
     $mail = new PHPMailer();
     $mail->Host = "localhost";
-    $mail->Body = $msg; 
+    $mail->Body = $msg;
     $mail->IsHTML(true); // El correo se envía como HTML
     $mail->WordWrap = 50;
     $mail->From = $From;
@@ -843,7 +844,7 @@ function viewBoxCalendar($arrConf,$arrLang,$pDB){
     $pACL      = new paloACL($pDBACL);
     $id_user   = $pACL->getIdUser($_SESSION["elastix_user"]);
     $json = new Services_JSON();
-	$data = $pCalendar->getEventById($id, $id_user);
+        $data = $pCalendar->getEventById($id, $id_user);
     $val  = false;
     if($data=="" && !isset($data))  return $json->encode(array());
     if($action == "view_box"){
@@ -869,11 +870,11 @@ function viewBoxCalendar($arrConf,$arrLang,$pDB){
         }else
             $data['size_emails'] = 0;
 
-        if($type_event==5){ 
+        if($type_event==5){
             $data['visibility_repeat'] = "visibility: visible;";
         }
 
-        if($type_event==6){ 
+        if($type_event==6){
             $visibility_repeat = "visibility: visible;";
         }
 
@@ -881,11 +882,11 @@ function viewBoxCalendar($arrConf,$arrLang,$pDB){
             $arr = getDaysByCheck($days_repeat,2);
             $data = array_merge($data,$arr);
         }
-		$data['New_Event'] = $arrLang['New_Event'];
-		$data['Edit Event'] = $arrLang['Edit Event'];
-		$data['View Event'] = $arrLang['View Event'];
-		$data['Contact'] = $arrLang['Contact'];
-		$data['Email'] = $arrLang['Email'];
+                $data['New_Event'] = $arrLang['New_Event'];
+                $data['Edit Event'] = $arrLang['Edit Event'];
+                $data['View Event'] = $arrLang['View Event'];
+                $data['Contact'] = $arrLang['Contact'];
+                $data['Email'] = $arrLang['Email'];
     }
     return $json->encode($data);
 }
@@ -995,9 +996,9 @@ function deleteBoxCalendar($arrConf,$arrLang,$pDB,$module_name){
     }
     if($val == true){
         $data["error_delete_JSON"] = $arrLang['delete_successful'];
-        $data["error_delete_status"] = "on"; 
+        $data["error_delete_status"] = "on";
         // eliminacion de archivos .call
-        // para este caso el nombre del archivo a eliminar tendra un formato: 
+        // para este caso el nombre del archivo a eliminar tendra un formato:
         // event_id_*.call dado que solo se estan registrando eventos diarios.
         array_map('unlink', glob("$dir_outgoing/event_{$id}_*.call"));
     }
@@ -1163,7 +1164,7 @@ function createRepeatAudioFile($each_repeat,$day_repeat,$starttime,$endtime,$typ
                     // crea el archivo de audio
                     createAudioFiles($asterisk_call_me,$ext,$call_to,$pDB,$id_event,$arrLang,$dir_outgoing,$sDirectorioBase,$cont,$FechaInicio,$recording, $remainerTime);
                 }
-                else{// ESPECIFICAR SI SOLO HAY UN DIA 
+                else{// ESPECIFICAR SI SOLO HAY UN DIA
                     $m=1;
                 }
             }else{
@@ -1286,7 +1287,7 @@ function createAudioFiles($asterisk_call,$ext,$call_to,$pDB,$id_event,$arrLang,$
 
         $hArchivo = fopen("$sDirectorioBase/$filename", 'w');
         if (!$hArchivo) {
-            $bExito = FALSE; 
+            $bExito = FALSE;
             //$pDB->errMsg = $arrLang["Can not create called file"]." $filename";
             break;
         }
@@ -1391,7 +1392,7 @@ function setDataCalendar($arrLang,$pDB,$arrConf){
     $start         = $event['startdate'];
     $end           = $event['enddate'];
     $checkbox_days = "";
-    $startdate     = date("Y-m-d",strtotime("$dateIni")); 
+    $startdate     = date("Y-m-d",strtotime("$dateIni"));
     $enddate       = date("Y-m-d",strtotime("$dateEnd"));
     $starttime     = $startdate." ".$hour_ini;
     $endtime       = $enddate." ".$hour_end;
@@ -1435,7 +1436,7 @@ function setDataCalendar($arrLang,$pDB,$arrConf){
         if(isset($arrResult['call_to']) && $arrResult['call_to'] != "")
             createRepeatAudioFile($each_repeat,$day_repeat,$starttime,$endtime,$num_frec,$asterisk_calls,$ext,$call_to,$pDB,$id,$arrLang,$arrConf,$recording,$remainerTime);
         return $arrLang['update_successful'];
-    }else 
+    }else
         return $arrLang['error_update'];
 }
 
@@ -1444,7 +1445,7 @@ function getContactEmails($arrConf)
     $pDBACL  = new paloDB($arrConf['dsn_conn_database1']);
     $pACL    = new paloACL($pDBACL);
     $id_user = $pACL->getIdUser($_SESSION["elastix_user"]);
-    $tag = getParameter('tag'); 
+    $tag = getParameter('tag');
     if(isset($id_user) && $id_user!=""){
         $pDB  = new paloDB($arrConf['dsn_conn_database']);
         $pDBAddress = new paloDB($arrConf['dsn_conn_database3']);
@@ -1492,7 +1493,7 @@ function getRepeatDate($each_repeat,$day_repeat,$starttime,$endtime,$j,&$k,&$arr
                     $arr[$k] = $arr1;
                     $k += 1;
                 }
-                else{// ESPECIFICAR SI SOLO HAY UN DIA 
+                else{// ESPECIFICAR SI SOLO HAY UN DIA
                     $m=1;
                 }
             }else{
@@ -1695,7 +1696,7 @@ function createFieldForm($arrLang)
                                             "VALIDATION_TYPE"        => "text",
                                             "VALIDATION_EXTRA_PARAM" => "",
                                             "EDITABLE"               => "si",
-                                            ), 
+                                            ),
 
             );
     return $arrFields;
@@ -1711,7 +1712,7 @@ function getAction()
         return "setData";
     else if(getParameter("save_edit"))
         return "save_edit";
-    else if(getParameter("delete")) 
+    else if(getParameter("delete"))
         return "delete";
     else if(getParameter("edit"))
         return "edit";
@@ -1740,7 +1741,7 @@ function getAction()
     else if(getParameter("action")=="getTextToSpeach")
         return "getTextToSpeach";
     else if(getParameter("action")=="display")
-	return "display";
+        return "display";
     else
         return "report"; //cancel
 }

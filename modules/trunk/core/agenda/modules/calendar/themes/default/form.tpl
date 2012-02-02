@@ -51,7 +51,7 @@
                                         </div>
                                         <div id="view_box" style="display:none">
                                             <input id="edit" class="button" type="button" name="edit" value="{$EDIT}">
-                                            <input id="delete" class="button" type="button" name="delete" value="{$DELETE}">
+                                            <input id="delete" class="button" type="button" name="delete" value="{$DELETE}" onClick="return confirmSubmit('{$Alert_continue}')">
                                             <input id="cancel" class="button cancel" type="button" name="cancel" value="{$CANCEL}">
                                         </div>
                                         <div id="edit_box" style="display:none">
@@ -95,7 +95,7 @@
                                 <tr>
                                     <td align="left" colspan="4">
                                         <table style="font-size: 16px; margin-left:10px;" width="99%" border="0">
-                                            <tr class="letra12" style="display: none;"> 
+                                            <tr class="letra12" style="display: none;">
                                                 <td align="left" width="90px"><b>{$reminder.LABEL}: </b></td>
                                                 <td align="left" id="remi">{$reminder.INPUT}</td>
                                             </tr>
