@@ -404,6 +404,51 @@ function downloadFile($smarty, $module_name, $local_templates_dir, &$pDB, $pACL,
     }
 }
 
+function record_format(&$pDB, $arrConf){
+    $record = getParameter("id");
+    $pMonitoring = new paloSantoMonitoring($pDB);
+
+    $path_record = $arrConf['records_dir'];
+    if (isset($record) && preg_match("/^[[:digit:]]+\.[[:digit:]]+$/",$record)) {
+
+        $filebyUid   = $pMonitoring->getAudioByUniqueId($record);
+
+        $file = basename($filebyUid['userfield']);
+        $file = str_replace("audio:","",$file);
+
+        $path = $path_record.$file;
+
+        if($file[0] == "q"){// caso de archivos de colas no se tiene el tipo de archivo gsm, wav,etc
+            $arrData  = glob("$path*");
+            $path = isset($arrData[0])?$arrData[0]:$path;
+        }
+
+    // See if the file exists
+        if ($file == 'deleted' || !is_file($path)) {
+            return "";
+        }
+
+        $name = basename($path);
+
+    //$extension = strtolower(substr(strrchr($name,"."),1));
+        $extension=substr(strtolower($name), -3);
+
+    // This will set the Content-Type to the appropriate setting for the file
+        $ctype ='';
+        switch( $extension ) {
+
+            case "mp3": $ctype="audio/mpeg"; break;
+            case "wav": $ctype="audio/x-wav"; break;
+            case "Wav": $ctype="audio/x-wav"; break;
+            case "WAV": $ctype="audio/x-wav"; break;
+            case "gsm": $ctype="audio/x-gsm"; break;
+            // not downloadable
+            default: $ctype=""; break ;
+        }
+    }
+    return $ctype;
+}
+
 function display_record($smarty, $module_name, $local_templates_dir, &$pDB, $pACL, $arrConf, $user, $extension, $esAdministrador){
     $action = getParameter("action");
     $file = getParameter("id");
@@ -419,8 +464,9 @@ function display_record($smarty, $module_name, $local_templates_dir, &$pDB, $pAC
             }
             if($sContenido == "")
                 $session_id = session_id();
+                $ctype=record_format(&$pDB, $arrConf);
                 $sContenido=<<<contenido
-                    <embed src='index.php?menu=$module_name&action=download&id=$file&rawmode=yes&elastixSession=$session_id' width=300, height=20 autoplay=true loop=false ></embed><br>
+                    <embed src='index.php?menu=$module_name&action=download&id=$file&rawmode=yes&elastixSession=$session_id' width=300, height=20 autoplay=true loop=false type="$ctype"></embed><br>
 contenido;
             break;
     }
