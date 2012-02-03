@@ -485,7 +485,9 @@ class Llamada
                 'datetime_entry_queue'  =>  date('Y-m-d H:i:s', $this->timestamp_enterqueue),
                 'status'                =>  'en-cola',
                 'uniqueid'              =>  $this->uniqueid,
-                'trunk'                 =>  $this->trunk,
+                
+                // Un trunk NULL ocurre en caso de Channel Local/XXX@yyyy-zzzz
+                'trunk'                 =>  is_null($this->trunk) ? '' : $this->trunk,
             );
             $this->_tuberia->msg_CampaignProcess_sqlinsertcalls($paramInsertar);
         }
