@@ -2,8 +2,8 @@
       <tr class="letra12">
         <td width="7%" align="right">{$date_start.LABEL}:</td>
         <td width="10%" align="left" nowrap>{$date_start.INPUT}</td>
-        <td width="7%" align="right">{$field_pattern.LABEL}: </td>
-        <td width="10%" align="left" nowrap>{$field_name.INPUT}&nbsp;{$field_pattern.INPUT}</td>
+        <td width="11%" align="right">{$field_pattern.LABEL}: </td>
+        <td width="14%" align="left" nowrap>{$field_name.INPUT}&nbsp;{$field_pattern.INPUT}</td>
         <td align="left"><input class="button" type="submit" name="filter" value="{$Filter}" /></td>
       </tr>
       <tr class="letra12">

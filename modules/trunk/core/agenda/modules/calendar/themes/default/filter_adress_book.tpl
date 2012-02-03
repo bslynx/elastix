@@ -1,6 +1,6 @@
 <table width="99%" border="0" cellspacing="0" cellpadding="0" align="center">
     <tr class="letra12">
-	<td width="7%" align="right">{$Phone_Directory}:</td>
+	<td width="10%" align="right">{$Phone_Directory}:</td>
 	<td width="7%" align="left">&nbsp;
 	    <select name="select_directory_type" onchange='report_by_directory_type()'>
 		<option value="Internal" {$internal_sel}>{$Internal}</option>

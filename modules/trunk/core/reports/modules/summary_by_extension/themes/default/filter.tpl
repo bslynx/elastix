@@ -1,9 +1,9 @@
 <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
     <tr class="letra12">
-        <td align="right" width="5%">{$date_from.LABEL}:&nbsp;</td>
+        <td align="right" width="8%">{$date_from.LABEL}:&nbsp;</td>
         <td align="left" width="13%">{$date_from.INPUT}</td>
-        <td align="right" width="5%">{$option_fil.LABEL}:&nbsp;</td>
-        <td align="left" width="18%">{$option_fil.INPUT}&nbsp;{$value_fil.INPUT}</td>
+        <td align="right" width="7%">{$option_fil.LABEL}:&nbsp;</td>
+        <td align="left" width="22%">{$option_fil.INPUT}&nbsp;{$value_fil.INPUT}</td>
         <td align="left"><input class="button" type="submit" name="show" value="{$SHOW}"></td>
     </tr>
     <tr class="letra12">
