@@ -577,6 +577,7 @@ div.neo-applet-processes-row-menu {
 }
 div.neo-applet-processes-menu {
     background-color: #EFEFEF;
+    border-top: 1px solid #888888;
     border-bottom: 1px solid #888888;
     border-left: 1px solid #888888;
     border-right: 1px solid #888888;
@@ -584,7 +585,7 @@ div.neo-applet-processes-menu {
     padding: 8px;
     position: absolute;
     z-index: 1000000;
-    border-radius: 0px 0px 5px 5px;
-    -moz-border-radius: 0px 0px 5px 5px;
-    -webkit-border-radius: 0px 0px 5px 5px;
+    border-radius: 5px 5px 5px 5px;
+    -moz-border-radius: 5px 5px 5px 5px;
+    -webkit-border-radius: 5px 5px 5px 5px;
 }
