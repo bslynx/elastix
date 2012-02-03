@@ -51,8 +51,6 @@ $arrLangModule = array(
     "{__CAMPAIGN_ID__} Internal ID of the current campaign\n".
     "{__CALL_ID__} Internal ID of the current connected call\n".
     "{__PHONE__} Dialed number or Caller-ID of the connected call\n".
-    "{__UNIQUEID__} Internal call ID assigned by Asterisk\n".
-    "{__QUEUE__} Queue number through which the call was connected\n".
     "{__REMOTE_CHANNEL__} Channel identifier of the connected call\n".
     "",
 );

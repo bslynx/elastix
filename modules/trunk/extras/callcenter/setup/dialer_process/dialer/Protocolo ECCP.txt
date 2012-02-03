@@ -1221,8 +1221,6 @@ Respuesta:
   {__CAMPAIGN_ID__} ID interno de la campaña en curso
   {__CALL_ID__} ID interno de la llamada actualmente conectada
   {__PHONE__} Número marcado o Caller-ID de la llamada conectada
-  {__UNIQUEID__} ID interno de llamada asignado por Asterisk
-  {__QUEUE__} Número de cola a través de la cual se conectó la llamada
   {__REMOTE_CHANNEL__} Identificador de canal de la llamada conectada
 * urlopentype: La manera recomendada de abrir el URL indicado por urltemplate:
   window:   El URL debe de abrirse en una ventana nueva del navegador, o equivalente.
