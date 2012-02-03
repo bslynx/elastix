@@ -115,5 +115,6 @@ $arrLangModule = array(
 'First name' => 'Nombre',
 'Last name' => 'Apellido',
 'National ID' => 'Cédula/RUC',
+'External site' => 'Sitio externo',
 );
 ?>

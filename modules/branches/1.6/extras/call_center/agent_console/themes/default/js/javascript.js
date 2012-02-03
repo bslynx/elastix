@@ -28,6 +28,10 @@ var timer = null;
 // Objeto EventSource, si está soportado por el navegador
 var evtSource = null;
 
+// Copia del URL a cargar al agregar la nueva cejilla
+var externalurl = null;
+var externalurl_title = null;
+
 $(document).ready(function() {
 	$('#elastix-callcenter-error-message').hide();
 	$('#elastix-callcenter-info-message').hide();
@@ -42,7 +46,13 @@ $(document).ready(function() {
     $('#schedule_same_agent').button();
     $('#schedule_radio').buttonset();
     $('#schedule_date').hide();
-    $('#elastix-callcenter-cejillas-contenido').tabs();
+    $('#elastix-callcenter-cejillas-contenido').tabs({
+    	add:	function (event, ui) {
+    		if (externalurl != null)
+    			$(ui.panel).append("<iframe scrolling=\"auto\" height=\"450\" frameborder=\"0\" width=\"100%\" src=\"" + externalurl + "\" />");
+    		externalurl = null;
+    	}
+    });
     
     // Operaciones que deben de repetirse al obtener formulario vía AJAX
     apply_form_styles();
@@ -123,18 +133,19 @@ function apply_form_styles()
 }
 
 // Inicializar estado del cliente al refrescar la página
-function initialize_client_state(onhold, break_id, calltype, campaign_id, callid, timer_seconds)
+function initialize_client_state(nuevoEstado)
 {
-	estadoCliente.onhold = onhold;
-	estadoCliente.break_id = break_id;
-	estadoCliente.calltype = calltype;
-	estadoCliente.campaign_id = campaign_id;
-	estadoCliente.callid = callid;
+	estadoCliente.onhold = nuevoEstado.onhold;
+	estadoCliente.break_id = nuevoEstado.break_id;
+	estadoCliente.calltype = nuevoEstado.calltype;
+	estadoCliente.campaign_id = nuevoEstado.campaign_id;
+	estadoCliente.callid = nuevoEstado.callid;
 
-    // Lanzar el callback que actualiza el estado de la llamada
+	// Lanzar el callback que actualiza el estado de la llamada
     setTimeout(do_checkstatus, 1);
 
-    iniciar_cronometro(timer_seconds);
+    iniciar_cronometro(nuevoEstado.timer_seconds);
+    abrir_url_externo(nuevoEstado.urlopentype, nuevoEstado.url);
 }
 
 // Inicializar el cronómetro con el valor de segundos indicado
@@ -232,6 +243,8 @@ function apply_ui_styles(uidata)
             }
         ]
     });
+    
+    externalurl_title = uidata['external_url_tab'];
 }
 
 // El siguiente código se ejecutará cuando se presione el botón de login del agente
@@ -604,6 +617,7 @@ function manejarRespuestaStatus(respuesta)
 			}
 
 			apply_form_styles();
+			abrir_url_externo(respuesta[i].urlopentype, respuesta[i].url);
 			break;
 		case 'agentunlinked':
 	        // El agente se ha desconectado de la llamada
@@ -649,4 +663,27 @@ function mostrar_mensaje_error(s)
 			$('#elastix-callcenter-error-message').fadeOut();
 		}, 5000);
 	});
+}
+
+function abrir_url_externo(urlopentype, url)
+{
+	if (urlopentype != null) {
+		switch (urlopentype) {
+		case 'iframe':
+			externalurl = url;
+			$('#elastix-callcenter-cejillas-contenido').tabs('remove', 3);
+			$('#elastix-callcenter-cejillas-contenido').tabs('add', '#tabs-externalurl', externalurl_title);
+			break;
+		case 'jsonp':
+			$.ajax(url, {
+				dataType: 'jsonp',
+				context:	document,
+			});
+			break;
+		case 'window':
+		default:
+			window.open(url, '_blank');
+			break;
+		}
+	}
 }

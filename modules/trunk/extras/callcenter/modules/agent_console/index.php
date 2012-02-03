@@ -225,7 +225,7 @@ function manejarLogin_doLogin()
         $oPaloConsola->desconectarTodo();
         $oPaloConsola = new PaloSantoConsola('Agent/'.$sAgente);
 
-        $estado = $oPaloConsola->estadoAgenteLogoneado($sExtension, $sAgente);
+        $estado = $oPaloConsola->estadoAgenteLogoneado($sExtension);
         switch ($estado['estadofinal']) {
         case 'error':
         case 'mismatch':
@@ -298,7 +298,7 @@ function manejarLogin_checkLogin()
     $oPaloConsola = new PaloSantoConsola('Agent/'.$sAgente);
 
     if ($bContinuar) {
-        $estado = $oPaloConsola->estadoAgenteLogoneado($sExtension, $sAgente);
+        $estado = $oPaloConsola->estadoAgenteLogoneado($sExtension);
         switch ($estado['estadofinal']) {
         case 'error':
         case 'mismatch':
@@ -399,7 +399,7 @@ function manejarSesionActiva($module_name, &$smarty, $sDirLocalPlantillas)
     $sAgente = $_SESSION['callcenter']['agente'];
     $sExtension = $_SESSION['callcenter']['extension'];
     $oPaloConsola = new PaloSantoConsola('Agent/'.$sAgente);
-    $estado = $oPaloConsola->estadoAgenteLogoneado($sExtension, $sAgente);
+    $estado = $oPaloConsola->estadoAgenteLogoneado($sExtension);
     if ($estado['estadofinal'] != 'logged-in') {
         // Se marca el final de la sesión del agente en las tablas de auditoría
         $oPaloConsola->logoutAgente();
@@ -451,6 +451,9 @@ function manejarSesionActiva($module_name, &$smarty, $sDirLocalPlantillas)
 
 function manejarSesionActiva_HTML($module_name, &$smarty, $sDirLocalPlantillas, $oPaloConsola, $estado)
 {
+    $bInactivarBotonColgar = FALSE;
+    $bPuedeConfirmarContacto = FALSE;
+
     // Acciones para mostrar la pantalla principal, fuera de cualquier acción AJAX
     for ($i = 0; $i < 24; $i++) { $ii = sprintf('%02d', $i); $comboHora[$ii] = $ii; }
     for ($i = 0; $i < 60; $i++) { $ii = sprintf('%02d', $i); $comboMinuto[$ii] = $ii; }
@@ -464,22 +467,15 @@ function manejarSesionActiva_HTML($module_name, &$smarty, $sDirLocalPlantillas, 
         'BTN_VTIGERCRM'                 =>  _tr('VTiger CRM'),
         'BTN_FINALIZAR_LOGIN'           =>  _tr('End session'),
         'TITLE_BREAK_DIALOG'            =>  _tr('Select break type'),
-        'BTN_BREAK_COMMIT'              =>  _tr('Take Break'),
-        'BTN_BREAK_DISMISS'             =>  _tr('Dismiss'),
         'BTN_CONFIRMAR_CONTACTO'        =>  _tr('Confirm contact'),
         'LBL_CONTACTO_TELEFONO'         =>  _tr('Phone number'),
         'LBL_CONTACTO_SELECT'           =>  _tr('Contact'),
         'LBL_CONTACTO_NOMBRES'          =>  _tr('Names'),
-        'PUEDE_CONFIRMAR_CONTACTO'      =>  FALSE,
         'TEXTO_CONTACTO_NOMBRES'        =>  '',
         'TEXTO_CONTACTO_TELEFONO'       =>  '',
         'BTN_AGENDAR_LLAMADA'           =>  _tr('Schedule call'),
         'TITLE_TRANSFER_DIALOG'         =>  _tr('Select extension to transfer to'),
         'TITLE_SCHEDULE_CALL'           =>  _tr('Schedule call'),
-        'BTN_TRANSFER_COMMIT'           =>  _tr('Transfer'),
-        'BTN_TRANSFER_DISMISS'          =>  _tr('Dismiss'),
-        'BTN_SCHEDULE_COMMIT'           =>  _tr('Schedule'),
-        'BTN_SCHEDULE_DISMISS'          =>  _tr('Dismiss'),
         'LBL_SCHEDULE_CAMPAIGN_END'     =>  _tr('Call at end of campaign'),
         'LBL_SCHEDULE_BYDATE'           =>  _tr('Schedule at date'),
         'LBL_SCHEDULE_DATE_START'       =>  _tr('Start date'),
@@ -489,7 +485,6 @@ function manejarSesionActiva_HTML($module_name, &$smarty, $sDirLocalPlantillas, 
         'LBL_SCHEDULE_SAME_AGENT'       =>  _tr('Schedule to same agent'),
         'SCHEDULE_TIME_HH'              =>  $comboHora,
         'SCHEDULE_TIME_MM'              =>  $comboMinuto,
-        'MSG_SCHEDULE_CALL_ERROR_MISSING_DATE' => _tr('Start and end date are required for date scheduling.'),
         'TAB_LLAMADA_INFO'              =>  _tr('Call Information'),
         'TAB_LLAMADA_SCRIPT'            =>  _tr('Call Script'),
         'TAB_LLAMADA_FORM'              =>  _tr('Call Form'),
@@ -500,15 +495,17 @@ function manejarSesionActiva_HTML($module_name, &$smarty, $sDirLocalPlantillas, 
         'CONTENIDO_LLAMADA_FORMULARIO'  =>  '',
         'CALLINFO_CALLTYPE'             =>  '',
         'BTN_HOLD'                      =>  $estado['onhold'] ? _tr('End Hold') : _tr('Hold'),
-        
-        'STATE_ONHOLD'                  =>  $estado['onhold'],
-        'STATE_BREAK_ID'                =>  is_null($estado['pauseinfo']) ? NULL : $estado['pauseinfo']['pauseid'],
-        // Usar CALLINFO_CALLTYPE
-        //'STATE_CALLTYPE'                =>  NULL,
-        'STATE_CAMPAIGN_ID'             =>  NULL,
-        'STATE_CALL_ID'                 =>  NULL,
     ));
-
+    $estadoInicial = array(
+        'onhold'        =>  $estado['onhold'],
+        'break_id'      =>  is_null($estado['pauseinfo']) ? NULL : $estado['pauseinfo']['pauseid'],
+        'calltype'      =>  NULL,
+        'campaign_id'   =>  NULL,
+        'callid'        =>  NULL,
+        'timer_seconds' =>  0,
+        'url'           =>  NULL,
+        'urlopentype'   =>  NULL,
+    );
 
     // Decidir estado del break a mostrar
     if (!is_null($estado['pauseinfo'])) {
@@ -527,8 +524,8 @@ function manejarSesionActiva_HTML($module_name, &$smarty, $sDirLocalPlantillas, 
                 ($iDuracionPausa - ($iDuracionPausa % 3600)) / 3600, 
                 (($iDuracionPausa - ($iDuracionPausa % 60)) / 60) % 60, 
                 $iDuracionPausa % 60),
-            'TIMER_SECONDS'                 =>  $iDuracionPausa,
         ));
+        $estadoInicial['timer_seconds'] = $iDuracionPausa;
     } else {
         if (!is_null($_SESSION['callcenter']['break_iniciado'])) {
         	/* Si esta condición se cumple, entonces se ha perdido el evento 
@@ -578,8 +575,8 @@ function manejarSesionActiva_HTML($module_name, &$smarty, $sDirLocalPlantillas, 
         $iDuracionLlamada = time() - strtotime($estado['callinfo']['linkstart']);
   
         // Asignaciones independientes del tipo de llamada
+        $bInactivarBotonColgar = false; // Se usa para botón hangup y botón transfer
         $smarty->assign(array(
-            'INACTIVO_COLGAR_LLAMADA'       =>  false, // Se usa para botón hangup y botón transfer
             'CLASS_ESTADO_AGENTE_INICIAL'   =>  'elastix-callcenter-class-estado-activo',
             'TEXTO_ESTADO_AGENTE_INICIAL'   =>  _tr('Connected to call'),
             'TEXTO_CONTACTO_TELEFONO'       =>  $estado['callinfo']['callnumber'],
@@ -590,15 +587,22 @@ function manejarSesionActiva_HTML($module_name, &$smarty, $sDirLocalPlantillas, 
                 ($iDuracionLlamada - ($iDuracionLlamada % 3600)) / 3600, 
                 (($iDuracionLlamada - ($iDuracionLlamada % 60)) / 60) % 60, 
                 $iDuracionLlamada % 60),
-            'TIMER_SECONDS'                 =>  $iDuracionLlamada,
             
             'CONTENIDO_LLAMADA_INFORMACION' =>  manejarSesionActiva_HTML_generarInformacion($smarty, $sDirLocalPlantillas, $infoLlamada, $infoCampania),
             'CONTENIDO_LLAMADA_FORMULARIO'  =>  manejarSesionActiva_HTML_generarFormulario($smarty, $sDirLocalPlantillas, $infoLlamada, $infoCampania),
             'CONTENIDO_LLAMADA_SCRIPT'      =>  $infoCampania['script'],
-            
-            'STATE_CAMPAIGN_ID'             =>  $estado['callinfo']['campaign_id'],
-            'STATE_CALL_ID'                 =>  $estado['callinfo']['callid'],
         ));
+        $estadoInicial['timer_seconds'] = $iDuracionLlamada;
+        $estadoInicial['calltype'] = $estado['callinfo']['calltype'];
+        $estadoInicial['campaign_id'] = $estado['callinfo']['campaign_id'];
+        $estadoInicial['callid'] = $estado['callinfo']['callid'];
+        $estadoInicial['urlopentype'] = isset($infoCampania['urlopentype']) ? $infoCampania['urlopentype'] : NULL;
+        $estadoInicial['url'] = is_null($estadoInicial['urlopentype']) 
+            ? NULL : construirUrlExterno($infoCampania['urltemplate'], $infoLlamada + array(
+            'callnumber'        =>  $estado['callinfo']['callnumber'],
+            'callid'            =>  $infoLlamada['call_id'],
+            'agent_number'      =>  $estado['callinfo']['agent_number'],
+            'remote_channel'    =>  $estado['callinfo']['remote_channel']));
         
         // Asignaciones específicas para llamadas entrantes
         if ($estado['callinfo']['calltype'] == 'incoming') {
@@ -625,8 +629,8 @@ function manejarSesionActiva_HTML($module_name, &$smarty, $sDirLocalPlantillas, 
             }
             $smarty->assign(array(
                 'LISTA_CONTACTOS'           =>  $comboContactos,
-                'PUEDE_CONFIRMAR_CONTACTO'  =>  (count($comboContactos) > 1),
             ));
+            $bPuedeConfirmarContacto = (count($comboContactos) > 1);
         }
         
         // Asignaciones específicas para llamadas salientes
@@ -645,8 +649,8 @@ function manejarSesionActiva_HTML($module_name, &$smarty, $sDirLocalPlantillas, 
             ));
         }
     } else {
-    	$smarty->assign(array(
-            'INACTIVO_COLGAR_LLAMADA'       =>  true, // Se usa para botón hangup y botón transfer
+    	$bInactivarBotonColgar = true; // Se usa para botón hangup y botón transfer
+        $smarty->assign(array(
             'CONTENIDO_LLAMADA_FORMULARIO'  =>  is_null($_SESSION['callcenter']['ultimo_calltype']) 
                 ? '' 
                 : manejarSesionActiva_HTML_generarFormulario($smarty, $sDirLocalPlantillas, 
@@ -654,8 +658,21 @@ function manejarSesionActiva_HTML($module_name, &$smarty, $sDirLocalPlantillas, 
                         $_SESSION['callcenter']['ultimo_campaignform']),
         ));
     }
-    
+    $json = new Services_JSON();
     $smarty->assign(array(
+        'APPLY_UI_STYLES'   =>  $json->encode(array(
+            'break_commit'              =>  _tr('Take Break'),
+            'break_dismiss'             =>  _tr('Dismiss'),
+            'transfer_commit'           =>  _tr('Transfer'),
+            'transfer_dismiss'          =>  _tr('Dismiss'),
+            'schedule_commit'           =>  _tr('Schedule'),
+            'schedule_dismiss'          =>  _tr('Dismiss'),
+            'external_url_tab'          =>  _tr('External site'),
+            'schedule_call_error_msg_missing_date' => _tr('Start and end date are required for date scheduling.'),
+            'no_call'                   =>  $bInactivarBotonColgar,
+            'can_confirm_contact'       =>  $bPuedeConfirmarContacto,
+            )),
+        'INITIAL_CLIENT_STATE'  =>  $json->encode($estadoInicial),
     ));
     return $smarty->fetch("$sDirLocalPlantillas/agent_console.tpl");
 }
@@ -1336,7 +1353,11 @@ function construirRespuesta_holdexit()
 function construirRespuesta_agentlinked($smarty, $sDirLocalPlantillas, 
     $oPaloConsola, $callinfo, $infoLlamada, &$infoCampania)
 {
-    if (!isset($infoLlamada['calltype'])) $infoLlamada['calltype'] = $callinfo['calltype'];
+    foreach (array('calltype', 'campaign_id', 'callid', 'callnumber',
+        'agent_number', 'remote_channel') as $k) {
+        if (!isset($infoLlamada[$k]) && isset($callinfo[$k]))
+            $infoLlamada[$k] = $callinfo[$k];
+    }
     if ($callinfo['calltype'] == 'incoming' && is_null($callinfo['campaign_id'])) {
         $infoCampania['queue'] = $infoLlamada['queue'];
         $infoCampania['script'] = $oPaloConsola->leerScriptCola($infoCampania['queue']);
@@ -1359,8 +1380,14 @@ function construirRespuesta_agentlinked($smarty, $sDirLocalPlantillas,
         'cronometro'            =>  sprintf('%02d:%02d:%02d', ($iDuracionLlamada - ($iDuracionLlamada % 3600)) / 3600, (($iDuracionLlamada - ($iDuracionLlamada % 60)) / 60) % 60, $iDuracionLlamada % 60),
         'llamada_informacion'   =>  manejarSesionActiva_HTML_generarInformacion($smarty, $sDirLocalPlantillas, $infoLlamada, $infoCampania),
         'llamada_formulario'    =>  manejarSesionActiva_HTML_generarFormulario($smarty, $sDirLocalPlantillas, $infoLlamada, $infoCampania),
-        'llamada_script'        =>  $infoCampania['script'],                 
+        'llamada_script'        =>  $infoCampania['script'],
+        'urlopentype'           =>  isset($infoCampania['urlopentype']) ? $infoCampania['urlopentype'] : NULL,
+        'url'                   =>  NULL,
     );
+    
+    if (isset($infoCampania['urltemplate']) && !is_null($infoCampania['urltemplate'])) {
+        $registroCambio['url'] = construirUrlExterno($infoCampania['urltemplate'], $infoLlamada);
+    }
     
     // Asignaciones específicas para llamadas entrantes
     if ($callinfo['calltype'] == 'incoming') {
@@ -1421,4 +1448,26 @@ function construirRespuesta_agentunlinked()
         'event'     =>  'agentunlinked',
     );	
 }
+
+function construirUrlExterno($s, $infoLlamada)
+{
+    $reemplazos = array(
+        '{__AGENT_NUMBER__}'    =>  (isset($infoLlamada['agent_number']) 
+                ? $infoLlamada['agent_number'] : ''),
+        '{__REMOTE_CHANNEL__}'  =>  (isset($infoLlamada['remote_channel']) 
+                ? $infoLlamada['remote_channel'] : ''),
+        '{__CALL_TYPE__}'       =>  $infoLlamada['calltype'],
+        '{__CAMPAIGN_ID__}'     =>  $infoLlamada['campaign_id'],
+        '{__CALL_ID__}'         =>  $infoLlamada['callid'],
+        '{__PHONE__}'           =>  $infoLlamada['callnumber'],
+    );
+    if (isset($infoLlamada['call_attributes'])) foreach ($infoLlamada['call_attributes'] as $tupla) {
+        $reemplazos['{'.$tupla['label'].'}'] = $tupla['value'];
+    }
+    foreach ($reemplazos as $k => $v) {
+        $s = str_replace($k, urlencode($v), $s);
+    }
+    return $s;
+}
+
 ?>

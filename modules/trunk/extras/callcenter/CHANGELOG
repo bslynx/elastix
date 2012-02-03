@@ -1,3 +1,7 @@
+* Agent Console: add support for opening external URLs for a connected call.
+  External URLs can be opened in three different ways: as a new window, as an
+  embedded frame inside a tab in the agent console, or as a JSONP call that 
+  loads and executes Javascript in the context of the agent console.
 * Campaign In: add support for linking external URLs to a campaign.
 * Campaign Out: add support for linking external URLs to a campaign.
 * Dialer (ECCP): extend "getcampaigninfo" request to report external URLs

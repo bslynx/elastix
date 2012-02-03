@@ -360,7 +360,7 @@ LISTA_EXTENSIONES;
      * 
      * @return  string  Uno de logged-in logging logged-out mismatch error
      */
-    function estadoAgenteLogoneado($sExtension, $sAgente)
+    function estadoAgenteLogoneado($sExtension)
     {
         try {
             $oECCP = $this->_obtenerConexion('ECCP');
@@ -376,13 +376,14 @@ LISTA_EXTENSIONES;
                 'channel'           =>  isset($connStatus->channel) ? (string)$connStatus->channel : NULL,
                 'extension'         =>  isset($connStatus->extension) ? (string)$connStatus->extension : NULL,
                 'onhold'            =>  isset($connStatus->onhold) ? ($connStatus->onhold == 1) : FALSE,
-                'remote_channel'    =>  isset($connStatus->remote_channel) ? (string)$connStatus->remote_channel : NULL,
                 'pauseinfo'         =>  isset($connStatus->pauseinfo) ? array(
                     'pauseid'       =>  (int)$connStatus->pauseinfo->pauseid,
                     'pausename'     =>  (string)$connStatus->pauseinfo->pausename,
                     'pausestart'    =>  (string)$connStatus->pauseinfo->pausestart,
                 ) : NULL,
                 'callinfo'          =>  isset($connStatus->callinfo) ? array(
+                    'agent_number'  =>  $this->_agent,
+                    'remote_channel'    =>  isset($connStatus->remote_channel) ? (string)$connStatus->remote_channel : NULL,
                     'calltype'      =>  (string)$connStatus->callinfo->calltype,
                     'campaign_id'   =>  isset($connStatus->callinfo->campaign_id) ? (int)$connStatus->callinfo->campaign_id : NULL,
                     'callid'        =>  (int)$connStatus->callinfo->callid,
@@ -588,7 +589,8 @@ LISTA_EXTENSIONES;
             }
             foreach (array('name', 'type', 'startdate', 'enddate', 
                 'working_time_starttime', 'working_time_endtime', 'queue', 
-                'retries', 'context', 'maxchan', 'status', 'script', 'forms') as $k)
+                'retries', 'context', 'maxchan', 'status', 'script', 'forms',
+                'urltemplate', 'urlopentype') as $k)
                 if (!isset($reporte[$k])) $reporte[$k] = NULL;
             return $reporte;
         } catch (Exception $e) {

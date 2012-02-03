@@ -225,29 +225,10 @@
 <script type="text/javascript">
 // Aplicar temas de jQueryUI a diversos elementos
 $(function() {
-    apply_ui_styles({
 {/literal}
-        break_commit:       "{$BTN_BREAK_COMMIT}",
-        break_dismiss:      "{$BTN_BREAK_DISMISS}",
-        transfer_commit:    "{$BTN_TRANSFER_COMMIT}",
-        transfer_dismiss:   "{$BTN_TRANSFER_DISMISS}",
-        schedule_commit:    "{$BTN_SCHEDULE_COMMIT}",
-        schedule_dismiss:   "{$BTN_SCHEDULE_DISMISS}",
-        schedule_call_error_msg_missing_date: "{$MSG_SCHEDULE_CALL_ERROR_MISSING_DATE}",
-        no_call:        {if $INACTIVO_COLGAR_LLAMADA}true{else}false{/if},
-        can_confirm_contact: {if $PUEDE_CONFIRMAR_CONTACTO}true{else}false{/if}        
+    apply_ui_styles({$APPLY_UI_STYLES});
+    initialize_client_state({$INITIAL_CLIENT_STATE});
 {literal}
-    });
-    initialize_client_state(
-{/literal}
-        {if $STATE_ONHOLD}true{else}false{/if},
-        {if $STATE_BREAK_ID}{$STATE_BREAK_ID}{else}null{/if},
-        {if $CALLINFO_CALLTYPE != ''}"{$CALLINFO_CALLTYPE}"{else}null{/if},
-        {if $STATE_CAMPAIGN_ID}{$STATE_CAMPAIGN_ID}{else}null{/if},
-        {if $STATE_CALL_ID}{$STATE_CALL_ID}{else}null{/if},
-        {if $TIMER_SECONDS}{$TIMER_SECONDS}{else}null{/if}
-{literal}
-    );
 });
 </script>
 {/literal}
