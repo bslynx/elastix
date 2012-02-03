@@ -1,13 +1,12 @@
 <table width="99%" border="0" cellspacing="0" cellpadding="0" align="center">
     <tr class="letra12">
-        <td width="60%" align="left">&nbsp;&nbsp;</td>
-        <td width="30%" align="right">{$filter_group.LABEL}:&nbsp;&nbsp;{$filter_group.INPUT}</td>
-        <td>&nbsp;</td>
+        <td width="5%" align="right">{$filter_group.LABEL}:&nbsp;&nbsp;</td>
+        <td width="10%" align="left">{$filter_group.INPUT}</td>
     </tr>
     <tr class="letra12">
-        <td align="left">&nbsp;&nbsp;</td>
-        <td align="right">{$filter_resource.LABEL}:&nbsp;&nbsp;{$filter_resource.INPUT}</td>
-        <td align="right"><input class="button" type="submit" name="show" value="{$SHOW}" /><td>
+        <td width="5%" align="right">{$filter_resource.LABEL}:&nbsp;&nbsp;</td>
+        <td width="10%" align="left">{$filter_resource.INPUT}</td>
+        <td align="left"><input class="button" type="submit" name="show" value="{$SHOW}" /><td>
     </tr>
 </table>
 
