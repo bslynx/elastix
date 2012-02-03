@@ -1568,6 +1568,11 @@ PETICION_LLAMADAS_AGENTE;
                 }
             }
             if (!is_null($sCanalRemoto)) {
+                if (strpos($sCanalRemoto, 'Local/') === 0) {
+                	$this->_log->output('WARN: '.__METHOD__.": el agente ".
+                        "Agent/$sAgentNum está hablando con canal $sCanalRemoto ".
+                        "según 'agent show online'");
+                }
             	$this->_tuberia->msg_AMIEventProcess_canalRemotoAgente(
                     $sAgentNum, $tipo_llamada, $uniqueid, $sCanalRemoto);
             }
