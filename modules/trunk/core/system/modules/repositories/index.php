@@ -90,6 +90,12 @@ function listRepositories($smarty, $module_name, $local_templates_dir,$arrConf) 
     $oGrid->setTotal($total);
     $offset = $oGrid->calculateOffset();
     $end    = $oGrid->getEnd();
+//    $offset = $oGrid->getOffsetValue(); 
+//    $oGrid  = new paloSantoGrid($smarty);
+//    $oGrid->setLimit($limit);
+//    $offset = $oGrid->getOffSet($limit,$total,(isset($_GET['nav']))?$_GET['nav']:NULL,(isset($_GET['start']))?$_GET['start']:NULL);
+//    $end    = ($offset+$limit)<=$total ? $offset+$limit : $total;
+
     $arrData = array();
     $version = $oRepositories->obtenerVersionDistro();
     $arch = $oRepositories->obtenerArquitectura();
@@ -106,10 +112,10 @@ function listRepositories($smarty, $module_name, $local_templates_dir,$arrConf) 
     $arrGrid = array("title"    => $arrLang["Repositories"],
         "url"      => array('menu' => $module_name),
         "icon"     => "modules/repositories/images/system_updates_repositories.png",
-        "width"    => "99%",
-        "start"    => ($total==0) ? 0 : $offset + 1,
-        "end"      => $end,
-        "total"    => $total,
+       //"width"    => "99%",
+       "start"    => ($total==0) ? 0 : $offset + 1,
+       "end"      => $end,
+       "total"    => $total,
         "columns"  => array(0 => array("name"      => $arrLang["Active"],
                                        "property1" => ""),
                             1 => array("name"      => $arrLang["Name"], 
@@ -119,10 +125,10 @@ function listRepositories($smarty, $module_name, $local_templates_dir,$arrConf) 
     $oGrid->showFilter( "
       <table border='0' cellpadding='4' callspacing='0' width='100%' height='44'>
 	   <tr class='letra12'>
-		<td width='50%' align='left'>
+		<td width='5%' align='center'>
 		      <input type='button' name='default' value='{$arrLang['Default']}' class='button' onclick='defaultValues($total,$version,\"$arch\")' />
 		</td>
-		<td width='50%' align='right'>Repo:&nbsp;&nbsp;
+		<td align='left'>Repo:&nbsp;
 		    <select name='typeRepository' onchange='javascript:submit();'> 
 			  <option value='main' {$option['main']}>{$arrLang['Main']}</option>
 			  <option value='others' {$option['others']}>{$arrLang['Others']}</option>

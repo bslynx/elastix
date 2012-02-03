@@ -1,6 +1,5 @@
 <table width="99%" border="0" cellspacing="0" cellpadding="0" align="center">
     <tr class="letra12">
-        <td width="2%" align="left"><input class="button" type="submit" name="desactivate" value="{$desactivate}" style= "{$DISPLAY_BUTTON}"></td>
         <td width="100%" align="right">
         <table style = "{$BORDER}" id = "table_message" >
             <tr class="letra12">
