@@ -235,6 +235,7 @@ function listCampaign($pDB, $smarty, $module_name, $local_templates_dir)
         'MESSAGE_CONTINUE_DELETE'       =>  _tr('Are you sure you wish to delete campaign?'),
     ));
     $oGrid = new paloSantoGrid($smarty);
+    $oGrid->addNew("?menu=$module_name&action=new_campaign",_tr('Create New Campaign'),true);
     $oGrid->showFilter($smarty->fetch("$local_templates_dir/filter-list-campaign.tpl"));
     $sContenido = $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
     if (strpos($sContenido, '<form') === FALSE)
@@ -313,6 +314,10 @@ function formEditCampaign($pDB, $smarty, $module_name, $local_templates_dir, $id
         ksort($arrDataQueues);
     }
 
+    $arrUrlsExternos = array(
+        ''  =>  _tr('(No external URL)'),
+    ) + $oCamp->getExternalUrls();
+
     // Cargar la información de todos los formularios creados y activos
     $oDataForm = new paloSantoDataForm($pDB); 
     $arrDataForm = $oDataForm->getFormularios(NULL,'A');
@@ -320,21 +325,22 @@ function formEditCampaign($pDB, $smarty, $module_name, $local_templates_dir, $id
     // Impedir mostrar el formulario si no se han definido colas o no
     // quedan colas libres para usar en campañas salientes.
     if (count($arrQueues) <= 0) {
-        $formCampos = getFormCampaign($arrDataQueues, NULL, NULL);
+        $formCampos = getFormCampaign($arrDataQueues, NULL, NULL, NULL);
         $oForm = new paloForm($smarty, $formCampos);
         $smarty->assign('no_queues', 1);
     } elseif (count($arrDataQueues) <= 0) {
-        $formCampos = getFormCampaign($arrDataQueues, NULL, NULL);
+        $formCampos = getFormCampaign($arrDataQueues, NULL, NULL, NULL);
         $oForm = new paloForm($smarty, $formCampos);
         $smarty->assign('no_outgoing_queues', 1);
     } elseif (count($arrDataForm) <= 0) {
-        $formCampos = getFormCampaign($arrDataQueues, NULL, NULL);
+        $formCampos = getFormCampaign($arrDataQueues, NULL, NULL, NULL);
         $oForm = new paloForm($smarty, $formCampos);
         $smarty->assign('no_forms', 1);
     } else {
         $smarty->assign('label_manage_trunks', _tr('Manage Trunks'));
         $smarty->assign('label_manage_queues', _tr('Manage Queues'));
         $smarty->assign('label_manage_forms',  _tr('Manage Forms'));
+        $smarty->assign('label_manage_external_url', _tr('Manage External URLs'));
         
         // Definición del formulario de nueva campaña
         $smarty->assign("REQUIRED_FIELD", _tr('Required field'));
@@ -376,6 +382,7 @@ function formEditCampaign($pDB, $smarty, $module_name, $local_templates_dir, $id
             } else {
                 $values_form = explode(",", $_POST['values_form']);
             }
+            if (!isset($_POST['external_url']))        $_POST['external_url']        = $arrCampaign[0]['id_url'];
         }
 
         // rte_script es un HTML complejo que debe de construirse con Javascript.
@@ -390,7 +397,7 @@ function formEditCampaign($pDB, $smarty, $module_name, $local_templates_dir, $id
         }
 
         // Generación del objeto de formulario
-        $formCampos = getFormCampaign($arrDataQueues, $arrNoElegidos, $arrElegidos);
+        $formCampos = getFormCampaign($arrDataQueues, $arrNoElegidos, $arrElegidos, $arrUrlsExternos);
         $oForm = new paloForm($smarty, $formCampos);
         if (!is_null($id_campaign)) {
             $oForm->setEditMode();
@@ -451,7 +458,8 @@ function formEditCampaign($pDB, $smarty, $module_name, $local_templates_dir, $id
                                             $time_ini,
                                             $time_fin,
                                             $_POST['rte_script'],
-                                            NULL);
+                                            NULL,
+                                            ($_POST['external_url'] == '') ? NULL : (int)$_POST['external_url']);
                             if (is_null($id_campaign)) $bExito = FALSE;
                         } elseif ($bDoUpdate) {
                             $bExito = $oCamp->updateCampaign(
@@ -463,7 +471,8 @@ function formEditCampaign($pDB, $smarty, $module_name, $local_templates_dir, $id
                                             $time_ini,
                                             $time_fin,
                                             $_POST['rte_script'],
-                                            NULL);
+                                            NULL,
+                                            ($_POST['external_url'] == '') ? NULL : (int)$_POST['external_url']);
                         }
                         
                         // Introducir o actualizar formularios
@@ -499,7 +508,8 @@ function formEditCampaign($pDB, $smarty, $module_name, $local_templates_dir, $id
     return $contenidoModulo;
 }
 
-function getFormCampaign($arrDataQueues, $arrSelectForm, $arrSelectFormElegidos)
+function getFormCampaign($arrDataQueues, $arrSelectForm, $arrSelectFormElegidos,
+    $arrUrlsExternos)
 {
     $horas = array();
     $i = 0;
@@ -629,6 +639,14 @@ function getFormCampaign($arrDataQueues, $arrSelectForm, $arrSelectFormElegidos)
             "INPUT_EXTRA_PARAM"      => "",
             "VALIDATION_TYPE"        => "text",
             "VALIDATION_EXTRA_PARAM" => ""
+        ),
+        'external_url'       => array(
+            "LABEL"                  => _tr("External URLs"),
+            "REQUIRED"               => "no",
+            "INPUT_TYPE"             => "SELECT",
+            "INPUT_EXTRA_PARAM"      => $arrUrlsExternos,
+            "VALIDATION_TYPE"        => "text",
+            "VALIDATION_EXTRA_PARAM" => "",
         ),
     );
 

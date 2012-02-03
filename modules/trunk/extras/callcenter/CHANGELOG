@@ -1,3 +1,4 @@
+* Campaign In: add support for linking external URLs to a campaign.
 * Campaign Out: add support for linking external URLs to a campaign.
 * Dialer (ECCP): extend "getcampaigninfo" request to report external URLs
 * External URL: new module for management of external URLs to be opened on each
