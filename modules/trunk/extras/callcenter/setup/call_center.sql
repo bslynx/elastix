@@ -428,9 +428,9 @@ CREATE TABLE IF NOT EXISTS `eccp_authorized_clients` (
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
----
---- Table structure for table `campaign_external_url`
----
+--
+-- Table structure for table `campaign_external_url`
+--
 CREATE TABLE IF NOT EXISTS `campaign_external_url` (
     `id` int(10) unsigned NOT NULL auto_increment,
     `urltemplate`   varchar(250)    NOT NULL,
