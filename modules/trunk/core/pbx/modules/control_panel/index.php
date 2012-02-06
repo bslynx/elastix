@@ -619,7 +619,7 @@ function saveresizeAction(&$pDB1, &$pDB2)
     $width   =  getParameter('width');
 
     if($width>747)
-        $num=3;
+        $num=4;
     elseif($width>559 && $width<748)
         $num=3;
     elseif($width>370 && $width<560)
