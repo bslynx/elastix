@@ -713,6 +713,49 @@ class AMIEventProcess extends TuberiaProcess
         }
     }
 
+    /* Deshacerse de todas las llamadas monitoreadas bajo la premisa de que 
+     * Asterisk se ha caído anormalmente y ya no está siguiendo llamadas */ 
+    private function _abortarTodasLasLlamadas()
+    {
+    	/* Copiar todas las llamadas a una lista temporal. Esto es necesario 
+         * para poder modificar la lista principal. */
+        $listaLlamadasRemover = array();
+        foreach ($this->_listaLlamadas as $llamada)
+            $listaLlamadasRemover[] = $llamada;
+        
+        $this->_log->output("WARN: abortando todas las llamadas activas...");
+        foreach ($listaLlamadasRemover as $llamada) {
+        	if (is_null($llamada->status)) {
+                // Llamada no ha sido iniciada todavía
+        		$this->_listaLlamadas->remover($llamada);
+                if (!is_null($llamada->agente_agendado)) {
+                    $a = $llamada->agente_agendado;
+                    $llamada->agente_agendado = NULL;
+                    $a->llamada_agendada = NULL;
+                    
+                    /* No puedo verificar estado de reserva de agente porque
+                     * se requiere de la conexión a Asterisk.*/
+                }
+        	} else switch ($llamada->status) {
+        	case 'Placing':
+                $llamada->llamadaFueOriginada(time(), NULL, NULL, 'Failure');
+                break;
+            case 'Ringing':
+            case 'OnQueue':
+            case 'Success':
+            case 'OnHold':
+                $llamada->llamadaFinalizaSeguimiento(time(),
+                        $this->_config['dialer']['llamada_corta']);
+                break;
+            default:
+                $this->_log->output("WARN: estado extraño {$llamada->status} al abortar llamada");
+                $llamada->llamadaFinalizaSeguimiento(time(),
+                        $this->_config['dialer']['llamada_corta']);
+                break;
+        	}
+        }
+    }
+
     /**************************************************************************/
 
     public function rpc_informarCredencialesAsterisk($sFuente, $sDestino, 
