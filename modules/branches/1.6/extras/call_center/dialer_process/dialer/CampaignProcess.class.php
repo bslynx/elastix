@@ -1581,7 +1581,8 @@ PETICION_LLAMADAS_AGENTE;
     
     private function _verificarFinLlamadasAgendables($sAgente, $id_campania, $infoSeguimiento)
     {
-    	$l = $this->_contarLlamadasAgendablesReserva($id_campania, $sAgente);
+    	if (is_null($this->_ami)) return;
+        $l = $this->_contarLlamadasAgendablesReserva($id_campania, $sAgente);
         if ($l['AHORA'] == 0 && $l['RESERVA'] == 0) {
         	/* Por ahora el agente ya no tiene llamadas agendables y se debe
              * reducir la cuenta de pausas del agente. Si la cuenta es 1, 
