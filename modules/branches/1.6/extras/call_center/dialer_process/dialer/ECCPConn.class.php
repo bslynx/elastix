@@ -2552,8 +2552,10 @@ SQL_INSERTAR_AGENDAMIENTO;
             'from-internal',    // context
             1);                 // priority
         if ($r['Response'] != 'Success') {
-            $this->_log->output('ERR: al transferir llamada: no se puede transferir - '.$r['Message']);
-            return FALSE;
+            $this->_log->output('ERR: '.__METHOD__.': al transferir llamada: no se puede transferir '.
+                $sCanalRemoto.' a '.$sExtension.' - '.$r['Message']);
+            $this->_agregarRespuestaFallo($xml_transferResponse, 500, 'Unable to transfer call');
+            return $xml_response;
         }
 
         $xml_transferResponse->addChild('success');
