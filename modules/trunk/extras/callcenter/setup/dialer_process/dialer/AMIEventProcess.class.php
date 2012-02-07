@@ -88,10 +88,12 @@ class AMIEventProcess extends TuberiaProcess
         // Verificar si la conexión AMI sigue siendo válida
         if (!is_null($this->_config)) {
             if (!is_null($this->_ami) && is_null($this->_ami->sKey)) $this->_ami = NULL;
-            if (is_null($this->_ami)) {
+            if (is_null($this->_ami) && !$this->_finalizandoPrograma) {
             	if (!$this->_iniciarConexionAMI()) {
                     $this->_log->output('ERR: no se puede restaurar conexión a Asterisk, se espera...');
-                    usleep(5000000);
+                    if ($this->_multiplex->procesarPaquetes())
+                        $this->_multiplex->procesarActividad(0);
+                    else $this->_multiplex->procesarActividad(5);
                 } else {
                     $this->_log->output('INFO: conexión a Asterisk restaurada, se reinicia operación normal.');
                 }
