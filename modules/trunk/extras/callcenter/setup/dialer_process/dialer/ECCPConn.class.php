@@ -1994,8 +1994,10 @@ LISTA_EXTENSIONES;
         //$this->_log->output('DEBUG: luego de colgado '.$sAgente.' se intenta colgar '.$sCanalRemoto.' ...');
         $r = $this->_ami->Hangup($sCanalRemoto);        
         if ($r['Response'] != 'Success') {
-            $this->_log->output('ERR: luego de colgar '.$sAgente.
-                ' no se puede colgar '.$sCanalRemoto.' - '.$r['Message'].' (se ignora)');
+            if ($this->DEBUG) {
+                $this->_log->output('DEBUG: luego de colgar '.$sAgente.
+                    ' no se puede colgar '.$sCanalRemoto.' - '.$r['Message'].' (se ignora)');
+            }
         }
 
         $xml_hangupResponse->addChild('success');
