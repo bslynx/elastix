@@ -148,8 +148,8 @@ class ECCPConn extends MultiplexConn
                         }
                     }
                     
-                    if ($this->DEBUG) {
-                        $iTimestampFinal = microtime(TRUE);
+                    $iTimestampFinal = microtime(TRUE);
+                    if ($this->DEBUG || (($iTimestampFinal - $iTimestampInicio) >= 1.0)) {
                         $this->_log->output('DEBUG: '.__METHOD__.': requerimiento '.
                             $comando->getName().' procesado luego de (sec): '.
                             ($iTimestampFinal - $iTimestampInicio));
