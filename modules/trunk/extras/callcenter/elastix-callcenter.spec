@@ -2,8 +2,8 @@
 
 Summary: Elastix Call Center 
 Name:    elastix-callcenter
-Version: 2.1.3
-Release: 1
+Version: 2.1.99
+Release: 0.alpha
 License: GPL
 Group:   Applications/System
 Source0: %{modname}_%{version}-%{release}.tgz
@@ -92,6 +92,105 @@ fi
 /etc/logrotate.d/elastixdialer
 
 %changelog
+* Wed Feb 08 2012 Alex Villacis Lasso <a_villacis@palosanto.com> 2.1.99-0.alpha
+- Pre-release version for testing of new dialer code.
+- From CHANGELOG:
+	- Agent Console: add support for opening external URLs for a connected call.
+	  External URLs can be opened in three different ways: as a new window, as
+      an embedded frame inside a tab in the agent console, or as a JSONP call 
+      that loads and executes Javascript in the context of the agent console.
+	- Campaign In: add support for linking external URLs to a campaign.
+	- Campaign Out: add support for linking external URLs to a campaign.
+	- Dialer (ECCP): extend "getcampaigninfo" request to report external URLs
+	- External URL: new module for management of external URLs to be opened on
+      each connected call.
+	- Agent Console: when reading ECCP password for agent, only active agents 
+      should be considered. Fixes Elastix bug #1157.
+	- Dialer (ECCP): protocol change: the agentloggedin and agentloggedout 
+      events no longer report agent membership to queues. The effort required to
+      parse the output of "queue show" scales linearly with the number of agents
+      in queues, and also with the number of queues defined, resulting in
+      noticeable lags in ECCP performance. A new request "getagentqueues" has
+      been added in case a client really needs this information.
+	- Dialer: (almost) complete rewrite of the central code.
+	  During a deployment with a moderately large number of agents, several
+      design flaws were uncovered in the dialer code. The largest of such design
+      flaws was the attempt to handle all of the operations of the dialer in a
+      single process. Coupled with this, several event handlers required 
+      synchronous database updates or reads, and in at least one handler, a 
+      database access with every single event, whether the event was from a 
+      handled call or not. In addition to this, the same event handler required
+      a synchronous AMI request that required three seconds to parse completely.
+      Furthermore, several instances were found where data was read from the
+      database that could have been cached, since the dialer itself generated 
+      the data. All of this added up to large and ever-increasing delays in 
+      event processing that degraded the responsiveness of the agent console 
+      (any implementation) by tens of seconds or more. To fix all of these
+      problems, the dialer was rewritten to make use of multiple processes. One
+      process handles AMI events, and does not read or write to the database.
+	  All of the database updates are sent as asynchronous messages to another 
+	  process, the process that reads outgoing campaign calls and places its 
+      calls. A third process handles the ECCP protocol and database accesses
+      that result from ECCP requests and events. Also, I seized the opportunity
+      to reorganize the code around a fully object-oriented model that caches as
+      much information as possible in memory and unifies almost all of the
+      handling for outgoing and incoming calls. 
+	- Dialer (ECCP): add new example program getcallinfo.php
+	- Agent Monitoring: fix some uses of undefined variables
+	- CallCenter Configuration: add new flag to completely disable dial
+      prediction in dialer.
+	- Agent Console: implement status refresh via Server-Sent Events. This mode
+      of operation saves further bandwidth by removing a POST request after an
+      event is received or after the 2-minute timeout. Long polling is kept as a
+      fallback for Internet Explorer.
+	- Agent Console: fix incorrect initial break state that caused console to 
+	  immediately refresh break state if agent console is entered while agent is
+	  in break.
+	- Agent Console: fix incorrect function reference that caused login process
+      to hang if user navigates to a different module and back during login 
+      process. 
+	- Agent Console: do not loop endlessly when some other client puts *our* 
+      agent on hold.
+	- Agent Console: fail more gracefully when shutting down dialer process, by 
+	  logging out the agent instead of getting stuck in an infinite loop.
+	- Dialer: add new function MultiplexServer::vaciarBuferesEscritura() to 
+      flush all output buffers.
+	- Dialer: modify packet processing algorithm to prioritize the Asterisk AMI 
+	  connection over other connections.
+	- Dialer: flush output buffers after every packet processing to ensure 
+      events are delivered as soon as possible.
+	- Dialer: add cache for output of 'agent show' and 'queue show' commands.
+      These commands are expensive to execute and greatly slow down the 
+      'getagentstatus' ECCP procedure. The current cache lifetime is 1.5 
+      seconds.
+	- Dialer: add utility function Predictivo::leerEstadoAgente() that will make
+      use of the output cache if possible.
+	- Dialer: add trimmed down function Predictivo::obtenerCanalRemotoAgente()
+      that only runs 'agent show' instead of building the entire queue report,
+      just to discard almost all of it.
+	- Dialer (ECCP): new ECCP diagnostic script getagentstatusloop.php
+	- Agent Console: fix typo that caused web console to refresh the agent
+      status twice on agent link.
+	- Dialer: discard AMI events for which there are no handlers upon reception.
+      Also put a microsecond timestamp for benchmarking.
+	- Dialer (ECCP): on hangup request, check clientchannel present instead of
+      status for reporting that agent is not in call. 
+	- Agent Console: reorder code so that ECCP call to 'getcampaigninfo' happens
+      at most once in status check.
+	- Dialer (ECCP): work around https://bugs.php.net/bug.php?id=41175 which
+      throws a warning on an attempt to set a XML attribute to an empty string.
+      Triggered by a form with an empty description. 
+	- Dialer (ECCP): remove bogus copy-paste leftover in form information
+      fetching.
+	- Dialer: at hangup, the check for scheduled calls requires access to 
+      campaign data, but the campaign may already have ended, so it might not be
+      in the campaign array. Read campaign data from database if required.
+	- Dialer (ECCP): fix access to possibly-undefined property 'ActualChannel'
+      when looping through calls - ActualChannel is set OnLink, but loop also 
+      visits unlinked calls in progress. 
+	- Dialer: subsys lock file must have the same name as the service in 
+	  /etc/init.d in order to shutdown properly.
+
 * Fri Nov 25 2011 Eduardo Cueva <ecueva@palosanto.com> 2.1.3-1
 - Changes in Spec file in Prereq elastix to elastix-framework >= 2.2.0-18
 - FIXED: Dialer (ECCP): fix copy/paste error in "getcampaignqueuewait" request 
