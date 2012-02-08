@@ -248,47 +248,6 @@ class ECCPProcess extends TuberiaProcess
         }
     }
     
-    // Método que lista las colas a las cuales está suscrito un agente
-    /**
-     * Método de conveniencia para verificar si el agente está en pausa, y 
-     * quitar la pausa en caso de encontrarla.
-     *
-     * @param   string  Canal del agente que se está logoneando: "Agent/9000"
-     *
-     * @return  VERDADERO en éxito, FALSE en error
-     */
-    private function _quitarPosiblePausa($sAgente)
-    {
-        if ($this->_estadoAgentePausa($sAgente)) {
-            $r = $this->_ami->QueuePause(NULL, $sAgente, "false");
-            // TODO: funcionó la operación de QueuePause ? $r['Response']
-        }
-        return TRUE;
-    }
-
-    /**
-     * Método para verificar el estado de pausa de un agente.
-     *
-     * @param   string  Canal del agente que se está logoneando: "Agent/9000"
-     *
-     * @return  VERDADERO si está en pausa, FALSE si no, o si agente no existe.
-     */
-    private function _estadoAgentePausa($sAgente)
-    {
-        $r = $this->_ami->Command("queue show");
-        $listaLineas = explode("\n", $r['data']);
-        foreach ($listaLineas as $sLinea) {
-            $regs = NULL;
-            if (preg_match('|^\s*(\w+/\d{2,})|', $sLinea, $regs)) {
-                if ($sAgente == $regs[1]) {
-                    // Se ha localizado el agente
-                    return (strpos($sLinea, "(paused)") !== FALSE);
-                }
-            }
-        }
-        return FALSE; // No se encontró al agente
-    }
-    
     private function _stdManejoExcepcionDB($e, $s)
     {
         $this->_log->output('ERR: '.__METHOD__. ": $s: ".implode(' - ', $e->errorInfo));
@@ -364,7 +323,7 @@ SQL_EXISTE_AUDIT;
     private function _marcarFinalSesionAgente($sAgente, $iTimestampLogout, $idAuditSesion, $idAuditBreak)
     {
         // Quitar posibles pausas sobre el agente
-        $this->_quitarPosiblePausa($sAgente);
+        $this->_ami->QueuePause(NULL, $sAgente, 'false');
         
         if (!is_null($idAuditBreak))
             $this->marcarFinalBreakAgente($idAuditBreak, $iTimestampLogout);
@@ -646,7 +605,7 @@ INFO_FORMULARIOS;
             $this->_multiplex->notificarEvento_AgentLogin($sAgente, NULL, FALSE);
         } else {
             // Si el agente está en pausa, se la quita ahora
-            $this->_quitarPosiblePausa($sAgente);
+            $this->_ami->QueuePause(NULL, $sAgente, 'false');
         
         	$id_sesion = $this->_marcarInicioSesionAgente($id_agent, $iTimestampLogin);
             if (!is_null($id_sesion)) {
