@@ -113,7 +113,7 @@ class MultiplexServer
                     // Escribir lo más que se puede de los datos pendientes por mostrar
                     $iBytesEscritos = fwrite($conexion['socket'], $conexion['pendiente_escribir']);
                     if ($iBytesEscritos === FALSE) {
-                        $this->oMainLog->output("ERR: error al escribir datos a ".$conexion['socket']);
+                        $this->_oLog->output("ERR: error al escribir datos a ".$conexion['socket']);
                         $this->_cerrarConexion($sKey);
                     } else {
                         $conexion['pendiente_escribir'] = substr($conexion['pendiente_escribir'], $iBytesEscritos);
@@ -173,7 +173,7 @@ class MultiplexServer
                     // Escribir lo más que se puede de los datos pendientes por mostrar
                     $iBytesEscritos = fwrite($conexion['socket'], $conexion['pendiente_escribir']);
                     if ($iBytesEscritos === FALSE) {
-                        $this->oMainLog->output("ERR: error al escribir datos a ".$conexion['socket']);
+                        $this->_oLog->output("ERR: error al escribir datos a ".$conexion['socket']);
                         $this->_cerrarConexion($sKey);
                     } else {
                         $conexion['pendiente_escribir'] = substr($conexion['pendiente_escribir'], $iBytesEscritos);
