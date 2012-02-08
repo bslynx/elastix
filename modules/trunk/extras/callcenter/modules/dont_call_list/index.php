@@ -157,6 +157,9 @@ function listCalls($pDB, $smarty, $module_name, $local_templates_dir) {
         $arrData=array();
     }
 
+    $button_delete="<input class='button' type='submit' name='submit_delete'".
+                    " value='"._tr('Remove')."'>";
+
     $url = construirURL(array('menu' => $module_name), array('nav', 'start'));
     $arrGrid = array("title"    => _tr('Phone List'),
         "url"      => $url,
@@ -165,7 +168,7 @@ function listCalls($pDB, $smarty, $module_name, $local_templates_dir) {
         "start"    => ($end==0) ? 0 : 1,
         "end"      => $end,
         "total"    => $end,
-        "columns"  => array(0 => array("name"      => "",
+        "columns"  => array(0 => array("name"      => $button_delete,
                                        "property1" => ""),
                             1 => array("name"      => _tr("Number Phone's"),
                                        "property1" => ""),
@@ -175,9 +178,9 @@ function listCalls($pDB, $smarty, $module_name, $local_templates_dir) {
                                        "property1" => "")));
 
     $oGrid = new paloSantoGrid($smarty);
-    $oGrid->addNew('submit_Add_Call',_tr('Add'));
-    $oGrid->customAction('submit_Apply',_tr('Apply'));
-    $oGrid->deleteList(_tr("Are you sure you want to delete this number(s)?"),'submit_delete',_tr("Remove"));
+    $oGrid->showFilter(
+        "<input type='submit' name='submit_Add_Call' value='"._tr('Add')."' class='button' />&nbsp&nbsp&nbsp&nbsp".
+        "<input type='submit' name='submit_Apply' value='"._tr('Apply')."' class='button' />");
     $sContenido = $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
     if (strpos($sContenido, '<form') === FALSE)
         $sContenido = "<form  method=\"POST\" style=\"margin-bottom:0;\" action=\"$url\">$sContenido</form>";
