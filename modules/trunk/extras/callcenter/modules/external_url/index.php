@@ -107,7 +107,8 @@ function listURL($pDB, $smarty, $module_name, $local_templates_dir)
             "<a href='?menu=$module_name&amp;action=edit_url&amp;id_url=".$tuplaUrl['id']."'>["._tr('Edit')."]</a>",
         );
     }
-    $grid->addNew("?menu=$module_name&action=new_url", _tr('New URL'), true);
+    //$grid->addNew("?menu=$module_name&action=new_url", _tr('New URL'), true);
+    $grid->showFilter("<div align=\"right\"><a href=\"?menu=$module_name&action=new_url\"><b>"._tr('New URL')."&raquo;</b></a></div>");
     $grid->setTitle(_tr('External URLs'));
     $grid->setColumns(array(_tr('Active'), _tr('Opens in'), _tr('URL Template'), _tr('Description'), _tr('Options')));
     $grid->setData($data);
