@@ -1,3 +1,5 @@
+* Dialer: init script MUST specify signal to send to shutdown process. Otherwise
+  killproc timeouts and sends SIGKILL to monitor process.
 * Agent Console: add support for opening external URLs for a connected call.
   External URLs can be opened in three different ways: as a new window, as an
   embedded frame inside a tab in the agent console, or as a JSONP call that 
