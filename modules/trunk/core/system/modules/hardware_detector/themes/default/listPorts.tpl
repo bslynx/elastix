@@ -107,7 +107,7 @@
                                                                         <td>
                                                                             <table style='border:1px #CCCCCC solid;padding:1px;background-color:white;' border='0' callpadding='0' cellspacing='0' onMouseOver="this.style.backgroundColor='#f2f2f2';" onMouseOut="this.style.backgroundColor='#ffffff';">
                                                                                 <tr><td  align='center' style='font-size:11px;background-image:url(modules/hardware_detector/images/{$puerto.ESTADO_DAHDI});height:64px;width:68px;background-repeat:no-repeat;vertical-align:top'><p><br />{$puerto.TIPO}<br />{$puerto.LOCALIDAD} </p></td></tr>
-                                                                                <tr><td  align='center' style='height:28px;font-size:11px;color:{$puerto.ESTADO_ASTERISK_COLOR}'>{$puerto.ESTADO_ASTERISK}</td></tr>
+                                                                                <tr><td  align='center' style='width:68px;height:28px;font-size:11px;color:{$puerto.ESTADO_ASTERISK_COLOR}'>{$puerto.ESTADO_ASTERISK}</td></tr>
                                                                             </table>
                                                                         </td>
                                                                 {if ($cnt+1)%12==0}

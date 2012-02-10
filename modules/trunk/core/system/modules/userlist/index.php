@@ -614,9 +614,23 @@ function reportUserList($arrLang, $pACL, $idUserAccount, $smarty, $userLevel1, $
         }
     }
 
-    $arrUsers = $pACL->getUsers();
+    $nav   = getParameter("nav");
+    $start = getParameter("start");
 
-    $end = 0;
+    $total = $pACL->getNumUsers();
+    $total = ($total == NULL)?0:$total;
+
+    $limit  = 20;
+    $oGrid  = new paloSantoGrid($smarty);
+    $oGrid->setLimit($limit);
+    $oGrid->setTotal($total);
+    $oGrid->pagingShow(true);
+    $oGrid->setURL("?menu=userlist");
+    $offset = $oGrid->calculateOffset();
+    $end = $oGrid->getEnd();
+
+    $arrUsers = $pACL->getUsersPaging($limit, $offset);
+
     $arrData = array();
     $typeUser = "";
     foreach($arrUsers as $user) {
@@ -667,13 +681,8 @@ function reportUserList($arrLang, $pACL, $idUserAccount, $smarty, $userLevel1, $
         }
 
     }
-
     $arrGrid = array("title"    => $arrLang["User List"],
                         "icon"     => "images/user.png",
-                        "width"    => "99%",
-                        "start"    => ($end==0) ? 0 : 1,
-                        "end"      => $end,
-                        "total"    => $end,
                         "columns"  => array(0 => array("name"      => $arrLang["Login"],
                                                     "property1" => ""),
                                             1 => array("name"      => $arrLang["Real Name"], 
@@ -685,10 +694,9 @@ function reportUserList($arrLang, $pACL, $idUserAccount, $smarty, $userLevel1, $
                                         )
                     );
 
-    $oGrid = new paloSantoGrid($smarty);
     if(!($typeUser == "other"))
       $oGrid->addNew("submit_create_user",_tr("Create New User"));
-   
+
     $contenidoModulo = $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
     return $contenidoModulo;
 }
