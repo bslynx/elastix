@@ -235,7 +235,6 @@ function listCampaign($pDB, $smarty, $module_name, $local_templates_dir)
         'MESSAGE_CONTINUE_DELETE'       =>  _tr('Are you sure you wish to delete campaign?'),
     ));
     $oGrid = new paloSantoGrid($smarty);
-    $oGrid->addNew("?menu=$module_name&action=new_campaign",_tr('Create New Campaign'),true);
     $oGrid->showFilter($smarty->fetch("$local_templates_dir/filter-list-campaign.tpl"));
     $sContenido = $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
     if (strpos($sContenido, '<form') === FALSE)
