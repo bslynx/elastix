@@ -798,7 +798,9 @@ SELECT
     a.number            AS number,
     c.start_time        AS fecha_hora,
     c.duration          AS duracion,
-    c.uniqueid          AS uniqueid
+    c.uniqueid          AS uniqueid,
+    c.failure_cause     AS failure_cause,
+    c.failure_cause_txt AS failure_cause_txt
 FROM calls c
 LEFT JOIN agent a 
     ON c.id_agent = a.id
@@ -825,6 +827,8 @@ SQL_LLAMADAS;
                     _tr('Date & Time'),
                     _tr('Duration'),
                     'Uniqueid',
+                    _tr('Failure Code'),
+                    _tr('Failure Cause'),
                 ),
                 'DATA'  =>  $datosTelefonos,
             ),

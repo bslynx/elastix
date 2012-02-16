@@ -1,3 +1,5 @@
+* Campaign Out: Add Failure Code and Failure Cause to CSV report. This reports
+  the failure cause reported when a call attempt failed.
 * Dialer: init script MUST specify signal to send to shutdown process. Otherwise
   killproc timeouts and sends SIGKILL to monitor process.
 * Agent Console: add support for opening external URLs for a connected call.
