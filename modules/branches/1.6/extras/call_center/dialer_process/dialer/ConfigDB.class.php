@@ -172,6 +172,8 @@ class ConfigDB
 		$this->limpiarCambios();
     }
 
+    function setDBConn($dbConn) { $this->_dbConn = $dbConn; }
+
 	// Leer todas las variables desde la base de datos
 	public function leerConfiguracionDesdeDB()
 	{

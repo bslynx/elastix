@@ -1,3 +1,5 @@
+* Dialer: fix broken recovery on database loss due to dangling connection in
+  configuration object.
 * Campaign Out: fix failed creation of new campaign with no external URL.
 * Campaign Out: allow free-format text as custom context. Fixes Elastix bug 
   #1168.

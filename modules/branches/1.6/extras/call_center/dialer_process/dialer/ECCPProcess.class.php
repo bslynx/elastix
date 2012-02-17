@@ -135,6 +135,7 @@ class ECCPProcess extends TuberiaProcess
                 usleep(5000000);
             } else {
             	$this->_log->output('INFO: conexión a DB restaurada, se reinicia operación normal.');
+                $this->_configDB->setDBConn($this->_db);
                 $this->_multiplex->setDBConn($this->_db);
             }
         }
