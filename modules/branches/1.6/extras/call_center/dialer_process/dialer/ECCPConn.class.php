@@ -1990,16 +1990,6 @@ LISTA_EXTENSIONES;
             return $xml_response;
         }
 
-        // Colgar también el canal remoto, para intentar acelerar el proceso de desconexión
-        //$this->_log->output('DEBUG: luego de colgado '.$sAgente.' se intenta colgar '.$sCanalRemoto.' ...');
-        $r = $this->_ami->Hangup($sCanalRemoto);        
-        if ($r['Response'] != 'Success') {
-            if ($this->DEBUG) {
-                $this->_log->output('DEBUG: luego de colgar '.$sAgente.
-                    ' no se puede colgar '.$sCanalRemoto.' - '.$r['Message'].' (se ignora)');
-            }
-        }
-
         $xml_hangupResponse->addChild('success');
         return $xml_response;
     }
@@ -2550,6 +2540,74 @@ SQL_INSERTAR_AGENDAMIENTO;
         $r = $this->_ami->Redirect(
             $sCanalRemoto,      // channel 
             '',                 // extrachannel
+            $sExtension,        // exten
+            'from-internal',    // context
+            1);                 // priority
+        if ($r['Response'] != 'Success') {
+            $this->_log->output('ERR: '.__METHOD__.': al transferir llamada: no se puede transferir '.
+                $sCanalRemoto.' a '.$sExtension.' - '.$r['Message']);
+            $this->_agregarRespuestaFallo($xml_transferResponse, 500, 'Unable to transfer call');
+            return $xml_response;
+        }
+
+        $xml_transferResponse->addChild('success');
+        return $xml_response;
+    }
+
+    private function Request_atxfercall($comando)
+    {
+        if (is_null($this->_ami))
+            return $this->_generarRespuestaFallo(500, 'No AMI connection');
+
+        if (is_null($this->_sUsuarioECCP))
+            return $this->_generarRespuestaFallo(401, 'Unauthorized');
+
+        // Verificar que agente está presentes
+        if (!isset($comando->agent_number)) 
+            return $this->_generarRespuestaFallo(400, 'Bad request');
+        $sAgente = (string)$comando->agent_number;
+
+        // Verificar que número de extensión está presente
+        if (!isset($comando->extension)) 
+            return $this->_generarRespuestaFallo(400, 'Bad request');
+        $sExtension = (string)$comando->extension;
+
+        $xml_response = new SimpleXMLElement('<response />');
+        $xml_transferResponse = $xml_response->addChild('atxfercall_response');
+
+        // Verificar que el agente sea válido en el sistema
+        $listaAgentes = $this->_listarAgentes();
+        if (!in_array($sAgente, array_keys($listaAgentes))) {
+            $this->_agregarRespuestaFallo($xml_transferResponse, 404, 'Specified agent not found');
+            return $xml_response;
+        }
+
+        // Verificar el hash del agente
+        if (!$this->_hashValidoAgenteECCP($comando)) {
+            $this->_agregarRespuestaFallo($xml_transferResponse, 401, 'Unauthorized agent');
+            return $xml_response;
+        }
+
+        // El siguiente código asume formato Agent/9000
+        if (!preg_match('|^Agent/(\d+)$|', $sAgente, $regs)) {
+            $this->_agregarRespuestaFallo($xml_transferResponse, 404, 'Specified agent not found');
+            return $xml_response;
+        }
+
+        $infoSeguimiento = $this->_tuberia->AMIEventProcess_infoSeguimientoAgente($sAgente);
+        if (is_null($infoSeguimiento)) {
+            $this->_agregarRespuestaFallo($xml_transferResponse, 404, 'Specified agent not found');
+            return $xml_response;
+        }
+        $sCanalRemoto = $infoSeguimiento['clientchannel'];
+        if (is_null($sCanalRemoto)) {
+            $this->_agregarRespuestaFallo($xml_transferResponse, 417, 'Agent not in call');
+            return $xml_response;
+        }
+
+        // Mandar a transferir la llamada usando el canal Agent/9000
+        $r = $this->_ami->Atxfer(
+            $sAgente,           // channel
             $sExtension,        // exten
             'from-internal',    // context
             1);                 // priority

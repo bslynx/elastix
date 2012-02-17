@@ -425,6 +425,17 @@ class ECCP
         return $xml_response->transfercall_response;
     }
 
+    public function atxfercall($extension)
+    {
+        $xml_request = new SimpleXMLElement("<request />");
+        $xml_cmdRequest = $xml_request->addChild('atxfercall');
+        $xml_cmdRequest->addChild('agent_number', $this->_agentNumber);
+        $xml_cmdRequest->addChild('agent_hash', $this->agentHash($this->_agentNumber, $this->_agentPass));
+        $xml_cmdRequest->addChild('extension', str_replace('&', '&amp;', $extension));
+        $xml_response = $this->send_request($xml_request);
+        return $xml_response->atxfercall_response;
+    }
+
     public function getcampaignstatus($campaign_type, $campaign_id)
     {
         $xml_request = new SimpleXMLElement("<request />");

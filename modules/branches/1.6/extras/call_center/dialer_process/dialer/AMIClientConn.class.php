@@ -291,6 +291,19 @@ class AMIClientConn extends MultiplexConn
       return $this->send_request('AbsoluteTimeout', array('Channel'=>$channel, 'Timeout'=>$timeout));
     }
 
+    /**
+     * Initiate an attended transfer
+     * 
+     * @param string $channel The transferer channel's name
+     * @param string $exten The extension to transfer to
+     * @param string $context The context to transfer to
+     * @param string $priority The priority to transfer to
+     */
+    function Atxfer($channel, $exten, $context, $priority)
+    {
+      return $this->send_request('Atxfer', array('Channel'=>$channel, 'Exten'=>$exten, 'Priority'=>$priority, 'Context'=>$context));
+    }
+
    /**
     * Change monitoring filename of a channel
     *
@@ -300,7 +313,7 @@ class AMIClientConn extends MultiplexConn
     */
     function ChangeMonitor($channel, $file)
     {
-      return $this->send_request('ChangeMontior', array('Channel'=>$channel, 'File'=>$file));
+      return $this->send_request('ChangeMonitor', array('Channel'=>$channel, 'File'=>$file));
     }
 
    /**
