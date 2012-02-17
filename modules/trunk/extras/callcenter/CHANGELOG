@@ -1,3 +1,5 @@
+* Agent Console: fix opening of blank page when receiving call in campaign that
+  does not have an external URL defined.
 * Dialer (ECCP): new requirement "atxfercall" that invokes the "atxfer" AMI 
   action.
 * Campaign Out: Add Failure Code and Failure Cause to CSV report. This reports

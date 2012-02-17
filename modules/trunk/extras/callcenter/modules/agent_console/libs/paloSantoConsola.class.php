@@ -591,7 +591,7 @@ LISTA_EXTENSIONES;
                 'working_time_starttime', 'working_time_endtime', 'queue', 
                 'retries', 'context', 'maxchan', 'status', 'script', 'forms',
                 'urltemplate', 'urlopentype') as $k)
-                if (!isset($reporte[$k])) $reporte[$k] = NULL;
+                if (!isset($reporte[$k]) || $reporte[$k] == '') $reporte[$k] = NULL;
             return $reporte;
         } catch (Exception $e) {
             $this->errMsg = '(internal) getcampaigninfo: '.$e->getMessage();
