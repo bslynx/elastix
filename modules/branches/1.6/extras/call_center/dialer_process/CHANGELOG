@@ -1,3 +1,5 @@
+* Campaign Out: allow free-format text as custom context. Fixes Elastix bug 
+  #1168.
 * Agent Console: fix opening of blank page when receiving call in campaign that
   does not have an external URL defined.
 * Dialer (ECCP): new requirement "atxfercall" that invokes the "atxfer" AMI 

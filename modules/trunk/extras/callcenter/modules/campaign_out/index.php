@@ -712,8 +712,8 @@ function getFormCampaign($arrDataTrunks, $arrDataQueues, $arrSelectForm,
             "REQUIRED"               => "yes",
             "INPUT_TYPE"             => "TEXT",
             "INPUT_EXTRA_PARAM"      => "",
-            "VALIDATION_TYPE"        => "ereg",
-            "VALIDATION_EXTRA_PARAM" => "^[[:alpha:]-]+$"
+            "VALIDATION_TYPE"        => "",
+            "VALIDATION_EXTRA_PARAM" => ""
         ),
         "queue" => array(
             "LABEL"                  => _tr("Queue"),
