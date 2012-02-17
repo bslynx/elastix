@@ -1,3 +1,5 @@
+* Dialer (ECCP): new requirement "atxfercall" that invokes the "atxfer" AMI 
+  action.
 * Campaign Out: Add Failure Code and Failure Cause to CSV report. This reports
   the failure cause reported when a call attempt failed.
 * Dialer: init script MUST specify signal to send to shutdown process. Otherwise
