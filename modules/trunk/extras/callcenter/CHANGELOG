@@ -1,3 +1,4 @@
+* Campaign Out: fix failed creation of new campaign with no external URL.
 * Campaign Out: allow free-format text as custom context. Fixes Elastix bug 
   #1168.
 * Agent Console: fix opening of blank page when receiving call in campaign that

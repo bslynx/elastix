@@ -217,7 +217,7 @@ class paloSantoCampaignCC
                             "daytime_init"       =>  paloDB::DBCAMPO($sHoraInicio),
                             "daytime_end"       =>  paloDB::DBCAMPO($sHoraFinal),
                             "script"       =>  paloDB::DBCAMPO($script),
-                            "id_url"        =>  paloDB::DBCAMPO($id_url),
+                            "id_url"        =>  (is_null($id_url) ? NULL : paloDB::DBCAMPO($id_url)),
                         )
                     );
 
