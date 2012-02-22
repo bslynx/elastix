@@ -528,11 +528,13 @@ LISTA_EXTENSIONES;
         }
     }
     
-    function transferirLlamada($sTransferExt)
+    function transferirLlamada($sTransferExt, $bAtxfer = FALSE)
     {
         try {
             $oECCP = $this->_obtenerConexion('ECCP');
-            $respuesta = $oECCP->transfercall($sTransferExt);
+            $respuesta = $bAtxfer 
+                ? $oECCP->atxfercall($sTransferExt) 
+                : $oECCP->transfercall($sTransferExt);
             if (isset($respuesta->failure)) {
                 $this->errMsg = _tr('Unable to transfer call').' - '.$this->_formatoErrorECCP($respuesta);
                 return FALSE;

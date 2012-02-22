@@ -1,3 +1,5 @@
+* Agent Console: expose selection of attended call transfer via "atxfercall"
+  command.
 * Dialer: fix broken recovery on database loss due to dangling connection in
   configuration object.
 * Campaign Out: fix failed creation of new campaign with no external URL.

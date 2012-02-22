@@ -475,6 +475,8 @@ function manejarSesionActiva_HTML($module_name, &$smarty, $sDirLocalPlantillas, 
         'TEXTO_CONTACTO_TELEFONO'       =>  '',
         'BTN_AGENDAR_LLAMADA'           =>  _tr('Schedule call'),
         'TITLE_TRANSFER_DIALOG'         =>  _tr('Select extension to transfer to'),
+        'LBL_TRANSFER_BLIND'            =>  _tr('Blind transfer'),
+        'LBL_TRANSFER_ATTENDED'         =>  _tr('Attended transfer'),
         'TITLE_SCHEDULE_CALL'           =>  _tr('Schedule call'),
         'LBL_SCHEDULE_CAMPAIGN_END'     =>  _tr('Call at end of campaign'),
         'LBL_SCHEDULE_BYDATE'           =>  _tr('Schedule at date'),
@@ -839,7 +841,7 @@ function manejarSesionActiva_agentTransfer($oPaloConsola)
         $respuesta['action'] = 'error';
         $respuesta['message'] = _tr('Invalid or missing extension to transfer');
     } else {
-        $bExito = $oPaloConsola->transferirLlamada($sTransferExt);
+        $bExito = $oPaloConsola->transferirLlamada($sTransferExt, (getParameter('atxfer') == 'true'));
         if (!$bExito) {
             $respuesta['action'] = 'error';
             $respuesta['message'] = _tr('Error while transferring call').' - '.$oPaloConsola->errMsg;

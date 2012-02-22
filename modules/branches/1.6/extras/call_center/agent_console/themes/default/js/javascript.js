@@ -45,6 +45,7 @@ $(document).ready(function() {
     $('#btn_agendar_llamada').button();
     $('#schedule_same_agent').button();
     $('#schedule_radio').buttonset();
+    $('#transfer_type_radio').buttonset();
     $('#schedule_date').hide();
     $('#elastix-callcenter-cejillas-contenido').tabs({
     	add:	function (event, ui) {
@@ -213,8 +214,8 @@ function apply_ui_styles(uidata)
     });
     $('#elastix-callcenter-seleccion-transfer').dialog({
         autoOpen: false,
-        width: 300,
-        height: 150,
+        width: 400,
+        height: 200,
         modal: true,
         buttons: [
             {
@@ -403,7 +404,8 @@ function do_transfer()
 		menu:		module_name, 
 		rawmode:	'yes',
 		action:		'transfer',
-		extension:	$('#transfer_extension').val()
+		extension:	$('#transfer_extension').val(),
+		atxfer: 	$('#transfer_type_attended').attr('checked'),
 	},
 	function (respuesta) {
         if (respuesta['action'] == 'error') {

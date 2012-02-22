@@ -137,11 +137,19 @@
 </div>{* elastix-callcenter-seleccion-break *}
 <div id="elastix-callcenter-seleccion-transfer" title="{$TITLE_TRANSFER_DIALOG}">
     <form>
-        <input 
-            name="transfer_extension"
-            id="transfer_extension"
-            class="ui-widget-content ui-corner-all" 
-            style="width: 100%" />
+        <div style="display: table; width: 100%">
+            <div style="display: table-row;">
+	        <input 
+	            name="transfer_extension"
+	            id="transfer_extension"
+	            class="ui-widget-content ui-corner-all" 
+	            style="width: 100%" />
+	        </div>
+	        <div align="center" id="transfer_type_radio" style="display: table-row; width: 100%">
+	            <input type="radio" id="transfer_type_blind" name="transfer_type" value="blind" checked="checked"/><label for="transfer_type_blind">{$LBL_TRANSFER_BLIND}</label>
+	            <input type="radio" id="transfer_type_attended" name="transfer_type" value="attended" /><label for="transfer_type_attended">{$LBL_TRANSFER_ATTENDED}</label>
+	        </div>
+        </div>
     </form>
 </div>{* elastix-callcenter-seleccion-transfer *}
 <div id="elastix-callcenter-agendar-llamada" title="{$TITLE_SCHEDULE_CALL}">
