@@ -3,7 +3,7 @@
 Summary: Elastix Call Center 
 Name:    elastix-callcenter
 Version: 2.1.99
-Release: 0.alpha
+Release: 1.alpha
 License: GPL
 Group:   Applications/System
 Source0: %{modname}_%{version}-%{release}.tgz
@@ -92,6 +92,25 @@ fi
 /etc/logrotate.d/elastixdialer
 
 %changelog
+* Wed Feb 22 2012 Alex Villacis Lasso <a_villacis@palosanto.com> 2.1.99-1.alpha
+- Second pre-release version for testing of new dialer code.
+- From CHANGELOG:
+	- Agent Console: expose selection of attended call transfer via "atxfercall"
+	  command.
+	- Dialer: fix broken recovery on database loss due to dangling connection in
+	  configuration object.
+	- Campaign Out: fix failed creation of new campaign with no external URL.
+	- Campaign Out: allow free-format text as custom context. Fixes Elastix bug 
+	  #1168.
+	- Agent Console: fix opening of blank page when receiving call in campaign 
+      that does not have an external URL defined.
+	- Dialer (ECCP): new requirement "atxfercall" that invokes the "atxfer" AMI 
+	  action.
+	- Campaign Out: Add Failure Code and Failure Cause to CSV report. This 
+      reports the failure cause reported when a call attempt failed.
+	- Dialer: init script MUST specify signal to send to shutdown process. 
+      Otherwise killproc timeouts and sends SIGKILL to monitor process.
+
 * Wed Feb 08 2012 Alex Villacis Lasso <a_villacis@palosanto.com> 2.1.99-0.alpha
 - Pre-release version for testing of new dialer code.
 - From CHANGELOG:
