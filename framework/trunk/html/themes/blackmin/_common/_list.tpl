@@ -3,38 +3,75 @@
     <table width="{$width}" align="center" cellspacing="0" cellpadding="0" >
         <thead>
             {* Bloque del filtro del contenido *}
-            {if !empty($contentFilter) ||  $addNewShow || $customActionShow}
+            {if !empty($arrActions) || !empty($contentFilter)}
                 <tr class="filterForm">
-                    <td colspan="{$numColumns}">
-                        <table width="100%" border="0" cellspacing="0" cellpadding="0" class="filterForm">
+                    <td colspan="{$numColumns}">                        
+                        <table cellpadding="0" cellspacing="0" border="0" class="filterForm" width="100%">
+                        {if !empty($arrActions)}
                             <tr>
-                                {if $addNewShow}
-                                    {if !$addNewLink}
-                                        <td width="160px" align="left">
-                                            <input type="submit" name="{$addNewTask}" value="{$addNewAlt}" class="button" />
-                                        </td>
-                                    {/if}
-                                {/if}
-                                {if $customActionShow}
-                                    {if !$customActionLink}
-                                        <td width="160px">
-                                            <input type="submit" name="{$customActionTask}" value="{$customActionAlt}" class="button" />
-                                        </td>
-                                    {/if}
-                                {/if}
-                                <td>{$contentFilter}</td>
-                                {if $addNewLink}
-                                    {if $addNewShow}
-                                        <td align="right">
-                                            <b><a href="{$addNewTask}" class="neo-table-action">{$addNewAlt}>></a></b>
-                                        </td>
+                            <td style="padding:0px;">
+                                {foreach from=$arrActions key=k item=accion name=actions}
+                                    {if $smarty.foreach.actions.first}
+                                        {assign var="clase" value="table-header-row-filter-first"}
                                     {else}
-                                        <td align="right">
-                                            <b><a href="{$customActionTask}" class="button">{$customActionAlt}>></a></b>
-                                        </td>
+                                        {assign var="clase" value="table-header-row-filter"}
                                     {/if}
-                                {/if}
+
+                                    {if $accion.type eq 'link'}
+                                        <a href="{$accion.task}" class="table-action" {if !empty($accion.onclick)} onclick="{$accion.onclick}" {/if} >
+                                            <div class="{$clase}" >
+                                                {if !empty($accion.icon)}
+                                                    <img border="0" src="{$accion.icon}" align="absmiddle"  />&nbsp;
+                                                {/if}
+                                                {$accion.alt}
+                                            </div>
+                                        </a>
+                                    {elseif $accion.type eq 'button'}
+                                        <div class="{$clase}">
+                                            {if !empty($accion.icon)}
+                                                <img border="0" src="{$accion.icon}" align="absmiddle"  />
+                                            {/if}
+                                            <input type="button" name="{$accion.task}" value="{$accion.alt}" {if !empty($accion.onclick)} onclick="{$accion.onclick}" {/if} class="table-action" />
+                                        </div> 
+                                    {elseif $accion.type eq 'submit'}
+                                        <div class="{$clase}">
+                                            {if !empty($accion.icon)}
+                                                <img border="0" src="{$accion.icon}" align="absmiddle"  />
+                                            {/if}
+                                            <input type="submit" name="{$accion.task}" value="{$accion.alt}" {if !empty($accion.onclick)} onclick="{$accion.onclick}" {/if} class="table-action" />
+                                        </div>                 
+                                    {elseif $accion.type eq 'text'}
+                                        <div class="{$clase}" style="cursor:default">                    
+                                            <input type="text"   id="{$accion.name}" name="{$accion.name}" value="{$accion.value}" {if !empty($accion.onkeypress)} onkeypress="{$accion.onkeypress}" {/if} style="height:22px" />
+                                            <input type="submit" name="{$accion.task}" value="{$accion.alt}" class="table-action" />
+                                        </div>                 
+                                    {elseif $accion.type eq 'combo'}
+                                        <div class="{$clase}" style="cursor:default">
+                                            <select name="{$accion.name}" id="{$accion.name}" {if !empty($accion.onchange)} onchange="{$accion.onchange}" {/if}>
+                                                {if !empty($accion.selected)}
+                                                    {html_options options=$accion.arrOptions selected=$accion.selected}
+                                                {else}
+                                                    {html_options options=$accion.arrOptions}
+                                                {/if}
+                                            </select>
+                                            {if !empty($accion.task)} 
+                                                <input type="submit" name="{$accion.task}" value="{$accion.alt}" class="table-action" />
+                                            {/if}
+                                        </div> 
+                                    {elseif $accion.type eq 'html'}
+                                        <div class="{$clase}">
+                                            {$accion.html}
+                                        </div>
+                                    {/if}
+                                {/foreach}
+                            </td>
                             </tr>
+                        {/if}
+                        {if !empty($contentFilter)}
+                            <tr>
+                                <td>{$contentFilter}</td>
+                            </tr>
+                        {/if}
                         </table>
                     </td>
                 </tr>
@@ -218,17 +255,7 @@
             </tr>
             <tr class="table_title_row">
                 {section name=columnNum loop=$numColumns start=0 step=1}
-                    {if $smarty.section.columnNum.first}
-                        {if $header[$smarty.section.columnNum.index].name == "" and $deleteListShow}
-                            <td class="table_title_row"> <input type="submit" name="{$deleteListTask}" value="{$deleteListAlt}" onclick="return confirmSubmit('{$deleteListMSG}')" class="button" /> </td>
-                        {elseif $header[$smarty.section.columnNum.index].name == ""}
-                            <td class="table_title_row">&nbsp;</td>
-                        {else}
-                            <td class="table_title_row">{$header[$smarty.section.columnNum.index].name}</td>
-                        {/if}
-                    {else}
-                        <td class="table_title_row">{$header[$smarty.section.columnNum.index].name}&nbsp;</td>
-                    {/if}
+                    <td class="table_title_row">{$header[$smarty.section.columnNum.index].name}&nbsp;</td>
                 {/section}
             </tr>
             {foreach from=$arrData key=k item=data name=filas}

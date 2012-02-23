@@ -1,54 +1,53 @@
 <form id="idformgrid" method="POST" style="margin-bottom:0;" action="{$url}">
     <div class="neo-table-header-row">
-        {if $addNewShow}
-            {if $addNewLink}
-                <a href="{$addNewTask}" class="neo-table-action">
+        {foreach from=$arrActions key=k item=accion name=actions}
+            {if $accion.type eq 'link'}
+                <a href="{$accion.task}" class="neo-table-action" {if !empty($accion.onclick)} onclick="{$accion.onclick}" {/if} >
                     <div class="neo-table-header-row-filter">
-                        <img border="0" src="images/plus2.png" align="absmiddle"  />&nbsp;{$addNewAlt}
-                    </div>
-                </a>
-            {else}
-                <div class="neo-table-header-row-filter" id="grid_task_add_new">
-                    <img border="0" src="images/plus2.png" align="absmiddle"  />
-                    <input type="submit" name="{$addNewTask}" value="{$addNewAlt}" class="neo-table-action" />
-                </div>
-            {/if}
-        {/if}
-
-        {if $deleteListShow}
-            {if $deleteListLink}
-                <a href="{$deleteListTask}" class="neo-table-action">
-                    <div class="neo-table-header-row-filter">
-                        <img border="0" src="images/delete5.png" align="absmiddle"  />&nbsp;{$addNewAlt}
-                    </div>
-                </a>
-            {else}
-                <div class="neo-table-header-row-filter">
-                    <img  border="0" src="images/delete5.png" align="absmiddle" />
-                    <input type="submit" name="{$deleteListTask}" value="{$deleteListAlt}" onclick="return confirmSubmit('{$deleteListMSG}')" class="neo-table-action" />
-                </div>
-            {/if}
-        {/if}
-
-        {if $customActionShow}
-            {if $customActionLink}
-                <a href="{$customActionTask}" class="neo-table-action">
-                    <div class="neo-table-header-row-filter">
-                        {if !empty($customActionIMG)}
-                            <img border="0" src="{$customActionIMG}" align="absmiddle"  />&nbsp;
+                        {if !empty($accion.icon)}
+                            <img border="0" src="{$accion.icon}" align="absmiddle"  />&nbsp;
                         {/if}
-                        {$customActionAlt}
+                        {$accion.alt}
                     </div>
                 </a>
-            {else}
+            {elseif $accion.type eq 'button'}
                 <div class="neo-table-header-row-filter">
-                    {if !empty($customActionIMG)}
-                        <img border="0" src="{$customActionIMG}" align="absmiddle"  />
+                    {if !empty($accion.icon)}
+                        <img border="0" src="{$accion.icon}" align="absmiddle"  />
                     {/if}
-                    <input type="submit" name="{$customActionTask}" value="{$customActionAlt}" class="neo-table-action" />
+                    <input type="button" name="{$accion.task}" value="{$accion.alt}" {if !empty($accion.onclick)} onclick="{$accion.onclick}" {/if} class="neo-table-action" />
+                </div> 
+            {elseif $accion.type eq 'submit'}
+                <div class="neo-table-header-row-filter">
+                    {if !empty($accion.icon)}
+                        <img border="0" src="{$accion.icon}" align="absmiddle"  />
+                    {/if}
+                    <input type="submit" name="{$accion.task}" value="{$accion.alt}" {if !empty($accion.onclick)} onclick="{$accion.onclick}" {/if} class="neo-table-action" />
+                </div>                 
+            {elseif $accion.type eq 'text'}
+                <div class="neo-table-header-row-filter" style="cursor:default">                    
+                    <input type="text"   id="{$accion.name}" name="{$accion.name}" value="{$accion.value}" {if !empty($accion.onkeypress)} onkeypress="{$accion.onkeypress}" {/if} style="height:22px" />
+                    <input type="submit" name="{$accion.task}" value="{$accion.alt}" class="neo-table-action" />
+                </div>                 
+            {elseif $accion.type eq 'combo'}
+                <div class="neo-table-header-row-filter" style="cursor:default">
+                    <select name="{$accion.name}" id="{$accion.name}" {if !empty($accion.onchange)} onchange="{$accion.onchange}" {/if}>
+                        {if !empty($accion.selected)}
+                            {html_options options=$accion.arrOptions selected=$accion.selected}
+                        {else}
+                            {html_options options=$accion.arrOptions}
+                        {/if}
+                    </select>
+                    {if !empty($accion.task)} 
+                        <input type="submit" name="{$accion.task}" value="{$accion.alt}" class="neo-table-action" />
+                    {/if}
+                </div> 
+            {elseif $accion.type eq 'html'}
+                <div class="neo-table-header-row-filter">
+                    {$accion.html}
                 </div>
             {/if}
-        {/if}
+        {/foreach}
 
         {if !empty($contentFilter)}
             <div class="neo-table-header-row-filter" id="neo-tabla-header-row-filter-1">
@@ -213,19 +212,13 @@
     }
 
     $("[id^=page]").keyup(function(event) {
-        if ( event.which == 13 ) {
-            event.preventDefault();
-            $("#idformgrid").submit();
-        }
-        else{
-            var id  = $(this).attr("id");
-            var val = $(this).val();
+        var id  = $(this).attr("id");
+        var val = $(this).val();
 
-            if(id == "pageup")
-                $("#pagedown").val(val);
-            else if(id == "pagedown")
-                $("#pageup").val(val);
-        }
+        if(id == "pageup")
+            $("#pagedown").val(val);
+        else if(id == "pagedown")
+            $("#pageup").val(val);
     });
 
     //   $(document).ready(function(){
