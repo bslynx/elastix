@@ -32,23 +32,24 @@ require_once "{$arrConf['basePath']}/libs/paloSantoPDF.class.php";
 
 class paloSantoGrid {
 
-    var $title;
-    var $icon;
-    var $width;
-    var $enableExport;
-    var $limit;
-    var $total;
-    var $offset;
-    var $start;
-    var $end;
-    var $tplFile;
-    var $pagingShow;
-    var $nameFile_Export;
-    var $arrHeaders;
-    var $arrData;
-    var $url;
+    private $title;
+    private $icon;
+    private $width;
+    private $enableExport;
+    private $limit;
+    private $total;
+    private $offset;
+    private $start;
+    private $end;
+    private $tplFile;
+    private $pagingShow;
+    private $nameFile_Export;
+    private $arrHeaders;
+    private $arrData;
+    private $url;
+    private $arrActions;
 
-    function paloSantoGrid($smarty)
+    public function paloSantoGrid($smarty)
     {
         $this->title  = "";
         $this->icon   = "images/list.png";
@@ -67,48 +68,103 @@ class paloSantoGrid {
         $this->arrData    = array();
         $this->url        = "";
 
-        $this->addNewShow = 0;
-        $this->addNewLink = 0;
-        $this->addNewTask = "add";
-        $this->addNewAlt  = "New Row";
-
-        $this->customActionShow = 0;
-        $this->customActionLink = 0;
-        $this->customActionTask = "task";
-        $this->customActionAlt  = "Custom Action";
-        $this->customActionIMG  = "";
-
-        $this->deleteListShow = 0;
-        $this->deleteListLink = 0;
-        $this->deleteListMSG  = "";
-        $this->deleteListTask = "remove";
-        $this->deleteListAlt  = "Delete Selected";
+        $this->arrActions = array();
     }
 
-    function addNew($task="add", $alt="New Row", $asLink=false)
+    public function addNew($task="add", $alt="New Row", $asLink=false)
     {
-        $this->addNewShow = 1;
-        $this->addNewTask = $task;
-        $this->addNewAlt  = $alt;
-        $this->addNewLink = (int)$asLink;
+        $type = ($asLink)?"link":"submit";
+        $this->addAction($task,$alt,"images/plus2.png",$type);
     }
 
-    function customAction($task="task", $alt="Custom Action", $img="",  $asLink=false)
+    public function customAction($task="task", $alt="Custom Action", $img="",  $asLink=false)
     {
-        $this->customActionShow = 1;
-        $this->customActionTask = $task;
-        $this->customActionAlt  = $alt;
-        $this->customActionIMG  = $img;
-        $this->customActionLink = (int)$asLink;
+        $type = ($asLink)?"link":"submit";
+        $this->addAction($task,$alt,$img,$type);
     }
 
-    function deleteList($msg="" , $task="remove", $alt="Delete Selected",  $asLink=false)
+    public function deleteList($msg="" , $task="remove", $alt="Delete Selected",  $asLink=false)
     {
-        $this->deleteListShow = 1;
-        $this->deleteListMSG  = $msg;
-        $this->deleteListTask = $task;
-        $this->deleteListAlt  = $alt;
-        $this->deleteListLink = (int)$asLink;
+        $type    = ($asLink)?"link":"submit";
+        $onclick = "return confirmSubmit('"._tr($msg)."')";
+        $this->addAction($task,$alt,"images/delete5.png",$type,$onclick);
+    }
+
+    public function addLinkAction($href="action=add", $alt="New Row", $icon=null, $onclick=null)
+    {
+        $this->addAction($href,$alt,$icon,"link",$onclick);
+    }
+
+    public function addSubmitAction($task="add", $alt="New Row", $icon=null, $onclick=null)
+    {
+        $this->addAction($task,$alt,$icon,"submit",$onclick);
+    }
+
+    public function addButtonAction($name="add", $alt="New Row", $icon=null, $onclick="javascript:click()")
+    {
+        $this->addAction($name,$alt,$icon,"button",$onclick);
+    }
+
+    public function addInputTextAction($name_input="add", $label="New Row", $value_input="", $task="add", $onkeypress_text=null)
+    {
+        $newAction['type']  = "text";
+        $newAction['name']  = $name_input;
+        $newAction['alt']   = $label;
+        $newAction['value'] = $value_input;
+        $newAction['onkeypress'] = empty($onkeypress_text)?null:$onkeypress_text;
+        $newAction['task']    = empty($task)?"add":$task;
+
+        $this->arrActions[] = $newAction;
+    }
+
+    public function addComboAction($name_select="cmb", $label="New Row", $data=array(), $selected=null, $task="add", $onchange_select=null)
+    {
+        $newAction['type'] = "combo";
+        $newAction['task'] = $name_select;
+        $newAction['alt']  = $label;
+        $newAction['arrOptions'] = empty($data)?array():$data;
+        $newAction['selected']   = empty($selected)?null:$selected;
+        $newAction['onchange']   = empty($onchange_select)?null:$onchange_select;
+        $newAction['task']    = empty($task)?"add":$task;
+
+        $this->arrActions[] = $newAction;
+    }
+
+    public function addHTMLAction($html)
+    {
+        $this->addAction($html,null,null,"html",null);
+    }
+
+    private function addAction($task, $alt, $icon, $type="submit", $event=null)
+    {
+        $newAction = array();
+
+        switch($type){
+            case 'link':
+            case 'button':
+            case 'submit':
+                $newAction = array(
+                    'type' => $type,
+                    'task' => $task,
+                    'alt'  => $alt,
+                    'icon' => $icon,
+                    'onclick' => empty($event)?null:$event);
+                break;
+            case 'html':
+                $newAction = array(
+                    'type' => $type,
+                    'html' => $task);
+                break;
+            default:
+                $newAction = array(
+                    'type' => "submit",
+                    'task' => $task,
+                    'alt'  => $alt,
+                    'icon' => $icon);
+                break;
+        }
+
+        $this->arrActions[] = $newAction;
     }
 
     function pagingShow($show)
@@ -298,22 +354,7 @@ class paloSantoGrid {
     {
         $this->smarty->assign("pagingShow",$this->pagingShow);
 
-        $this->smarty->assign("addNewShow",$this->addNewShow);
-        $this->smarty->assign("addNewLink",$this->addNewLink);
-        $this->smarty->assign("addNewTask",$this->addNewTask);
-        $this->smarty->assign("addNewAlt" ,_tr($this->addNewAlt));
-
-        $this->smarty->assign("customActionShow",$this->customActionShow);
-        $this->smarty->assign("customActionLink",$this->customActionLink);
-        $this->smarty->assign("customActionTask" ,$this->customActionTask);
-        $this->smarty->assign("customActionAlt",$this->customActionAlt);
-        $this->smarty->assign("customActionIMG" ,_tr($this->customActionIMG));
-
-        $this->smarty->assign("deleteListShow",$this->deleteListShow);
-        $this->smarty->assign("deleteListLink",$this->deleteListLink);
-        $this->smarty->assign("deleteListMSG" ,$this->deleteListMSG);
-        $this->smarty->assign("deleteListTask",$this->deleteListTask);
-        $this->smarty->assign("deleteListAlt" ,_tr($this->deleteListAlt));
+        $this->smarty->assign("arrActions",$this->arrActions);
 
         $this->smarty->assign("title", $this->getTitle());
         $this->smarty->assign("icon",  $this->getIcon());

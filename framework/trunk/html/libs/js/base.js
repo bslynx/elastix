@@ -618,7 +618,7 @@ function saveToggleTab(){
 
 $(document).ready(function(){
     //***Para los módulos con filtro se llama a la función pressKey
-    if(document.getElementById("filter_value"))
+    if(document.getElementById("filter_value") || document.getElementById("pageup"))
 	document.onkeypress = keyPressed;
     //*****************************************/
     $(".close_image_box").click(function(){
