@@ -123,5 +123,7 @@ $arrLangModule=array(
 'Manage Forms'=>'Manage Forms',
 'External URLs' => 'External URLs',
 'Manage External URLs' => 'Manage External URLs',
+'At least 1 used channel must be allowed.' => 'At least 1 used channel must be allowed.',
+'Campaign must allow at least one call retry' => 'Campaign must allow at least one call retry',
 );
 ?>

@@ -464,7 +464,11 @@ function formEditCampaign($pDB, $smarty, $module_name, $local_templates_dir, $id
                 $strErrorMsg .= "";
                 $smarty->assign("mb_message", $strErrorMsg);
             } elseif ($_POST['max_canales'] <= 0) { 
-                $smarty->assign("mb_message", 'At least 1 used channel must be allowed.');
+                $smarty->assign("mb_title", _tr("Validation Error"));
+                $smarty->assign("mb_message", _tr('At least 1 used channel must be allowed.'));
+            } elseif ((int)$_POST['reintentos'] <= 0) { 
+                $smarty->assign("mb_title", _tr("Validation Error"));
+                $smarty->assign("mb_message", _tr('Campaign must allow at least one call retry'));
             } else {
                 $time_ini = $_POST['hora_ini_HH'].":".$_POST['hora_ini_MM'];
                 $time_fin = $_POST['hora_fin_HH'].":".$_POST['hora_fin_MM'];
