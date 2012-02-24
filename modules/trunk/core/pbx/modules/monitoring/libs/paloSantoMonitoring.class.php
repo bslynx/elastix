@@ -219,11 +219,15 @@ class paloSantoMonitoring {
         return $result['userfield'];
     }
 
-    function getAudioByUniqueId($id)
+    function getAudioByUniqueId($id, $namefile = NULL)
     {
         
         $query = "select userfield from cdr where uniqueid=?";
         $parame = array($id);
+        if (!is_null($namefile)) {
+            $query .= ' AND userfield = ?';
+            $parame[] = 'audio:'.$namefile;
+        }
         $result=$this->_DB->getFirstRowQuery($query, true, $parame);
         if($result==FALSE){
             $this->errMsg = $this->_DB->errMsg;

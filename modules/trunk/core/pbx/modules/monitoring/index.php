@@ -300,9 +300,9 @@ function reportMonitoring($smarty, $module_name, $local_templates_dir, &$pDB, $p
                       break;
                 }
                 if ($namefile != 'deleted') {
-                    $recordingLink = "<a  href=\"javascript:popUp('index.php?menu=$module_name&action=display_record&id=$file&rawmode=yes',350,100);\">"._tr("Listen")."</a>&nbsp;";
+                    $recordingLink = "<a  href=\"javascript:popUp('index.php?menu=$module_name&action=display_record&id=$file&namefile=$namefile&rawmode=yes',350,100);\">"._tr("Listen")."</a>&nbsp;";
 
-                    $recordingLink .= "<a href='?menu=$module_name&action=download&id=$file&rawmode=yes' >"._tr("Download")."</a>";
+                    $recordingLink .= "<a href='?menu=$module_name&action=download&id=$file&namefile=$namefile&rawmode=yes' >"._tr("Download")."</a>";
                 } else {
                     $recordingLink = '';
                 }
@@ -337,6 +337,7 @@ function reportMonitoring($smarty, $module_name, $local_templates_dir, &$pDB, $p
 
 function downloadFile($smarty, $module_name, $local_templates_dir, &$pDB, $pACL, $arrConf, $user, $extension, $esAdministrador){
     $record = getParameter("id");
+    $namefile = getParameter('namefile');
     $pMonitoring = new paloSantoMonitoring($pDB);
     if(!$esAdministrador){
         if(!$pMonitoring->recordBelongsToUser($record, $extension)){
@@ -348,7 +349,7 @@ function downloadFile($smarty, $module_name, $local_templates_dir, &$pDB, $pACL,
     $path_record = $arrConf['records_dir'];
     if (isset($record) && preg_match("/^[[:digit:]]+\.[[:digit:]]+$/",$record)) {
 
-        $filebyUid   = $pMonitoring->getAudioByUniqueId($record);
+        $filebyUid   = $pMonitoring->getAudioByUniqueId($record, $namefile);
 
         $file = basename($filebyUid['userfield']);
         $file = str_replace("audio:","",$file);
@@ -452,6 +453,7 @@ function record_format(&$pDB, $arrConf){
 function display_record($smarty, $module_name, $local_templates_dir, &$pDB, $pACL, $arrConf, $user, $extension, $esAdministrador){
     $action = getParameter("action");
     $file = getParameter("id");
+    $namefile = getParameter('namefile');
     $pMonitoring = new paloSantoMonitoring($pDB);
     $path_record = $arrConf['records_dir'];
     $sContenido="";
@@ -466,7 +468,7 @@ function display_record($smarty, $module_name, $local_templates_dir, &$pDB, $pAC
                 $session_id = session_id();
                 $ctype=record_format(&$pDB, $arrConf);
                 $sContenido=<<<contenido
-                    <embed src='index.php?menu=$module_name&action=download&id=$file&rawmode=yes&elastixSession=$session_id' width=300, height=20 autoplay=true loop=false type="$ctype"></embed><br>
+                    <embed src='index.php?menu=$module_name&action=download&id=$file&namefile=$namefile&rawmode=yes&elastixSession=$session_id' width=300, height=20 autoplay=true loop=false type="$ctype"></embed><br>
 contenido;
             break;
     }
