@@ -152,6 +152,7 @@ function _moduleContent(&$smarty, $module_name)
 function report_conference($smarty, $module_name, $local_templates_dir, $pDB, $arrLang2, $arrConfig, $dsn_agi_manager, $dsnAsterisk)
 {
     global $arrLang;
+    global $arrConf;
 
     $bSoporteWebConf = (file_exists('modules/conferenceroom_list/libs/conferenceActions.lib.php'));
     $arrConference = array("Past_Conferences" => $arrLang["Past Conferences"], "Current_Conferences" => $arrLang["Current Conferences"], "Future_Conferences" => $arrLang["Future Conferences"]);
@@ -216,7 +217,8 @@ function report_conference($smarty, $module_name, $local_templates_dir, $pDB, $a
         // la lista de datos para las columnas adicionales
         $listaWebConf = array();
         if (!is_null($pConfWeb)) {
-            $listaWC = $pConfWeb->listarConferencias();
+            $pACL = new paloACL($arrConf['elastix_dsn']['acl']);
+            $listaWC = $pConfWeb->listarConferencias($pACL->isUserAdministratorGroup($_SESSION['elastix_user']));
             foreach ($listaWC as $tuplaConf) {
                 if (!is_null($tuplaConf['id_cbmysql_conference']))
                     $listaWebConf[$tuplaConf['id_cbmysql_conference']] = $tuplaConf;
