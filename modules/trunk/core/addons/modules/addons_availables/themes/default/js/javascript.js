@@ -141,7 +141,10 @@ function do_listarAddons(list_offset)
 				$('body').css('cursor','wait');
 				$(this).css('cursor','wait');
 				estadoCliente.name_rpm = $(this).parent().children('#name_rpm').val();
-				do_checkDependencies(estadoCliente.name_rpm);
+				if($('#'+estadoCliente.name_rpm+'_installed').val() == "yes")
+				    checkServerID(estadoCliente.name_rpm);
+				else
+				    do_checkDependencies(estadoCliente.name_rpm);
 			});
 			$('.neo-addons-row-button-install-left, .neo-addons-row-button-install-right, .neo-addons-row-button-trial-left, .neo-addons-row-button-trial-right').click(function () {
 				$('body').css('cursor','wait');
@@ -178,6 +181,8 @@ function checkServerID(name_rpm)
 		action:		'getServerKey'
 	},
 	function (respuesta) {
+		$('body').css('cursor','default');
+		$('.neo-addons-row-button-buy-left.neo-addons-row-button-buy-right').css('cursor','pointer');
 		if(respuesta["server_key"])
 		    do_iniciarCompra(name_rpm);
 		else{

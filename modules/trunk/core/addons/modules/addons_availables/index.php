@@ -281,6 +281,17 @@ function do_iniciarUninstall($smarty, $module_name, $local_templates_dir)
     $json = new Services_JSON();
     Header('Content-Type: application/json');
 
+    //Se busca si existe el archivo que indica las dependencias a desinstalar también
+    if(file_exists("/usr/bin/$name_rpm-dependencies")){
+	exec("/usr/bin/$name_rpm-dependencies",$output,$retval);
+	if($retval == 0){
+	    if(is_array($output) && count($output)>0){
+		foreach($output as $dependency)
+		    $name_rpm .= " $dependency";
+	    }
+	}
+    }
+
     $oAddons = new paloSantoAddons();
     $oAddons->updateStatusCache();
     $status = $oAddons->getStatusCache();

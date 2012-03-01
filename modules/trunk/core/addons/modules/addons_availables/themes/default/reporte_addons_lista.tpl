@@ -26,9 +26,11 @@
             <div class="neo-addons-row-button-install-left">{$UPDATE}</div>
             <div class="neo-addons-row-button-install-right"><img src="modules/{$module_name}/images/addons_icon_update.png" width="20" height="17" alt="Update" /></div>
         {/if}
+	<input type="hidden" id="{$data.name_rpm}_installed" value="yes"/>
         <div class="neo-addons-row-button-uninstall-left">{$UNINSTALL}</div>
         <div class="neo-addons-row-button-uninstall-right"><img src="modules/{$module_name}/images/addons_icon_uninstall.png" width="17" height="17" alt="Uninstall" /></div>
 	{if $data.fecha_compra eq 0 and $data.is_commercial}
+	    <input type="hidden" id="{$data.name_rpm}_link" value="{$data.url_marketplace}{$server_key}&referer="/>
 	    <div class="neo-addons-row-button-buy-left">{$BUY}</div>
 	    <div class="neo-addons-row-button-buy-right"><img src="modules/{$module_name}/images/addons_icon_buy.png" width="19" height="18" alt="Buy" /></div>
 	{/if}
