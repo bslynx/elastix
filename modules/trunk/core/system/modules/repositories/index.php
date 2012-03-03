@@ -28,13 +28,14 @@
   $Id: repositories.php $ */
 
 include_once "libs/paloSantoGrid.class.php";
+include_once "libs/paloSantoForm.class.php";
 
 function _moduleContent(&$smarty, $module_name)
 {
     //include module files
     include_once "modules/$module_name/configs/default.conf.php";
     require_once "modules/$module_name/libs/PaloSantoRepositories.class.php";
-    
+
     $lang=get_language();
     $base_dir=dirname($_SERVER['SCRIPT_FILENAME']);
     $lang_file="modules/$module_name/lang/$lang.lang";
@@ -77,28 +78,19 @@ function listRepositories($smarty, $module_name, $local_templates_dir,$arrConf) 
     $option["main"]   = "";
     $option["others"] = "";
     $option["all"]    = "";
-    if(isset($typeRepository)){
-	$option[$typeRepository] = "selected";
-    }
-    else
-	$typeRepository = "main";
+
     $arrRepositorios = $oRepositories->getRepositorios($arrConf['ruta_repos'],$typeRepository,$arrConf["main_repos"]);
-    $limit  = 50;
+    $limit  = 40;
     $total  = count($arrRepositorios);
     $oGrid  = new paloSantoGrid($smarty);
     $oGrid->setLimit($limit);
     $oGrid->setTotal($total);
     $offset = $oGrid->calculateOffset();
     $end    = $oGrid->getEnd();
-//    $offset = $oGrid->getOffsetValue(); 
-//    $oGrid  = new paloSantoGrid($smarty);
-//    $oGrid->setLimit($limit);
-//    $offset = $oGrid->getOffSet($limit,$total,(isset($_GET['nav']))?$_GET['nav']:NULL,(isset($_GET['start']))?$_GET['start']:NULL);
-//    $end    = ($offset+$limit)<=$total ? $offset+$limit : $total;
-
     $arrData = array();
     $version = $oRepositories->obtenerVersionDistro();
     $arch = $oRepositories->obtenerArquitectura();
+ //   print($arch);
     if (is_array($arrRepositorios)) {
         for($i=$offset;$i<$end;$i++){
             $activo = "";
@@ -109,35 +101,47 @@ function listRepositories($smarty, $module_name, $local_templates_dir,$arrConf) 
         }
     }
 
+    if(isset($typeRepository)){
+        $oGrid->setURL("?menu=$module_name&typeRepository=$typeRepository");
+        $_POST["typeRepository"]=$typeRepository;
+    }else{
+        $oGrid->setURL("?menu=$module_name");
+    }
+
     $arrGrid = array("title"    => $arrLang["Repositories"],
-        "url"      => array('menu' => $module_name),
         "icon"     => "modules/repositories/images/system_updates_repositories.png",
-       //"width"    => "99%",
-       "start"    => ($total==0) ? 0 : $offset + 1,
-       "end"      => $end,
-       "total"    => $total,
+        "width"    => "99%",
+        "start"    => ($total==0) ? 0 : $offset + 1,
+        "end"      => $end,
+        "total"    => $total,
         "columns"  => array(0 => array("name"      => $arrLang["Active"],
                                        "property1" => ""),
-                            1 => array("name"      => $arrLang["Name"], 
+                            1 => array("name"      => $arrLang["Name"],
                                        "property1" => "")));
 
     $oGrid->customAction('submit_aceptar',_tr('Save/Update'));
-    $oGrid->showFilter( "
-      <table border='0' cellpadding='4' callspacing='0' width='100%' height='44'>
-	   <tr class='letra12'>
-		<td width='5%' align='center'>
-		      <input type='button' name='default' value='{$arrLang['Default']}' class='button' onclick='defaultValues($total,$version,\"$arch\")' />
-		</td>
-		<td align='left'>Repo:&nbsp;
-		    <select name='typeRepository' onchange='javascript:submit();'> 
-			  <option value='main' {$option['main']}>{$arrLang['Main']}</option>
-			  <option value='others' {$option['others']}>{$arrLang['Others']}</option>
-			  <option value='all' {$option['all']}>{$arrLang['All']}</option>
-		    </select>&nbsp; &nbsp;
-		 </td>
-	    </tr> 
-       </table>");
+    $oGrid->addButtonAction("default",_tr('Default'),null,"defaultValues($total,'$version','$arch')");
+    $FilterForm = new paloForm($smarty,createFilter());
+
+    $htmlFilter = $FilterForm->fetchForm("$local_templates_dir/new.tpl","",$_POST);
+    $oGrid->showFilter($htmlFilter);
+
     $contenidoModulo = $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
     return $contenidoModulo;
 }
+
+function createFilter(){
+    $arrOpt = array("main"=>_tr('Main'),"others"=>_tr('Others'),"all"=>_tr('All'));
+        $arrFields = array(
+            "typeRepository"   => array(      "LABEL"                  => _tr("Repo"),
+                                            "REQUIRED"               => "no",
+                                            "INPUT_TYPE"             => "SELECT",
+                                            "INPUT_EXTRA_PARAM"      => $arrOpt,
+                                            "VALIDATION_TYPE"        => "text",
+                                            "VALIDATION_EXTRA_PARAM" => "",
+                                            "ONCHANGE"               => "javascript:submit()"),
+            );
+        return $arrFields;
+}
 ?>
+
