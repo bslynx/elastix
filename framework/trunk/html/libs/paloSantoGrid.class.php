@@ -48,6 +48,7 @@ class paloSantoGrid {
     private $arrData;
     private $url;
     private $arrActions;
+    private $arrControlFilters;
 
     public function paloSantoGrid($smarty)
     {
@@ -69,6 +70,38 @@ class paloSantoGrid {
         $this->url        = "";
 
         $this->arrActions = array();
+        $this->arrFiltersControl = array();
+    }
+
+    public function addFilterControl($msg, &$arrData, $arrFilter = array())
+    {
+        if((is_array($arrFilter) && count($arrFilter)>0)){
+            $name_delete_filters = getParameter('name_delete_filters');
+            $keys = array_keys($arrFilter);
+            $first = $keys[0];
+
+            $name_delete_filters = explode(",",$name_delete_filters);
+            if(in_array($first, $name_delete_filters)){ //accion eliminar
+                foreach($arrFilter as $name => $value){
+                    $arrData[$name] = $value;
+                }
+            }
+            else{
+                $filter_apply = true;
+                foreach($arrFilter as $name => $value){
+                    $val = (isset($arrData[$name]) && !empty($arrData[$name]))?$arrData[$name]:null;
+                    if($val===null){
+                        $filter_apply = false; 
+                        break;                        
+                    }
+                }
+                if($filter_apply) //solo si todos estan seteados
+                    $this->arrFiltersControl[] = array("msg" => $msg, "filters" => implode(",",$keys));
+            }                
+        }
+        else{
+            echo "Invalid format for variable \$arrFilter.";
+        }
     }
 
     public function addNew($task="add", $alt="New Row", $asLink=false)
@@ -210,7 +243,7 @@ class paloSantoGrid {
     function setURL($arrURL)
     {
         if (is_array($arrURL))
-            $this->url = construirURL($arrURL, array('nav', 'start', 'logout'));
+            $this->url = construirURL($arrURL, array('nav', 'start', 'logout','name_delete_filters'));
         else
             $this->url = $arrURL;
     }
@@ -355,6 +388,7 @@ class paloSantoGrid {
         $this->smarty->assign("pagingShow",$this->pagingShow);
 
         $this->smarty->assign("arrActions",$this->arrActions);
+        $this->smarty->assign("arrFiltersControl",$this->arrFiltersControl);
 
         $this->smarty->assign("title", $this->getTitle());
         $this->smarty->assign("icon",  $this->getIcon());

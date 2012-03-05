@@ -383,6 +383,19 @@ function checkbox($id_name, $checked='off', $disable='off')
 */
 function getParameter($parameter)
 {
+    $name_delete_filters = null;
+    if(isset($_POST['name_delete_filters']) && !empty($_POST['name_delete_filters']))
+        $name_delete_filters = $_POST['name_delete_filters'];
+    else if(isset($_GET['name_delete_filters']) && !empty($_GET['name_delete_filters']))
+        $name_delete_filters = $_GET['name_delete_filters'];
+
+    if($name_delete_filters){
+        $arrFilters = explode(",",$name_delete_filters);
+        print_r($arrFilters);
+        if(isset($arrFilters[$parameter]))
+            return null;
+    }
+
     if(isset($_POST[$parameter]))
         return $_POST[$parameter];
     else if(isset($_GET[$parameter]))
