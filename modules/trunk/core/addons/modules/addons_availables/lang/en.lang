@@ -66,6 +66,7 @@ $arrLangModule = array(
 "Are you sure you want to cancel this transaction?" => "Are you sure you want to cancel this transaction?",
 "Location" => "Location",
 "Please wait..." => "Please wait...",
-"Warning" => "Warning"
+"Warning" => "Warning",
+"Note" => "Note"
 );
 ?>

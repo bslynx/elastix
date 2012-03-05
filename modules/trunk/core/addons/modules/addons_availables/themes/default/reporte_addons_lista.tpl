@@ -6,6 +6,9 @@
     <div class="neo-addons-row-icon"><img src="{$url_images}/{$data.name_rpm}.jpeg " width="65" height="65" alt="iconaddon" align="absmiddle" /></div>
     <div class="neo-addons-row-desc">{$data.description}</div>
     <div class="neo-addons-row-location"><font style='font-weight:bold;'>{$location}: </font>{$data.location}</div>
+    {if $data.note}
+    <div class="neo-addons-row-note"><font style='font-weight:bold;'>{$note}: </font>{$data.note}</div>
+    {/if}
     <div class="neo-addons-row-button">
         {* El siguiente campo hidden contiene el nombre del RPM a manipular *}
         <input type="hidden" id="name_rpm" value="{$data.name_rpm}"/>

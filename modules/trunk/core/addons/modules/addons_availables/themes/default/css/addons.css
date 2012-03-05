@@ -7,7 +7,7 @@
 .neo-addons-row {
 	position:relative;
 	left: 0px;
-	height:115px;
+	height:120px;
 	padding: 5px 12px 12px 16px;
 	border-bottom: 1px solid #ccc;
 }
@@ -68,8 +68,15 @@
 }
 
 .neo-addons-row-location {
-    width: 950px;
+    width: 873px;
     text-align: justify;
+    padding-left:77px
+}
+
+.neo-addons-row-note {
+    width: 873px;
+    text-align: justify;
+    padding-left:77px;
 }
 
 .neo-addons-row-author{

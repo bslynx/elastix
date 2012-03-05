@@ -242,7 +242,8 @@ function do_listarAddons($smarty, $module_name, $local_templates_dir)
 	'UPDATE'	=>  _tr('UPDATE'),
 	'UNINSTALL'	=>  _tr('UNINSTALL'),
 	'more_info'	=>  _tr('More info'),
-	'location'	=>  _tr('Location')
+	'location'	=>  _tr('Location'),
+	'note'		=>  _tr('Note')
     ));
     $respuesta['addonlist_html'] = $smarty->fetch("$local_templates_dir/reporte_addons_lista.tpl");
     return $json->encode($respuesta);
