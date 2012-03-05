@@ -391,7 +391,7 @@ function getParameter($parameter)
 
     if($name_delete_filters){
         $arrFilters = explode(",",$name_delete_filters);
-        print_r($arrFilters);
+        
         if(isset($arrFilters[$parameter]))
             return null;
     }
