@@ -91,6 +91,19 @@ function reportDHCP_Configuration($smarty, $module_name, $local_templates_dir, &
     
     //begin grid parameters
     $oGrid  = new paloSantoGrid($smarty);
+        $nameOpt = array(
+        "hostname" => _tr('Host Name'),
+        "ipaddress" => _tr('IP Address'),
+        "macaddress" => _tr('MAC Address'),
+                    );
+
+    if(isset($nameOpt[$filter_field])){
+        $valorFiltro = $nameOpt[$filter_field];
+    }else
+        $valorFiltro = "";
+
+    $oGrid->addFilterControl(_tr("Filter applied ")." ".$valorFiltro." = $filter_value", $_POST, array("filter_field" => "hostname","filter_value" => ""));
+
     $totalDHCP_Configuration = $pDHCP_Configuration->contarIpFijas($filter_field, $filter_value);
 
     $oGrid->addNew("new_dhcpconft",_tr("Assign IP Address"));
