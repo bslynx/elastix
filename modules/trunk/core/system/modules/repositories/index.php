@@ -123,6 +123,14 @@ function listRepositories($smarty, $module_name, $local_templates_dir,$arrConf) 
     $oGrid->addButtonAction("default",_tr('Default'),null,"defaultValues($total,'$version','$arch')");
     $FilterForm = new paloForm($smarty,createFilter());
 
+    $arrOpt = array("main"=>_tr('Main'),"others"=>_tr('Others'),"all"=>_tr('All'));
+    if(isset($arrOpt[$typeRepository])){
+        $valorfiltro = $arrOpt[$typeRepository];
+    }else
+        $valorfiltro = "";
+
+    $oGrid->addFilterControl(_tr("Filter applied ")._tr("Repo")." = ".$valorfiltro, $_POST, array("typeRepository" => "main"));
+
     $htmlFilter = $FilterForm->fetchForm("$local_templates_dir/new.tpl","",$_POST);
     $oGrid->showFilter($htmlFilter);
 
