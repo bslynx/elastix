@@ -50,14 +50,25 @@ div.neo-table-toolbar-button {
 }
 
 .neo-table-header-row-filter {
-        position:relative;
-        display:inline-block;
-        height:33px;
-        float:left;
-        padding:8px 10px 0px 10px;
-        border-right: 1px solid #aaa;
-		cursor: pointer;
+    position:relative;
+    display:inline-block;
+    height:33px;
+    float:left;
+    padding:8px 10px 0px 10px;
+    border-right: 1px solid #aaa;
+    cursor: pointer;
 }
+
+.neo-table-header-row-filter:hover, 
+.neo-table-header-row-filter:hover input[type=submit],
+.neo-table-header-row-filter:hover input[type=button]{
+    background: -moz-linear-gradient(center top , #777777, #999999);
+    background: -webkit-gradient(linear,0% 40%,0% 70%,from(#777),to(#999));
+    background: linear-gradient(center top , #777777, #999999);
+    border-color: #888888 !important;
+    color: #FFFFFF;
+}
+
 .neo-table-header-row-navigation {
         position:relative;
         display:inline-block;

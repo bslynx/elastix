@@ -240,7 +240,7 @@ TD.table_data {
 .exportBackground {
     background: -moz-linear-gradient(center top , #777777, #999999);
     background: -webkit-gradient(linear,0% 40%,0% 70%,from(#777),to(#999));
-	background: linear-gradient(center top , #777777, #999999);
+    background: linear-gradient(center top , #777777, #999999);
     /*border-color: #888888 !important;*/
     color: #FFFFFF;
 }
