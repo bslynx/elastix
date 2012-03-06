@@ -325,7 +325,7 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
 	}else
 	    $smarty->assign("mb_message", "<b>".$arrLang["contact_admin"]."</b>");
     }
-    if(getParametro('select_directory_type') != null && getParametro('select_directory_type')=='external')
+    if(getParameter('select_directory_type') != null && getParameter('select_directory_type')=='external')
     {
         $smarty->assign("external_sel",'selected=selected');
         $directory_type = 'external';
@@ -334,6 +334,8 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
         $smarty->assign("internal_sel",'selected=selected');
         $directory_type = 'internal';
     }
+    $_POST['select_directory_type'] = $directory_type;
+    
 
     $arrComboElements = array(  "name"        =>$arrLang["Name"],
                                 "telefono"    =>$arrLang["Phone Number"]);
@@ -369,17 +371,26 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
 
     $field   = NULL;
     $pattern = NULL;
+    $namePattern = NULL;
     $allowSelection = array("name", "telefono", "last_name");
-    if(isset($_POST['field']) and isset($_POST['pattern'])){
+    if(isset($_POST['field']) and isset($_POST['pattern']) and ($_POST['pattern']!="")){
         $field      = $_POST['field'];
         if (!in_array($field, $allowSelection))
             $field = "name";
-        $pattern    = "%$_POST[pattern]%";;
+        $pattern    = "%$_POST[pattern]%";
+        $namePattern = $_POST['pattern'];
+        $nameField=$arrComboElements[$field];
     }
 
-    $startDate = $endDate = date("Y-m-d H:i:s");
+    $arrFilter = array("select_directory_type"=>$directory_type,"field"=>$field,"pattern" =>$namePattern);
 
-    $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/filter_adress_book.tpl", "", $_POST);
+    $startDate = $endDate = date("Y-m-d H:i:s");
+    $oGrid  = new paloSantoGrid($smarty);
+
+    $oGrid->addFilterControl(_tr("Filter applied ")._tr("Phone Directory")." =  $directory_type ", $arrFilter, array("select_directory_type" => "internal"),true);
+    $oGrid->addFilterControl(_tr("Filter applied ").$field." = $namePattern", $arrFilter, array("field" => "name","pattern" => ""));
+
+    $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/filter_adress_book.tpl", "", $arrFilter);
 
     if($directory_type=='external')
         $total = $padress_book->getAddressBook(NULL,NULL,$field,$pattern,TRUE,$id_user);
@@ -391,7 +402,6 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
     $limit  = 20;
     $total  = $total_datos;
 
-    $oGrid  = new paloSantoGrid($smarty);
     $oGrid->setLimit($limit);
     $oGrid->setTotal($total);
 
@@ -1011,42 +1021,32 @@ function transferCALL($smarty, $module_name, $local_templates_dir, $pDB, $pDB_2,
 
 function getAction()
 {
-    if(getParametro("edit"))
+    if(getParameter("edit"))
         return "edit"; 
-    else if(getParametro("commit"))
+    else if(getParameter("commit"))
         return "commit";
-    else if(getParametro("show"))
+    else if(getParameter("show"))
         return "show";
-    else if(getParametro("delete"))
+    else if(getParameter("delete"))
         return "delete";
-    else if(getParametro("new"))
+    else if(getParameter("new"))
         return "new";
-    else if(getParametro("save"))
+    else if(getParameter("save"))
         return "save";
-    else if(getParametro("delete"))
+    else if(getParameter("delete"))
         return "delete";
-    else if(getParametro("action")=="show")
+    else if(getParameter("action")=="show")
         return "show";
-    else if(getParametro("action")=="download_csv")
+    else if(getParameter("action")=="download_csv")
         return "download_csv";
-    else if(getParametro("action")=="call2phone")
+    else if(getParameter("action")=="call2phone")
         return "call2phone";
-    else if(getParametro("action")=="transfer_call")
+    else if(getParameter("action")=="transfer_call")
         return "transfer_call";
-    else if(getParametro("action")=="getImage")
+    else if(getParameter("action")=="getImage")
         return "getImage";
     else
         return "report";
-}
-
-function getParametro($parametro)
-{
-    if(isset($_POST[$parametro]))
-        return $_POST[$parametro];
-    else if(isset($_GET[$parametro]))
-        return $_GET[$parametro];
-    else
-        return null;
 }
 
 function download_address_book($smarty, $module_name, $local_templates_dir, $pDB, $pDB_2, $arrLang, $arrConf, $dsn_agi_manager, $dsnAsterisk)
@@ -1060,8 +1060,8 @@ function download_address_book($smarty, $module_name, $local_templates_dir, $pDB
 
 function getImageContact($smarty, $module_name, $local_templates_dir, $pDB, $pDB_2, $arrLang, $arrConf, $dsn_agi_manager, $dsnAsterisk)
 {
-    $contact_id = getParametro('idPhoto'); 
-    $thumbnail  = getParametro("thumbnail");
+    $contact_id = getParameter('idPhoto'); 
+    $thumbnail  = getParameter("thumbnail");
     $pACL       = new paloACL($pDB_2);
     $id_user    = $pACL->getIdUser($_SESSION["elastix_user"]);
     $ruta_destino = "/var/www/address_book_images";
