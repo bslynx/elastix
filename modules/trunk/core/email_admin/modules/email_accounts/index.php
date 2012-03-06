@@ -118,8 +118,13 @@ function viewFormAccount($smarty, $module_name, $local_templates_dir, &$pDB, $ar
     $oGrid = new paloSantoGrid($smarty);
     $id_domain=0;
 
-    if (isset($_POST['domain'])) $id_domain=$_POST['domain'];
-    if (isset($_GET['id_domain'])) $id_domain=$_GET['id_domain'];
+    /*if (isset($_POST['domain'])) $id_domain=$_POST['domain'];
+    if (isset($_GET['id_domain'])) $id_domain=$_GET['id_domain'];*/
+    if(isset($_POST['domain']) || isset($_GET['domain'])){
+        $id_domain=getParameter('domain');
+        if($id_domain==null)
+            $id_domain=0;
+    }
 
     $_POST['domain']=$id_domain;
 
@@ -143,7 +148,7 @@ function viewFormAccount($smarty, $module_name, $local_templates_dir, &$pDB, $ar
     if($id_domain == 0)
        $url = array("menu" => $module_name);
     else
-       $url = array("menu" => $module_name, "id_domain" => $id_domain);
+       $url = array("menu" => $module_name, "domain" => $id_domain);
     $oGrid->setURL($url);
     $oGrid->setTitle(_tr("Email Account List"));
 
@@ -205,6 +210,7 @@ function viewFormAccount($smarty, $module_name, $local_templates_dir, &$pDB, $ar
         "total"    => $total,
             );
 
+    $oGrid->addFilterControl(_tr("Filter applied ")._tr("Domain")." = ".$arrDominios[$id_domain], $_POST, array("domain" => 0));
     $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/accounts_filter.tpl", "", $_POST);
     $oGrid->addNew("submit_create_account",_tr("Create Account"));
     $oGrid->showFilter(trim($htmlFilter));
