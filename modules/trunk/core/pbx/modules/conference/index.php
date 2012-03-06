@@ -132,7 +132,7 @@ function _moduleContent(&$smarty, $module_name)
             $content = caller_invite($smarty, $module_name, $local_templates_dir, $pDB, $arrLang, $arrConfig, $dsn_agi_manager,$dsnAsterisk);
             break;
         case "update_show_callers":
-            $room = getParametro('roomNo');
+            $room = getParameter('roomNo');
             header("location: ?menu=$module_name&accion=show_callers&roomNo=$room");
             break;
         case 'list_guests': // Para caso de conferencias web
@@ -181,12 +181,16 @@ function report_conference($smarty, $module_name, $local_templates_dir, $pDB, $a
 
     $startDate = $endDate = date("Y-m-d H:i:s");
 
-    $conference = getParametro("conference");
-    $field_pattern = getParametro("filter");
+    $conference = getParameter("conference");
+    $field_pattern = getParameter("filter");
     if($conference)
         $_POST['conference'] = $conference;
     else $_POST['conference'] = "Current_Conferences";
 
+    $oGrid  = new paloSantoGrid($smarty);
+
+    $oGrid->addFilterControl(_tr("Filter applied: ")._tr("State")." = ".$arrConference[$_POST['conference']], $_POST, array("conference" => "Current_Conferences"),true);
+    $oGrid->addFilterControl(_tr("Filter applied: ")._tr("Conference Name")." = $field_pattern", $_POST, array("filter" => ""));
     $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/conference.tpl", "", $_POST);
 
     $pConference = new paloSantoConference($pDB);
@@ -195,8 +199,6 @@ function report_conference($smarty, $module_name, $local_templates_dir, $pDB, $a
     //Paginacion
     $limit  = 8;
     $total  = $total_datos[0];
-
-    $oGrid  = new paloSantoGrid($smarty);
     $oGrid->setLimit($limit);
     $oGrid->setTotal($total);
     $offset = $oGrid->calculateOffset();
@@ -594,7 +596,7 @@ function delete_conference($smarty, $module_name, $local_templates_dir, $pDB, $a
 function show_callers($smarty, $module_name, $local_templates_dir, $pDB, $arrLang, $arrConfig, $dsn_agi_manager, $dsnAsterisk)
 {
     $pConference = new paloSantoConference($pDB);
-    $room = getParametro("roomNo");
+    $room = getParameter("roomNo");
     $arrCallers = $pConference->ObtainCallers($dsn_agi_manager, $room);
     $arrDevices = $pConference->getDeviceFreePBX($dsnAsterisk);
     $arrData = null;
@@ -688,7 +690,7 @@ function callers_mute($smarty, $module_name, $local_templates_dir, $pDB, $arrLan
 {
     $pConference = new paloSantoConference($pDB);
 
-    $room = getParametro('roomNo');
+    $room = getParameter('roomNo');
     foreach($_POST as $key => $values)
     {
         if(substr($key,0,5) == "mute_")
@@ -705,7 +707,7 @@ function callers_kick($smarty, $module_name, $local_templates_dir, $pDB, $arrLan
 {
     $pConference = new paloSantoConference($pDB);
 
-    $room = getParametro('roomNo');
+    $room = getParameter('roomNo');
     foreach($_POST as $key => $values)
     {
         if(substr($key,0,5) == "kick_")
@@ -723,7 +725,7 @@ function callers_kick_all($smarty, $module_name, $local_templates_dir, $pDB, $ar
 {
     $pConference = new paloSantoConference($pDB);
 
-    $room = getParametro('roomNo');
+    $room = getParameter('roomNo');
 
     $pConference->KickAllCallers($dsn_agi_manager, $room);
 
@@ -735,9 +737,9 @@ function caller_invite($smarty, $module_name, $local_templates_dir, $pDB, $arrLa
 {
     $pConference = new paloSantoConference($pDB);
 
-    $room = getParametro('roomNo');
+    $room = getParameter('roomNo');
 
-    $device = getParametro("device");
+    $device = getParameter("device");
 
     if($device != null)
     {
@@ -813,16 +815,6 @@ function view_conference($smarty, $module_name, $local_templates_dir, $pDB, $arr
     $contenidoModulo = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";
 
     return $contenidoModulo;
-}
-
-function getParametro($parametro)
-{
-    if(isset($_POST[$parametro]))
-        return $_POST[$parametro];
-    else if(isset($_GET[$parametro]))
-        return $_GET[$parametro];
-    else
-        return null;
 }
 
 /******* Funciones creadas para ayudar a integración de conferencias web ********/
