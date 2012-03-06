@@ -104,13 +104,17 @@ function _moduleContent(&$smarty, $module_name)
         // Por omision las fechas toman el sgte. valor (la fecha de hoy)
     $date_start = date("Y-m-d")." 00:00:00"; 
     $date_end   = date("Y-m-d")." 23:59:59";
+    $dateStartFilter = getParameter('date_start');
+    $dateEndFilter = getParameter('date_end');
+    $report = false;
+
 
     if( getParameter('filter') ){
         if($oFilterForm->validateForm($_POST)) {
             // Exito, puedo procesar los datos ahora.
-            $date_start = translateDate($_POST['date_start'])." 00:00:00"; 
-            $date_end   = translateDate($_POST['date_end'])." 23:59:59";
-            $arrFilterExtraVars = array("date_start" => $_POST['date_start'], "date_end" => $_POST['date_end'] );
+            $date_start = translateDate($dateStartFilter)." 00:00:00";
+            $date_end   = translateDate($dateEndFilter)." 23:59:59";
+            $arrFilterExtraVars = array("date_start" => $dateStartFilter, "date_end" => $dateEndFilter);
         } else {
             // Error
             $smarty->assign("mb_title", $arrLang["Validation Error"]);
@@ -122,16 +126,35 @@ function _moduleContent(&$smarty, $module_name)
             $strErrorMsg .= "";
             $smarty->assign("mb_message", $strErrorMsg);
         }
+        if($dateStartFilter==""){
+            $dateStartFilter = " ";
+        }
+        if($dateEndFilter==""){
+            $dateEndFilter= " ";
+        }
+        //se añade control a los filtros
+        $report = true;
+        $arrDate = array('date_start'=>$dateStartFilter,'date_end'=>$dateEndFilter);
         $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/filter.tpl", "", $_POST);
-    } else if (isset($_GET['date_start']) AND isset($_GET['date_end'])) {
-        $date_start = translateDate($_GET['date_start']) . " 00:00:00";
-        $date_end   = translateDate($_GET['date_end']) . " 23:59:59";
+    } else if (isset($dateStartFilter) AND isset($dateEndFilter)) {
+        $report = true;
+        $date_start = translateDate($dateStartFilter) . " 00:00:00";
+        $date_end   = translateDate($dateEndFilter) . " 23:59:59";
 
-        $arrFilterExtraVars = array("date_start" => $_GET['date_start'], "date_end" => $_GET['date_end']);
+        $arrDate = array('date_start'=>$dateStartFilter,'date_end'=>$dateEndFilter);
+        $arrFilterExtraVars = array("date_start" => $dateStartFilter, "date_end" => $dateEndFilter);
         $htmlFilter = $contenidoModulo=$oFilterForm->fetchForm("$local_templates_dir/filter.tpl", "", $_GET);
     } else {
+        $report = true;
+        //se añade control a los filtros
+        $arrDate = array('date_start'=>date("d M Y"),'date_end'=>date("d M Y"));
         $htmlFilter = $contenidoModulo=$oFilterForm->fetchForm("$local_templates_dir/filter.tpl", "", 
         array('date_start' => date("d M Y"), 'date_end' => date("d M Y")));
+    }
+
+    $oGrid  = new paloSantoGrid($smarty);
+    if($report){
+        $oGrid->addFilterControl(_tr("Filter applied ")._tr("Start Date")." = ".$arrDate['date_start'].", "._tr("End Date")." = ".$arrDate['date_end'], $arrDate, array('date_start' => date("Y-m-d"),'date_end' => date("Y-m-d")),true);
     }
 
     if( getParameter('submit_eliminar') ) {
@@ -353,7 +376,6 @@ contenido;
         $limit  = 15;
         $total  = count($arrData);
 
-        $oGrid  = new paloSantoGrid($smarty);
         $oGrid->setLimit($limit);
         $oGrid->setTotal($total);
 
