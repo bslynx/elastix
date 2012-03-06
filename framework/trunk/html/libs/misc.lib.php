@@ -391,11 +391,9 @@ function getParameter($parameter)
 
     if($name_delete_filters){
         $arrFilters = explode(",",$name_delete_filters);
-        
-        if(isset($arrFilters[$parameter]))
+        if(in_array($parameter,$arrFilters))
             return null;
     }
-
     if(isset($_POST[$parameter]))
         return $_POST[$parameter];
     else if(isset($_GET[$parameter]))

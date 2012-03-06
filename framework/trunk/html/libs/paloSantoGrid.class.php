@@ -73,7 +73,7 @@ class paloSantoGrid {
         $this->arrFiltersControl = array();
     }
 
-    public function addFilterControl($msg, &$arrData, $arrFilter = array())
+    public function addFilterControl($msg, &$arrData, $arrFilter = array(), $always_activated=false)
     {
         if((is_array($arrFilter) && count($arrFilter)>0)){
             $name_delete_filters = getParameter('name_delete_filters');
@@ -85,6 +85,8 @@ class paloSantoGrid {
                 foreach($arrFilter as $name => $value){
                     $arrData[$name] = $value;
                 }
+                if($always_activated) // a pesar de que fue eliminado el filtro, se desea que el control siga visible.
+                    $this->arrFiltersControl[] = array("msg" => $msg, "filters" => implode(",",$keys));
             }
             else{
                 $filter_apply = true;
@@ -95,7 +97,7 @@ class paloSantoGrid {
                         break;                        
                     }
                 }
-                if($filter_apply) //solo si todos estan seteados
+                if($filter_apply) //solo si todos estan seteados o tiene un value asociado (!=null)
                     $this->arrFiltersControl[] = array("msg" => $msg, "filters" => implode(",",$keys));
             }                
         }
@@ -153,7 +155,7 @@ class paloSantoGrid {
     public function addComboAction($name_select="cmb", $label="New Row", $data=array(), $selected=null, $task="add", $onchange_select=null)
     {
         $newAction['type'] = "combo";
-        $newAction['task'] = $name_select;
+        $newAction['name'] = $name_select;
         $newAction['alt']  = $label;
         $newAction['arrOptions'] = empty($data)?array():$data;
         $newAction['selected']   = empty($selected)?null:$selected;
@@ -296,7 +298,7 @@ class paloSantoGrid {
 
         if(isset($arrGrid['url'])) {
             if (is_array($arrGrid['url']))
-                $this->url = construirURL($arrGrid['url'], array('nav', 'start', 'logout'));
+                $this->url = construirURL($arrGrid['url'], array('nav', 'start', 'logout','name_delete_filters'));
             else
                 $this->url = $arrGrid["url"];
         }
