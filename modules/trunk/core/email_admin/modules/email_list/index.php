@@ -152,7 +152,7 @@ function reportEmailList($smarty, $module_name, $local_templates_dir, &$pDB, $ar
     //begin section filter
     //ya no se usa esa variable smarty
     //$smarty->assign("NEW_EMAILLIST", _tr("New Email list"));
-
+    $oGrid->addFilterControl(_tr("Filter applied ")._tr("Domain")." = ".$arrDominios[$id_domain], $_POST, array("domain" => "all"));
     $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/filter.tpl","",$_POST);
     //end section filter
     $oGrid->addNew("new_emaillist",_tr("New Email list"));
