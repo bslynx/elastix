@@ -186,21 +186,9 @@ function report_backup_restore($smarty, $module_name, $local_templates_dir, $arr
                                     )
                     );
     $time = $_DATA['status'];
-    if($time=="DISABLED")
-        $smarty->assign("SEL_DISABLED", "SELECTED='SELECTED'");
-    if($time=="DAILY")
-        $smarty->assign("SEL_DAILY", "SELECTED='SELECTED'");
-    if($time=="MONTHLY")
-        $smarty->assign("SEL_MONTHLY", "SELECTED='SELECTED'");
-    if($time=="WEEKLY")
-        $smarty->assign("SEL_WEEKLY", "SELECTED='SELECTED'");
 
     $smarty->assign("FILE_UPLOAD", $arrLang["File Upload"]);
     $smarty->assign("AUTOMATIC", $arrLang["AUTOMATIC"]);
-    $smarty->assign("DAILY", $arrLang["DAILY"]);
-    $smarty->assign("MONTHLY", $arrLang["MONTHLY"]);
-    $smarty->assign("WEEKLY", $arrLang["WEEKLY"]);
-    $smarty->assign("DISABLED",$arrLang["DISABLED"]);
    // $smarty->assign("BACKUP", $arrLang["Backup"]);
     $smarty->assign("UPLOAD", $arrLang["Upload"]);
     $smarty->assign("FTP_BACKUP", $arrLang["FTP Backup"]);
@@ -214,9 +202,11 @@ function report_backup_restore($smarty, $module_name, $local_templates_dir, $arr
         'MONTHLY'   =>  _tr('MONTHLY'),
         'WEEKLY'    =>  _tr('WEEKLY'),
     );
-    $oGrid->addComboAction("time",_tr("AUTOMATIC"),$backupIntervals,"DAILY",'automatic');
 
-    $htmlFilter = $smarty->fetch("$local_templates_dir/filter.tpl");
+    $oGrid->addComboAction("time",_tr("AUTOMATIC"),$backupIntervals,$time,'automatic');
+    
+
+    //$htmlFilter = $smarty->fetch("$local_templates_dir/filter.tpl");
     //$oGrid->showFilter(trim($htmlFilter),true);
     $contenidoModulo = $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
 
@@ -280,28 +270,25 @@ function automatic_backup($smarty, $module_name, $local_templates_dir, $arrLang,
                                     )
                     );
 
-    if($time=="DISABLED")
-        $smarty->assign("SEL_DISABLED", "SELECTED");
-    if($time=="DAILY")
-        $smarty->assign("SEL_DAILY", "SELECTED");
-    if($time=="MONTHLY")
-        $smarty->assign("SEL_MONTHLY", "SELECTED");
-    if($time=="WEEKLY")
-        $smarty->assign("SEL_WEEKLY", "SELECTED");
 
     $smarty->assign("FILE_UPLOAD", $arrLang["File Upload"]);
     $smarty->assign("AUTOMATIC", $arrLang["AUTOMATIC"]);
-    $smarty->assign("DAILY", $arrLang["DAILY"]);
-    $smarty->assign("MONTHLY", $arrLang["MONTHLY"]);
-    $smarty->assign("WEEKLY", $arrLang["WEEKLY"]);
-    $smarty->assign("DISABLED",$arrLang["DISABLED"]);
+
    // $smarty->assign("BACKUP", $arrLang["Backup"]);
     $smarty->assign("UPLOAD", $arrLang["Upload"]);
     $smarty->assign("FTP_BACKUP", $arrLang["FTP Backup"]);
-        $oGrid->addNew("backup",_tr("Backup"));
+    $oGrid->addNew("backup",_tr("Backup"));
     $oGrid->deleteList(_tr("Are you sure you wish to delete backup (s)?"),'delete_backup',_tr("Delete"));
-    $htmlFilter = $smarty->fetch("$local_templates_dir/filter.tpl");
-    $oGrid->showFilter(trim($htmlFilter));
+    $oGrid->customAction("view_form_FTP",_tr("FTP Backup"));
+    $backupIntervals = array(
+        'DISABLED'  =>  _tr('DISABLED'),
+        'DAILY'     =>  _tr('DAILY'),
+        'MONTHLY'   =>  _tr('MONTHLY'),
+        'WEEKLY'    =>  _tr('WEEKLY'),
+    );
+
+    $oGrid->addComboAction("time",_tr("AUTOMATIC"),$backupIntervals,$time,'automatic');
+
     //if there is data in database
     $result = $pFTPBackup->getStatusAutomaticBackupById();
     if(isset($result) && $result != "")
