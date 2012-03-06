@@ -77,10 +77,22 @@ function listarFaxes(&$smarty, $module_name, $local_templates_dir)
         'filter'        =>  'All',
     );
     foreach (array_keys($paramFiltro) as $k) {
-        if (isset($_GET[$k])) $paramFiltro[$k] = $_GET[$k];
-        if (isset($_POST[$k])) $paramFiltro[$k] = $_POST[$k];
+        if(!is_null(getParameter($k))){
+            $paramFiltro[$k] = getParameter($k); 
+        }
     }
+
+
+    $oGrid  = new paloSantoGrid($smarty);
+    $arrType = array("All"=>_tr('All'),"In"=>_tr('in'),"Out"=>_tr('out'));
+
+    $oGrid->addFilterControl(_tr("Filter applied ")._tr("Company Name")." = ".$paramFiltro['name_company'], $paramFiltro, array("name_company" => ""));
+    $oGrid->addFilterControl(_tr("Filter applied ")._tr("Company Fax")." = ".$paramFiltro['fax_company'], $paramFiltro, array("fax_company" => ""));
+    $oGrid->addFilterControl(_tr("Filter applied ")._tr("Fax Date")." = ".$paramFiltro['date_fax'], $paramFiltro, array("date_fax" => NULL));
+    $oGrid->addFilterControl(_tr("Filter applied ")._tr("Type Fax")." = ".$arrType[$paramFiltro['filter']], $paramFiltro, array("filter" => "All"),true);
+
     $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/filter.tpl", "", $paramFiltro);
+
     if (!$oFilterForm->validateForm($paramFiltro)) {
         $smarty->assign(array(
             'mb_title'      =>  _tr('Validation Error'),
@@ -112,7 +124,6 @@ function listarFaxes(&$smarty, $module_name, $local_templates_dir)
         }
     }
 
-    $oGrid  = new paloSantoGrid($smarty);
     $oGrid->setTitle(_tr("Fax Viewer"));
     $oGrid->setIcon("modules/$module_name/images/kfaxview.png");
     $oGrid->pagingShow(true); // show paging section.
