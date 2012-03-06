@@ -703,6 +703,27 @@ PETICION_LLAMADAS;
                 return FALSE;
             }
         }
+
+        /* Verificar si las llamadas están colocadas en la lista de Do Not Call. 
+         * Esto puede ocurrir incluso si la bandera dnc es 0, si la lista se 
+         * actualiza luego de cargar la lista de llamadas salientes. */
+        $recordset = $this->_db->prepare(
+            'SELECT COUNT(*) FROM dont_call WHERE caller_id = ? AND status = "A"');
+        $sth = $this->_db->prepare(
+            'UPDATE calls SET dnc = 1 WHERE id_campaign = ? AND id = ?');
+        foreach (array_keys($listaLlamadas) as $k) {
+            $recordset->execute(array($k));
+            $iNumDNC = $recordset->fetch(PDO::FETCH_COLUMN, 0);
+            $recordset->closeCursor();
+            if ($iNumDNC > 0) {
+            	if ($this->DEBUG) {
+            		$this->_log->output('DEBUG: '.__METHOD__." (campania {$infoCampania['id']} ".
+                        "número $k encontrado en lista DNC, no se marcará.");
+            	}
+                $sth->execute(array($infoCampania['id'], $tupla['id']));
+                unset($listaLlamadas[$k]);
+            }
+        }
         
         /* Mandar los teléfonos a punto de marcar a AMIEventProcess. Se espera
          * de vuelta una lista de los números que ya están repetidos y en proceso
