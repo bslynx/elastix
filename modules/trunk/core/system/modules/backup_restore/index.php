@@ -207,12 +207,14 @@ function report_backup_restore($smarty, $module_name, $local_templates_dir, $arr
     $oGrid->addNew("backup",_tr("Backup"));
     $oGrid->deleteList(_tr("Are you sure you wish to delete backup (s)?"),'delete_backup',_tr("Delete"));
     $oGrid->customAction("view_form_FTP",_tr("FTP Backup"));
-    $data["DISABLED"] = "DISABLED";
-    $data["DAILY"] = "DAILY";
-    $data["MONTHLY"] = "MONTHLY";
-    $data["WEEKLY"] = "WEEKLY";
 
-    $oGrid->addComboAction("time",_tr("AUTOMATIC"),$data,"DAILY",'automatic');
+    $backupIntervals = array(
+        'DISABLED'  =>  _tr('DISABLED'),
+        'DAILY'     =>  _tr('DAILY'),
+        'MONTHLY'   =>  _tr('MONTHLY'),
+        'WEEKLY'    =>  _tr('WEEKLY'),
+    );
+    $oGrid->addComboAction("time",_tr("AUTOMATIC"),$backupIntervals,"DAILY",'automatic');
 
     $htmlFilter = $smarty->fetch("$local_templates_dir/filter.tpl");
     //$oGrid->showFilter(trim($htmlFilter),true);
