@@ -152,3 +152,11 @@ td.neo-table-title-row a.link_summary_on{
   color:#F5DEB3;
   font-weight:bold;
 }
+
+.neo-table-filter-controls{
+    background-color: #FFFFFF;
+    height: 27px;
+    margin: 0px;
+    padding: 0px;
+    border: 0px;
+}

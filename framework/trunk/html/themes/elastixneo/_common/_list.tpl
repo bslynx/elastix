@@ -118,9 +118,9 @@
     {/if}
 
     {if !empty($arrFiltersControl)}
-        <div style="background-color: #FFFFFF">
+        <div class="neo-table-filter-controls">
             {foreach from=$arrFiltersControl key=k item=filterc name=filtersctrl}
-                <div class="neo-filter-control">{$filterc.msg}&nbsp; <a href="{$url}&name_delete_filters={$filterc.filters}"><img src='themes/elastixneo/images/bookmarks_equis.png' width="18" height="16" align='absmiddle'/></a></div>
+                <div class="neo-filter-control">{$filterc.msg}&nbsp; <a href="{$url}&name_delete_filters={$filterc.filters}"><img src='themes/elastixneo/images/bookmarks_equis.png' width="18" height="16" align='absmiddle' border="0" /></a></div>
             {/foreach}
         </div>
     {/if}
