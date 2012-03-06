@@ -217,7 +217,6 @@ function viewCalendar($smarty, $module_name, $local_templates_dir, &$pDB, $arrCo
     $smarty->assign("CreateEvent", $arrLang["Create New Event"]);
     $smarty->assign("Listen", $arrLang["Listen"]);
     $smarty->assign("Listen_here", _tr("Click here to listen"));
-    $smarty->assign("Alert_continue",_tr("Are you sure you wish to continue?"));
 
     $htmlForm = $oForm->fetchForm("$local_templates_dir/form.tpl",$arrLang["Calendar"], $_DATA);
 
@@ -1762,6 +1761,7 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
         $smarty->assign("internal_sel",'selected=selected');
         $directory_type = 'internal';
     }
+    $_POST['select_directory_type'] = $directory_type;
 
     $arrComboElements = array(  "name"        =>$arrLang["Name"],
                                 "telefono"    =>$arrLang["Phone Number"]);
@@ -1796,18 +1796,27 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
 
     $field   = NULL;
     $pattern = NULL;
+    $namePattern = NULL;
 
     $allowSelection = array("name", "telefono", "last_name");
-    if(isset($_POST['field']) and isset($_POST['pattern'])){
+    if(isset($_POST['field']) and isset($_POST['pattern']) and ($_POST['pattern']!="")){
         $field      = $_POST['field'];
         if (!in_array($field, $allowSelection))
             $field = "name";
         $pattern = '%'.$_POST['pattern'].'%';
+        $namePattern = $_POST['pattern'];
+        $nameField=$arrComboElements[$field];
     }
 
     $startDate = $endDate = date("Y-m-d H:i:s");
 
-    $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/filter_adress_book.tpl", "", $_POST);
+    $arrFilter = array("select_directory_type"=>$directory_type,"field"=>$field,"pattern" =>$namePattern);
+
+    $oGrid  = new paloSantoGrid($smarty);
+
+    $oGrid->addFilterControl(_tr("Filter applied ")._tr("Phone Directory")." =  $directory_type ", $arrFilter, array("select_directory_type" => "internal"),true);
+    $oGrid->addFilterControl(_tr("Filter applied ").$field." = $namePattern", $arrFilter, array("field" => "name","pattern" => ""));
+    $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/filter_adress_book.tpl", "", $arrFilter);
 
     if($directory_type=='external')
         $total = $padress_book->getAddressBook(NULL,NULL,$field,$pattern,TRUE,$id_user);
@@ -1819,7 +1828,6 @@ function report_adress_book($smarty, $module_name, $local_templates_dir, $pDB, $
     $limit  = 20;
     $total  = $total_datos;
 
-    $oGrid  = new paloSantoGrid($smarty);
     $oGrid->setLimit($limit);
     $offset = $oGrid->getOffSet($limit,$total,(isset($_GET['nav']))?$_GET['nav']:NULL,(isset($_GET['start']))?$_GET['start']:NULL);
 
