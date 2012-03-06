@@ -106,6 +106,7 @@ function listRepositories($smarty, $module_name, $local_templates_dir,$arrConf) 
         $_POST["typeRepository"]=$typeRepository;
     }else{
         $oGrid->setURL("?menu=$module_name");
+        $_POST["typeRepository"]="main";
     }
 
     $arrGrid = array("title"    => $arrLang["Repositories"],
@@ -127,9 +128,9 @@ function listRepositories($smarty, $module_name, $local_templates_dir,$arrConf) 
     if(isset($arrOpt[$typeRepository])){
         $valorfiltro = $arrOpt[$typeRepository];
     }else
-        $valorfiltro = "";
+        $valorfiltro = _tr('Main');
 
-    $oGrid->addFilterControl(_tr("Filter applied ")._tr("Repo")." = ".$valorfiltro, $_POST, array("typeRepository" => "main"));
+    $oGrid->addFilterControl(_tr("Filter applied ")._tr("Repo")." = ".$valorfiltro, $_POST, array("typeRepository" => "main"),true);
 
     $htmlFilter = $FilterForm->fetchForm("$local_templates_dir/new.tpl","",$_POST);
     $oGrid->showFilter($htmlFilter);
