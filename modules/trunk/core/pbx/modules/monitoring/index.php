@@ -110,15 +110,19 @@ function reportMonitoring($smarty, $module_name, $local_templates_dir, &$pDB, $p
 {
     $pMonitoring = new paloSantoMonitoring($pDB);
     $filter_field = getParameter("filter_field");
+
     switch($filter_field){
         case "dst":
             $filter_field = "dst";
+            $nameFilterField = _tr("Destination");
             break;
         case "userfield":
             $filter_field = "userfield";
+            $nameFilterField = _tr("Type");
             break;
         default:
             $filter_field = "src";
+            $nameFilterField = _tr("Source");
             break;
     }
     if($filter_field == "userfield"){
@@ -134,15 +138,19 @@ function reportMonitoring($smarty, $module_name, $local_templates_dir, &$pDB, $p
     switch($filter_value){
         case "outgoing":
               $smarty->assign("SELECTED_2", "Selected");
+              $nameFilterUserfield = _tr("Outgoing");
               break;
         case "queue":
               $smarty->assign("SELECTED_3", "Selected");
+              $nameFilterUserfield = _tr("Queue");
               break;
         case "group":
               $smarty->assign("SELECTED_4", "Selected");
+              $nameFilterUserfield = _tr("Group");
               break;
         default:
               $smarty->assign("SELECTED_1", "Selected");
+              $nameFilterUserfield = _tr("Incoming");
               break;
     }
     $date_ini = getParameter("date_start");
@@ -152,6 +160,12 @@ function reportMonitoring($smarty, $module_name, $local_templates_dir, &$pDB, $p
 
     $_POST['date_start'] = isset($date_ini)?$date_ini:date("d M Y");
     $_POST['date_end']   = isset($date_end)?$date_end:date("d M Y");
+
+    if($date_ini===""){
+        $_POST['date_start'] = " ";
+    }
+    if($date_end==="")
+        $_POST['date_end'] = " ";
 
     if (!empty($pACL->errMsg)) {
         echo "ERROR DE ACL: $pACL->errMsg <br>";
@@ -177,6 +191,7 @@ function reportMonitoring($smarty, $module_name, $local_templates_dir, &$pDB, $p
     else
         $totalMonitoring = 0;
     $url = array('menu' => $module_name);
+
     $paramFilter = array(
        'filter_field'           => $filter_field,
        'filter_value'           => $filter,
@@ -325,6 +340,16 @@ function reportMonitoring($smarty, $module_name, $local_templates_dir, &$pDB, $p
     $_POST["filter_field"]           = $filter_field;
     $_POST["filter_value"]           = $filter;
     $_POST["filter_value_userfield"] = $filter_userfield;
+
+    $oGrid->addFilterControl(_tr("Filter applied ")._tr("Start Date")." = ".$paramFilter['date_start'].", "._tr("End Date")." = ".$paramFilter['date_end'], $paramFilter, array('date_start' => date("Y-m-d"),'date_end' => date("Y-m-d")),true);
+
+    if($filter_field == "userfield"){
+        $oGrid->addFilterControl(_tr("Filter applied ")." $nameFilterField = $nameFilterUserfield", $_POST, array('filter_field' => "src",'filter_value_userfield' => "incoming"));
+    }
+    else{
+        $oGrid->addFilterControl(_tr("Filter applied ")." $nameFilterField = $filter", $_POST, array('filter_field' => "src","filter_value" => ""));
+    }
+
     $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/filter.tpl","",$_POST);
     //end section filter
     $oGrid->showFilter(trim($htmlFilter));
@@ -466,7 +491,7 @@ function display_record($smarty, $module_name, $local_templates_dir, &$pDB, $pAC
             }
             if($sContenido == "")
                 $session_id = session_id();
-                $ctype=record_format(&$pDB, $arrConf);
+                $ctype=record_format($pDB, $arrConf);
                 $sContenido=<<<contenido
                     <embed src='index.php?menu=$module_name&action=download&id=$file&namefile=$namefile&rawmode=yes&elastixSession=$session_id' width=300, height=20 autoplay=true loop=false type="$ctype"></embed><br>
 contenido;
