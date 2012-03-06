@@ -133,9 +133,10 @@ function listarArchivos($module_name, $smarty, $local_templates_dir, $sDirectori
     $smarty->assign("Filter", _tr('Filter'));
     $smarty->assign("NEW_FILE", _tr("New File"));
     $smarty->assign('url_new', construirURL(array('menu' => $module_name, 'action' => 'new')));
+    $oGrid = new paloSantoGrid($smarty);
+    $oGrid->addFilterControl(_tr("Filter applied ")._tr("File")." = ".$sSubStrArchivo, $_POST, array("file" => ""));
     $htmlFilter = $oForm->fetchForm("$local_templates_dir/new.tpl", _tr("File Editor"), $_POST);
 
-    $oGrid = new paloSantoGrid($smarty);
     $oGrid->setLimit($limit);
     $oGrid->setTotal($total);
 
