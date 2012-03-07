@@ -104,12 +104,32 @@ class paloFax {
         return $this->refreshFaxConfiguration();
     }
 
-    function getFaxList()
+    function getTotalFax()
     {
-        $query  = 
+        $query  = 'SELECT count(*) cnt FROM fax';
+
+        $arrReturn = $this->_db->getFirstRowQuery($query, true);
+        if(is_array($arrReturn) && count($arrReturn)>0) {
+            if(isset($arrReturn['cnt']))
+                return $arrReturn['cnt'];
+            else{
+                $this->errMsg = $this->_db->errMsg;
+                return null;
+            }
+        }
+        else{
+            $this->errMsg = $this->_db->errMsg;
+            return null;
+        }
+    }
+
+    function getFaxList($offset, $limit)
+    {
+        $query  =
             'SELECT id, name, extension, secret, clid_name, clid_number, '.
                 'dev_id, date_creation, email, country_code, area_code '.
-            'FROM fax';
+            "FROM fax LIMIT $limit OFFSET $offset";
+
         $arrReturn = $this->_db->fetchTable($query, true);
         if($arrReturn == FALSE) {
             $this->errMsg = $this->_db->errMsg;
