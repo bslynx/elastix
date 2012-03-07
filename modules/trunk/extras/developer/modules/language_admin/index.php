@@ -228,6 +228,19 @@ function showLanguages($smarty, $module_name, $local_templates_dir, $arrLang, $a
 
     $_POST["module"] = $module;
     $_POST["language"] = $language;
+
+    $oGrid  = new paloSantoGrid($smarty);
+
+    if(!is_null($module) && !is_null($language)){
+        $nameModule = $arrFormElements["module"]["INPUT_EXTRA_PARAM"][$module];
+        $valueLanguage = $arrFormElements["language"]["INPUT_EXTRA_PARAM"][$language];
+    }else{
+        $nameModule = "";
+        $valueLanguage = "";
+    }
+
+    $oGrid->addFilterControl(_tr("Filter applied: ").$nameModule." = ".$valueLanguage,$_POST, array("module" => null,"language" => null));
+
     $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/filter.tpl", "", $_POST);
 
     $pLanguages = new paloSantoLanguageAdmin();
@@ -237,7 +250,6 @@ function showLanguages($smarty, $module_name, $local_templates_dir, $arrLang, $a
     $total_datos = $pLanguages->ObtainNumLanguages($module, $language);
     $total  = $total_datos;
 
-    $oGrid  = new paloSantoGrid($smarty);
     $oGrid->addNew("new",_tr("Add"));
 	$oGrid->customAction("save_all",_tr("Save All"));
 
