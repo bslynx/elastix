@@ -52,7 +52,7 @@ div.neo-table-toolbar-button {
 .neo-table-header-row-filter {
     position:relative;
     display:inline-block;
-    height:33px;
+    height:32px;
     float:left;
     padding:8px 10px 0px 10px;
     border-right: 1px solid #aaa;
@@ -153,10 +153,31 @@ td.neo-table-title-row a.link_summary_on{
   font-weight:bold;
 }
 
-.neo-table-filter-controls{
+div.neo-table-filter-controls{
     background-color: #FFFFFF;
-    height: 27px;
+    height: 28px;
     margin: 0px;
     padding: 0px;
     border: 0px;
+    position:relative;
+    float:none;
+}
+
+div.neo-filter-control{
+    background-color: #E7D8E3;
+    margin-left: 3px;
+    margin-right: 1px;
+    margin-top: 3px;
+    margin-bottom: 2px;
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    border: 1px solid #aaa;
+    border-radius:5px 5px 5px 5px;
+    -moz-border-radius: 5px 5px 5px 5px;
+    -webkit-border-radius: 5px 5px 5px 5px;
+    height: 17px;
+    position: relative;
+    display: inline-block;
 }
