@@ -142,6 +142,10 @@ function reportWeakKeys($smarty, $module_name, $local_templates_dir, &$pDB, $arr
     $oFilterForm = new paloForm($smarty, $arrFormFilterWeakKeys);
     $smarty->assign("SHOW", _tr("Show"));
 
+    $_POST["filter_field"]= $filter_field; 
+    $_POST["filter_value"]= $filter_value;
+
+    $oGrid->addFilterControl(_tr("Filter applied: ")._tr("Extension")." = ".$filter_value,$_POST, array("filter_field" => "extension","filter_value" => ""));
     $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/filter.tpl","",$_POST);
     //end section filter
     $oGrid->showFilter(trim($htmlFilter));
