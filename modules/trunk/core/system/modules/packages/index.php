@@ -29,6 +29,7 @@
 
 include_once "libs/paloSantoGrid.class.php";
 include_once "libs/xajax/xajax.inc.php";
+include_once "libs/paloSantoForm.class.php";
 
 function _moduleContent(&$smarty, $module_name)
 {
@@ -71,8 +72,8 @@ function listPackages($smarty, $module_name, $local_templates_dir,$arrConf) {
     global $arrLang;
     $oPackages = new PaloSantoPackages();
 
-    $submitInstalado = getParametro('submitInstalado');
-    $nombre_paquete = getParametro('nombre_paquete');
+    $submitInstalado = getParameter('submitInstalado');
+    $nombre_paquete = getParameter('nombre_paquete');
 
     $total_paquetes = $oPackages->ObtenerTotalPaquetes($submitInstalado, $arrConf['ruta_yum'], $nombre_paquete);
 
@@ -99,6 +100,7 @@ function listPackages($smarty, $module_name, $local_templates_dir,$arrConf) {
         'submitInstalado'   =>  $submitInstalado,
         'nombre_paquete'    =>  $nombre_paquete,
     );
+
     $arrData = array();
     if (is_array($arrPaquetes)) {
         for($i=0;$i<count($arrPaquetes);$i++){
@@ -141,41 +143,64 @@ function listPackages($smarty, $module_name, $local_templates_dir,$arrConf) {
                                        "property1" => ""),));
 
     /*Inicion Parte del Filtro*/
-    $opcion1 = $opcion2= "";
-    if(getParametro('submitInstalado')=='all')
-        $opcion1 = "selected='selected'";
-    else if(getParametro('submitInstalado')=='installed')
-        $opcion2 = "selected='selected'";
+    $arrFilter = filterField();
+    $oFilterForm = new paloForm($smarty, $arrFilter);
+
+    if(getParameter('submitInstalado')=='all'){
+        $arrFilter["submitInstalado"] = 'all';
+        $tipoPaquete = _tr('All Package');
+    }else{ 
+        $arrFilter["submitInstalado"] = 'installed';
+        $tipoPaquete = _tr('Package Installed');
+    }
+    $arrFilter["nombre_paquete"] = $nombre_paquete;
 
     $smarty->assign("module_name",$module_name);
     $smarty->assign("RepositoriesUpdate",$arrLang['Repositories Update']);
-    $smarty->assign("Name",$arrLang['Name']);
-    $smarty->assign("nombre_paquete",htmlentities($nombre_paquete, ENT_QUOTES, 'UTF-8'));
+    //$smarty->assign("Name",$arrLang['Name']);
+
+    //$smarty->assign("nombre_paquete",htmlentities($nombre_paquete, ENT_QUOTES, 'UTF-8'));
     $smarty->assign("Search",$arrLang['Search']);
-    $smarty->assign("Status",$arrLang['Status']);
-    $smarty->assign("opcion2",$opcion2);
-    $smarty->assign("opcion1",$opcion1);
-    $smarty->assign("PackageInstalled",$arrLang['Package Installed']);
-    $smarty->assign("AllPackage",$arrLang['All Package']);
+   // $smarty->assign("Status",$arrLang['Status']);
+   // $smarty->assign("opcion2",$opcion2);
+   // $smarty->assign("opcion1",$opcion1);
+   // $smarty->assign("PackageInstalled",$arrLang['Package Installed']);
+   // $smarty->assign("AllPackage",$arrLang['All Package']);
     $smarty->assign("UpdatingRepositories",$arrLang['Updating Repositories']);
     $smarty->assign("InstallPackage",$arrLang['Installing Package']);
     $smarty->assign("accionEnProceso",$arrLang['There is an action in process']);
 
-    $contenidoFiltro = $smarty->fetch("file:$local_templates_dir/new.tpl");
+    $oGrid->addFilterControl(_tr("Filter applied ")._tr("Status")." =  $tipoPaquete", $arrFilter, array("submitInstalado" => "installed"));
+    $oGrid->addFilterControl(_tr("Filter applied ")._tr("Name")." = $nombre_paquete", $arrFilter, array("nombre_paquete" => ""));
+
+    $oGrid->addButtonAction("update_repositorios",_tr('Repositories Update'),null,'mostrarReloj()');
+
+    $contenidoFiltro =$oFilterForm->fetchForm("$local_templates_dir/new.tpl","",$arrFilter);
     $oGrid->showFilter($contenidoFiltro);
     /*Fin Parte del Filtro*/
     $contenidoModulo = $oGrid->fetchGrid($arrGrid, $arrData,$arrLang);
     return $contenidoModulo;
 }
 
-function getParametro($parametro)
-{
-    if(isset($_POST[$parametro]))
-        return $_POST[$parametro];
-    else if(isset($_GET[$parametro]))
-        return $_GET[$parametro];
-    else
-        return null;
+function filterField(){
+    $arrPackages = array("all"=>_tr('All Package'),"installed"=>_tr('Package Installed'));
+
+    $arrFilter = array(
+            "nombre_paquete" => array( "LABEL"                  => _tr("Name"),
+                                        "REQUIRED"               => "no",
+                                        "INPUT_TYPE"             => "TEXT",
+                                        "INPUT_EXTRA_PARAM"      => "",
+                                        "VALIDATION_TYPE"        => "text",
+                                        "VALIDATION_EXTRA_PARAM" => ""),
+            "submitInstalado"   => array("LABEL"                  => _tr("Status"),
+                                            "REQUIRED"               => "no",
+                                            "INPUT_TYPE"             => "SELECT",
+                                            "INPUT_EXTRA_PARAM"      => $arrPackages,
+                                            "VALIDATION_TYPE"        => "text",
+                                            "VALIDATION_EXTRA_PARAM" => "",
+                                            "ONCHANGE"               => "javascript:submit()"),
+                        );
+    return $arrFilter;
 }
 
 function actualizarRepositorios()
