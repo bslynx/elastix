@@ -212,6 +212,26 @@ function reportReportCall($smarty, $module_name, $local_templates_dir, &$pDB_cdr
     $_POST['date_from'] = $date_from;
     $_POST['date_to']   = $date_to;
     $smarty->assign("SHOW", $arrLang["Show"]);
+
+    if($_POST["date_from"]==="")
+        $_POST["date_from"]  = " ";
+
+    if($_POST['date_to']==="")
+        $_POST['date_to']  = " ";
+
+    $oGrid->addFilterControl(_tr("Filter applied: ")._tr("Start Date")." = ".$date_from.", "._tr("End Date")." = ".
+    $date_to, $_POST, array("date_from" => date("d M Y"),"date_to" => date("d M Y")),true);
+
+    $valueType = "";
+    if(!is_null($type)){
+        if($type=="Ext")
+            $valueType=_tr("Extension");
+        else
+            $valueType=_tr("User");
+    }
+    $oGrid->addFilterControl(_tr("Filter applied: ").$valueType." = ".$value, $_POST, array("option_fil" => "Ext","value_fil" => ""));
+
+
     $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/filter.tpl","",$_POST);
     //end section filter
 
