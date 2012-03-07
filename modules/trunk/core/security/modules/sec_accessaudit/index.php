@@ -269,6 +269,10 @@ function report_AccessAudit($smarty, $module_name, $local_templates_dir)
     $_POST['offset'] = $offset;
 
     $smarty->assign("SHOW", _tr("Show"));
+
+    $oGrid->addFilterControl(_tr("Filter applied: ")._tr("Date")." = ".$_POST['filter'], $_POST, array('filter' => date("Y d m")),true);
+    $oGrid->addFilterControl(_tr("Filter applied: ")._tr('Search string')." = ".$busqueda, $_POST, array('busqueda' => ""));
+
     $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/filter.tpl", "", $_POST);
     $oGrid->showFilter(trim($htmlFilter));
     return $oGrid->fetchGrid();
