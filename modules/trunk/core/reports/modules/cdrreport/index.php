@@ -157,9 +157,35 @@ function _moduleContent(&$smarty, $module_name)
         'ringgroup'     =>  '',
     );
     foreach (array_keys($paramFiltro) as $k) {
-        if (isset($_GET[$k])) $paramFiltro[$k] = $_GET[$k];
-        if (isset($_POST[$k])) $paramFiltro[$k] = $_POST[$k];
+        if (!is_null(getParameter($k))){
+            $paramFiltro[$k] = getParameter($k);
+        }
     }
+
+    $oGrid  = new paloSantoGrid($smarty);
+    if($paramFiltro['date_start']==="")
+        $paramFiltro['date_start']  = " ";
+
+
+    if($paramFiltro['date_end']==="")
+        $paramFiltro['date_end']  = " ";
+
+
+        $valueFieldName = $arrFormElements['field_name']["INPUT_EXTRA_PARAM"][$paramFiltro['field_name']];
+        $valueStatus = $arrFormElements['status']["INPUT_EXTRA_PARAM"][$paramFiltro['status']];
+        $valueRingGRoup = $arrFormElements['ringgroup']["INPUT_EXTRA_PARAM"][$paramFiltro['ringgroup']];
+
+
+    $oGrid->addFilterControl(_tr("Filter applied: ")._tr("Start Date")." = ".$paramFiltro['date_start'].", "._tr("End Date")." = ".
+    $paramFiltro['date_end'], $paramFiltro, array('date_start' => date("d M Y"),'date_end' => date("d M Y")),true);
+
+    $oGrid->addFilterControl(_tr("Filter applied: ").$valueFieldName." = ".$paramFiltro['field_pattern'],$paramFiltro, array('field_name' => "dst",'field_pattern' => ""));
+
+    $oGrid->addFilterControl(_tr("Filter applied: ")._tr("Status")." = ".$valueStatus,$paramFiltro, array('status' => 'ALL'),true);
+
+    $oGrid->addFilterControl(_tr("Filter applied: ")._tr("Ring Group")." = ".$valueRingGRoup,$paramFiltro, array('ringgroup' => ''));
+
+
     $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/filter.tpl", "", $paramFiltro);
     if (!$oFilterForm->validateForm($paramFiltro)) {
         $smarty->assign(array(
@@ -203,9 +229,6 @@ function _moduleContent(&$smarty, $module_name)
 	}
     }
     
-    // Generación del reporte
-    
-    $oGrid  = new paloSantoGrid($smarty);
     $oGrid->setTitle(_tr("CDR Report"));
     $oGrid->pagingShow(true); // show paging section.
 
