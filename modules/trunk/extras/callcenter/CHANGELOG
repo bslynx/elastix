@@ -1,3 +1,6 @@
+* Dialer: signaling termination to the process group could result in 
+  subprocesses terminating before receiving shutdown requests, which in turn 
+  caused HubProcess to hang waiting for an answer that will never come. Fixed.
 * Dialer: fix broken Do Not Call check for outgoing calls by checking whether
   phone number appears in DNC at time of call. Fixes Elastix bug #1178.
 * Campaign Out: do not allow creation of campaigns with 0 retries.

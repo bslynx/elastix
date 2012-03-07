@@ -51,6 +51,34 @@ class HubProcess extends AbstractProcess
         return TRUE;
     }
     
+    /* Verificar si la tarea indicada sigue activa. Devuelve VERDADERO si la 
+     * tarea sigue corriendo, FALSO si inactiva o si se detecta que terminó. */
+    private function _revisarTareaActiva($sTarea)
+    {
+        $bTareaActiva = FALSE;
+
+        // Si está definido el PID del proceso, se verifica si se ejecuta.
+        if (!is_null($this->_tareas[$sTarea])) {
+            $iStatus = NULL;
+            $iPidDevuelto = pcntl_waitpid($this->_tareas[$sTarea], $iStatus, WNOHANG);
+            if ($iPidDevuelto > 0) {
+                $this->_log->output("WARN: $sTarea (PID=$iPidDevuelto) ha terminado inesperadamente (status=$iStatus), se agenda reinicio...");
+                $iErrCode = pcntl_wifexited($iStatus) ? pcntl_wexitstatus($iStatus) : 255;
+                $iRcvSignal = pcntl_wifsignaled($iStatus) ? pcntl_wtermsig($iStatus) : 0;
+                if ($iRcvSignal != 0) { $this->_log->output("WARN: $sTarea terminó debido a señal $iRcvSignal..."); }
+                if ($iErrCode != 0) { $this->_log->output("WARN: $sTarea devolvió código de error $iErrCode..."); }
+                $this->_tareas[$sTarea] = NULL;
+                
+                // Quitar la tubería del proceso que ha terminado
+                $this->_hub->quitarTuberia($sTarea);
+            } else {
+            	$bTareaActiva = TRUE;
+            }
+        }
+        
+        return $bTareaActiva;
+    }
+    
     public function procedimientoDemonio()
     {
         $bHayNuevasTareas = FALSE;
@@ -59,21 +87,7 @@ class HubProcess extends AbstractProcess
         if (is_null($this->_iTimestampVerificacionProcesos) || time() - $this->_iTimestampVerificacionProcesos > 0) {
             foreach (array_keys($this->_tareas) as $sTarea) {
                 // Si está definido el PID del proceso, se verifica si se ejecuta.
-                if (!is_null($this->_tareas[$sTarea])) {
-                    $iStatus = NULL;
-                    $iPidDevuelto = pcntl_waitpid($this->_tareas[$sTarea], $iStatus, WNOHANG);
-                    if ($iPidDevuelto > 0) {
-                    	$this->_log->output("WARN: $sTarea (PID=$iPidDevuelto) ha terminado inesperadamente (status=$iStatus), se agenda reinicio...");
-                        $iErrCode = pcntl_wifexited($iStatus) ? pcntl_wexitstatus($iStatus) : 255;
-                        $iRcvSignal = pcntl_wifsignaled($iStatus) ? pcntl_wtermsig($iStatus) : 0;
-                        if ($iRcvSignal != 0) { $this->_log->output("WARN: $sTarea terminó debido a señal $iRcvSignal..."); }
-                        if ($iErrCode != 0) { $this->_log->output("WARN: $sTarea devolvió código de error $iErrCode..."); }
-                        $this->_tareas[$sTarea] = NULL;
-                        
-                        // Quitar la tubería del proceso que ha terminado
-                        $this->_hub->quitarTuberia($sTarea);
-                    }
-                }
+                $this->_revisarTareaActiva($sTarea);
                 
                 // Si no está definido el PID del proceso, se intenta iniciar
                 if (is_null($this->_tareas[$sTarea])) {
@@ -222,7 +236,9 @@ class HubProcess extends AbstractProcess
         $this->_log->output('INFO: avisando de finalización a todos los procesos...');
         $this->_hub->enviarFinalizacion();
         $this->_log->output('INFO: esperando respuesta de todos los procesos...');
-        while ($this->_hub->numFinalizados() < 3) {
+        while ($this->_hub->numFinalizados() < count(array_filter($this->_tareas))) {
+            foreach (array_keys($this->_tareas) as $sTarea)
+                $this->_revisarTareaActiva($sTarea);
             if ($this->_hub->procesarPaquetes())
                 $this->_hub->procesarActividad(0);
             else $this->_hub->procesarActividad(1);
@@ -243,23 +259,9 @@ class HubProcess extends AbstractProcess
             $bTodosTerminaron = TRUE;
             foreach (array_keys($this->_tareas) as $sTarea) {
                 // Si está definido el PID del proceso, se verifica si se ejecuta.
-                if (!is_null($this->_tareas[$sTarea])) {
-                    $iStatus = NULL;
-                    $iPidDevuelto = pcntl_waitpid($this->_tareas[$sTarea], $iStatus, WNOHANG);
-                    if ($iPidDevuelto > 0) {
-                        $this->_log->output("INFO: $sTarea (PID=$iPidDevuelto) ha terminado (status=$iStatus)...");
-                        $iErrCode = pcntl_wifexited($iStatus) ? pcntl_wexitstatus($iStatus) : 255;
-                        $iRcvSignal = pcntl_wifsignaled($iStatus) ? pcntl_wtermsig($iStatus) : 0;
-                        if ($iRcvSignal != 0) { $this->_log->output("WARN: $sTarea terminó debido a señal $iRcvSignal..."); }
-                        if ($iErrCode != 0) { $this->_log->output("WARN: $sTarea devolvió código de error $iErrCode..."); }
-                        $this->_tareas[$sTarea] = NULL;
-                        
-                        // Quitar la tubería del proceso que ha terminado
-                        $this->_hub->quitarTuberia($sTarea);
-                    } else {
-                        // Este proceso aún no termina...
-                    	$bTodosTerminaron = FALSE;
-                    }
+                if ($this->_revisarTareaActiva($sTarea)) {
+                    // Este proceso aún no termina...
+                    $bTodosTerminaron = FALSE;
                 }
             }
 
