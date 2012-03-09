@@ -1,7 +1,7 @@
 Summary: Elastix First Boot Setup
 Name:    elastix-firstboot
-Version: 2.2.0
-Release: 10
+Version: 2.3.0
+Release: 1
 License: GPL
 Group:   Applications/System
 Source0: %{name}-%{version}.tar.bz2
@@ -101,7 +101,7 @@ rm -rf $RPM_BUILD_ROOT
 /usr/bin/change-passwords
 
 %changelog
-* Fri Mar 09 2012 Alex Villacis Lasso <a_villacis@palosanto.com> 2.2.0-10
+* Fri Mar 09 2012 Alex Villacis Lasso <a_villacis@palosanto.com> 2.3.0-1
 - CHANGED: Remove fix for Elastix bug 595. This workaround is rendered obsolete
   with the use of kmod-dahdi. 
 
