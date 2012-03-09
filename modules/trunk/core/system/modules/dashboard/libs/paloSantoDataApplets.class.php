@@ -174,11 +174,11 @@ PLANTILLA_RSS_ROW;
             for ($i = 0; $i < 7 && $i < count($infoRSS->items); $i++) {
                 $sContentList .= sprintf($sPlantilla,
                     date('Y.m.d', $infoRSS->items[$i]['date_timestamp']),
-                    urlencode('http://www.elastix.org'),
-                    urlencode($infoRSS->items[$i]['title']),
-                    urlencode($infoRSS->items[$i]['link']),
+                    rawurlencode('http://www.elastix.org'),
+                    rawurlencode(utf8_encode($infoRSS->items[$i]['title'])),
+                    rawurlencode($infoRSS->items[$i]['link']),
                     $infoRSS->items[$i]['link'],
-                    htmlentities($infoRSS->items[$i]['title'], ENT_COMPAT, 'UTF-8'));
+					htmlentities($infoRSS->items[$i]['title'], ENT_COMPAT));
             }
         }
         return $sContentList;
