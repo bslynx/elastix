@@ -1,7 +1,7 @@
 Summary: Elastix First Boot Setup
 Name:    elastix-firstboot
 Version: 2.2.0
-Release: 9
+Release: 10
 License: GPL
 Group:   Applications/System
 Source0: %{name}-%{version}.tar.bz2
@@ -34,7 +34,6 @@ mkdir -p $RPM_BUILD_ROOT/usr/bin/
 mkdir -p $RPM_BUILD_ROOT/usr/sbin/
 cp elastix-firstboot $RPM_BUILD_ROOT/etc/init.d/
 cp change-passwords  $RPM_BUILD_ROOT/usr/bin/
-cp fix-elastix-bug-595  $RPM_BUILD_ROOT/usr/sbin/
 mv compat-dbscripts/ $RPM_BUILD_ROOT/usr/share/elastix-firstboot/
 
 %post
@@ -100,10 +99,9 @@ rm -rf $RPM_BUILD_ROOT
 /usr/share/elastix-firstboot/compat-dbscripts/01-asteriskcdrdb.sql
 /usr/share/elastix-firstboot/compat-dbscripts/02-asteriskuser-password.sql
 /usr/bin/change-passwords
-/usr/sbin/fix-elastix-bug-595
 
 %changelog
-* Fri Mar 09 2012 Alex Villacis Lasso <a_villacis@palosanto.com>
+* Fri Mar 09 2012 Alex Villacis Lasso <a_villacis@palosanto.com> 2.2.0-10
 - CHANGED: Remove fix for Elastix bug 595. This workaround is rendered obsolete
   with the use of kmod-dahdi. 
 
