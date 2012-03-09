@@ -393,7 +393,10 @@ class paloSantoSysInfo
     {
         if($this->_existService($nameService)){
             $pid=trim(`/sbin/pidof $serviceName`);
-            $exist=`ps -p $pid | grep $pid`;
+            $pid_grep=str_replace(" ","|",$pid);
+
+            $exist=`ps -p $pid | grep "[$pid_grep]"`;
+
             if(isset($exist)) return "OK";
             else return "Shutdown";
         }
