@@ -123,12 +123,17 @@ class paloFax {
         }
     }
 
-    function getFaxList($offset, $limit)
+    function getFaxList($offset=null, $limit=null)
     {
+        $OFFSET = $LIMIT = "";
+
+        if($offset!=null) $OFFSET = "OFFSET $offset";
+        if($limit!=null) $LIMIT = "LIMIT $limit";
+
         $query  =
             'SELECT id, name, extension, secret, clid_name, clid_number, '.
                 'dev_id, date_creation, email, country_code, area_code '.
-            "FROM fax LIMIT $limit OFFSET $offset";
+            "FROM fax $LIMIT $OFFSET";
 
         $arrReturn = $this->_db->fetchTable($query, true);
         if($arrReturn == FALSE) {
