@@ -103,6 +103,10 @@ rm -rf $RPM_BUILD_ROOT
 /usr/sbin/fix-elastix-bug-595
 
 %changelog
+* Fri Mar 09 2012 Alex Villacis Lasso <a_villacis@palosanto.com>
+- CHANGED: Remove fix for Elastix bug 595. This workaround is rendered obsolete
+  with the use of kmod-dahdi. 
+
 * Wed Dec 22 2011 Eduardo Cueva <ecueva@palosanto.com> 2.2.0-9
 - CHANGED: In spec file remove actions over vtiger database because the
   package vtiger do that task.

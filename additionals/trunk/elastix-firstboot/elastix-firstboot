@@ -309,27 +309,11 @@ start(){
 		ret=1
 	fi
 
-    # Run check for Elastix bug #595 (should pass with noop)
-    /usr/sbin/fix-elastix-bug-595
-    if [ $? -eq 1 ] ; then
-        echo "*** WARNING *** *** WARNING *** *** WARNING *** *** WARNING ***"
-        echo "YOUR DEFAULT BOOT CONFIGURATION IN /boot/grub/grub.conf WAS MODIFIED"
-        echo "TO FIX ELASTIX BUG #595. YOU ARE PROBABLY RUNNING A KERNEL WITHOUT"
-        echo "DAHDI DRIVERS. YOUR SYSTEM MUST BE REBOOTED TO ENSURE THAT DAHDI"
-        echo "DRIVERS ARE LOADED."
-        echo "YOUR SYSTEM WILL REBOOT IN 10 SECONDS."
-        sleep 10
-        /sbin/reboot
-        return 1
-    fi
-
     [ $ret -eq 0 -a -d /var/lock/subsys ] && touch /var/lock/subsys/elastix-firstboot
 	return $ret
 }
 
 stop(){
-	# Run check for Elastix bug #595
-	/usr/sbin/fix-elastix-bug-595
 	[ -f "/var/lock/subsys/elastix-firstboot" ] && rm -f /var/lock/subsys/elastix-firstboot
 	return 0
 }
