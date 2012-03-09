@@ -136,6 +136,11 @@
 		}
 	}
 
+    if (!isset($astman) || is_null($astman)) {
+    	return _tr('Failed to connect to Asterisk Manager Interface').' - '.
+            "127.0.0.1:".$amp_conf["ASTMANAGERPORT"];
+    }
+
 	$GLOBALS['amp_conf'] = $amp_conf;
 	$GLOBALS['asterisk_conf']  = $asterisk_conf;
 	$GLOBALS['astman'] = $astman;
