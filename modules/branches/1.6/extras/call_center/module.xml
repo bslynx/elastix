@@ -8,6 +8,7 @@
     <menuitem menuid="outgoing_calls" desc="Outgoing Calls" parent="call_center" module="no"></menuitem>
     <menuitem menuid="campaign_out" desc="Campaigns" parent="outgoing_calls" module="yes"></menuitem>
     <menuitem menuid="dont_call_list" desc="Do not Call List" parent="outgoing_calls" module="yes"></menuitem>
+    <menuitem menuid="external_url"   desc="External URLs"    parent="outgoing_calls" module="yes"></menuitem>
 
     <menuitem menuid="ingoing_calls" desc="Ingoing Calls" parent="call_center" module="no"></menuitem>
     <menuitem menuid="queues" desc="Queues" parent="ingoing_calls" module="yes"></menuitem>
