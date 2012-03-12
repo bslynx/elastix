@@ -38,7 +38,6 @@ function _moduleContent(&$smarty, $module_name)
 {
     require_once "modules/$module_name/libs/externalUrl.class.php";
     
-    $lang = get_language();
     $script_dir = dirname($_SERVER['SCRIPT_FILENAME']);
 
     load_language_module($module_name);
