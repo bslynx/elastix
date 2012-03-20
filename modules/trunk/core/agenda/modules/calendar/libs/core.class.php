@@ -823,19 +823,24 @@ CONTENIDO_ARCHIVO_AUDIO;
      *                                                           event.
      *                   or false if an error exists
      */
-    function listCalendarEvents($startdate, $enddate)
+    function listCalendarEvents($startdate, $enddate=NULL, $id_event = NULL)
     {
         global $arrConf;
 
         if (!$this->_checkUserAuthorized('calendar')) return false;
 
         // Validación de fechas
-        $sFechaInicio = $this->_checkDateFormat(isset($startdate) ? $startdate : NULL);
-        $sFechaFinal  = $this->_checkDateFormat(isset($enddate) ? $enddate : NULL);
-        if (is_null($sFechaInicio) || is_null($sFechaFinal)) return false;
-        if ($sFechaFinal < $sFechaInicio) {
-            $t = $sFechaFinal; $sFechaFinal = $sFechaInicio; $sFechaInicio = $t;
-        }
+	if(is_null($id_event)){
+	    $sFechaInicio = $this->_checkDateFormat(isset($startdate) ? $startdate : NULL);
+	    if (is_null($sFechaInicio)) return false;
+	    if(isset($enddate)){
+		$sFechaFinal  = $this->_checkDateFormat($enddate);
+		if (is_null($sFechaFinal)) return false;
+		if ($sFechaFinal < $sFechaInicio) {
+		    $t = $sFechaFinal; $sFechaFinal = $sFechaInicio; $sFechaInicio = $t;
+		}
+	    }
+	}
 
         // Identificar el usuario para averiguar el ID de usuario en calendario
         $id_user = $this->_leerIdUser();
@@ -843,15 +848,34 @@ CONTENIDO_ARCHIVO_AUDIO;
         // Base de datos del calendario
         $pDB_calendar = $this->_getDB($arrConf['dsn_conn_database']);
 
-        $sql = <<<LEER_EVENTOS
+	if(isset($id_event)){
+	    $arrParam = array($id_user, $id_event);
+	    $sql = <<<LEER_EVENTOS
+SELECT * FROM events
+WHERE uid = ? AND id = ?
+LEER_EVENTOS;
+	}
+	elseif(isset($enddate)){
+	    $arrParam = array($sFechaFinal, $sFechaInicio, $id_user);
+	    $sql = <<<LEER_EVENTOS
 SELECT * FROM events
 WHERE   ? >= strftime('%Y-%m-%d', startdate)
     AND ? <= strftime('%Y-%m-%d', enddate)
     AND uid = ?
 ORDER BY starttime
 LEER_EVENTOS;
-        $recordset = $pDB_calendar->fetchTable($sql, TRUE, 
-            array($sFechaFinal, $sFechaInicio, $id_user));
+	}
+	else{  // Se devuelven todos los eventos cuyo fecha de inicio es mayor o igual a la fecha inicio pasada como parámetro
+	    $arrParam = array($sFechaInicio, $id_user);
+	    $sql = <<<LEER_EVENTOS
+SELECT * FROM events
+WHERE   ? <= strftime('%Y-%m-%d', startdate)
+    AND uid = ?
+ORDER BY starttime
+LEER_EVENTOS;
+	}
+        
+        $recordset = $pDB_calendar->fetchTable($sql, TRUE, $arrParam);
         if (!is_array($recordset)) {
             $this->errMsg["fc"] = 'DBERROR';
             $this->errMsg["fm"] = 'Database operation failed';
@@ -868,8 +892,8 @@ LEER_EVENTOS;
                 // Las siguientes 3 son fechas
                 'startdate'     =>  date(SOAP_DATE_FORMAT, strtotime($tupla['startdate'])),
                 'enddate'       =>  date(SOAP_DATE_FORMAT, strtotime($tupla['enddate'])),
-                'starttime'     =>  date(SOAP_DATETIME_FORMAT, strtotime($tupla['starttime'])),
-                'endtime'       =>  date(SOAP_DATETIME_FORMAT, strtotime($tupla['starttime'])),
+                'starttime'     =>  $tupla['starttime'],
+                'endtime'       =>  $tupla['endtime'],
 
                 'subject'       =>  $tupla['subject'],
                 'description'   =>  $tupla['description'],
@@ -905,7 +929,7 @@ LEER_EVENTOS;
      * @param   string    $color                     (Optional) Color for the event
      * @return  boolean   True if the event was successfully created, or false if an error exists
      */
-    function addCalendarEvent($startdate,$enddate,$subject,$description,$asterisk_call,$recording,$call_to,$reminder_timer,$emails_notification, $color)
+    function addCalendarEvent($startdate,$enddate,$subject,$description,$asterisk_call,$recording,$call_to,$reminder_timer,$emails_notification, $color, $getIdInserted=FALSE)
     {
         global $arrConf;
 
@@ -1015,7 +1039,8 @@ LEER_EVENTOS;
 
         $color = isset($color)? $color : "#3366CC";
         /* Insertar el registro del nuevo evento. */
-        $pCalendar = new paloSantoCalendar($this->_getDB($arrConf['dsn_conn_database']));
+	$dbCalendar = $this->_getDB($arrConf['dsn_conn_database']);
+        $pCalendar = new paloSantoCalendar($dbCalendar);
         $r = $pCalendar->insertEvent(
             $id_user,
             substr($sFechaInicio, 0, 10),   // asume yyyy-mm-dd al inicio
@@ -1054,7 +1079,10 @@ LEER_EVENTOS;
         if (count($emails_notification) > 0) {
             $this->_enviarCorreosNotificacionEvento($idEvento, $sFechaInicio, $sFechaFinal, $subject, $emails_notification, $description, 'New_Event');
         }
-        return true; 
+        if($getIdInserted)
+	    return $dbCalendar->getLastInsertId();
+	else
+	    return true;
     }
 
     /**
