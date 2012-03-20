@@ -852,7 +852,7 @@ $(document).ready(function(){
         $('#divNotification').show();
         $('#lblCheckBoxNoti').attr("for","CheckBoxNoti");
         $('#lblCheckBoxRemi').attr("for","CheckBoxRemi");
-        $('#desc').hide();
+        $('#desc').show();
         $('.counter').text("140");
         $('textarea[name=tts]').val("");
         var order = "menu="+module_name+"&action=new_box&rawmode=yes";
