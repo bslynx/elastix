@@ -584,6 +584,68 @@ class core_AddressBook
         return true;
     }
 
+    public function getContactImage($id, $thumbnail)
+    {
+	global $arrConf;
+
+        if (!$this->_checkUserAuthorized('address_book')) return false;
+
+        $dbAddressBook = $this->_getDB($arrConf['dsn_conn_database']);
+        $addressBook = new paloAdressBook($dbAddressBook);
+
+        // Obtener el ID del usuario logoneado
+        $id_user = $this->_leerIdUser();
+        if (is_null($id_user)) return false;
+
+        // Validar que el ID está presente y es numérico
+        if (!isset($id) || !preg_match('/^\d+$/', $id)) {
+            $this->errMsg["fc"] = 'PARAMERROR';
+            $this->errMsg["fm"] = 'Invalid format';
+            $this->errMsg["fd"] = 'Invalid ID, must be positive integer';
+            $this->errMsg["cn"] = get_class($this);
+            return false;
+        }
+
+        // Verificar si el contacto existe y pertenece al usuario logoneado
+        $tupla = $addressBook->contactData($id, $id_user);
+	if (!is_array($tupla)) {
+            $this->errMsg["fc"] = 'DBERROR';
+            $this->errMsg["fm"] = 'Database operation failed';
+            $this->errMsg["fd"] = 'Unable to read data from external phonebook - '.$addressBook->_DB->errMsg;
+            $this->errMsg["cn"] = get_class($addressBook);
+            return false;
+        }
+
+	$ruta_destino = "/var/www/address_book_images";
+	$arrIm = explode(".",$tupla['picture']);
+	$typeImage = $arrIm[count($arrIm)-1];
+	if($thumbnail=="yes"){
+	    $imgDefault = $_SERVER['DOCUMENT_ROOT']."/modules/address_book/images/Icon-user_Thumbnail.png";
+	    $image = $ruta_destino."/".$id."_Thumbnail.$typeImage";
+	}
+	else{
+	    $imgDefault = $_SERVER['DOCUMENT_ROOT']."/modules/address_book/images/Icon-user.png";
+	    $image = $ruta_destino."/".$tupla['picture'];
+	}
+	if(is_file($image)){
+	    if(strtolower($typeImage) == "png"){
+		Header("Content-type: image/png"); 
+		$im = imagecreatefromPng($image); 
+		ImagePng($im); // Mostramos la imagen 
+		ImageDestroy($im); // Liberamos la memoria que ocupaba la imagen 
+	    }else{
+		Header("Content-type: image/jpeg"); 
+		$im = imagecreatefromJpeg($image); 
+		ImageJpeg($im); // Mostramos la imagen 
+		ImageDestroy($im); // Liberamos la memoria que ocupaba la imagen 
+	    }
+	}else{
+	    Header("Content-type: image/png"); 
+	    $image = file_get_contents($imgDefault); 
+	    return $image;
+	}
+    }
+
     /**
      * 
      * Function that returns the error message
