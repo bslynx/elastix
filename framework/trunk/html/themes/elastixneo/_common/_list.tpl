@@ -16,19 +16,19 @@
                         <img border="0" src="{$accion.icon}" align="absmiddle"  />
                     {/if}
                     <input type="button" name="{$accion.task}" value="{$accion.alt}" {if !empty($accion.onclick)} onclick="{$accion.onclick}" {/if} class="neo-table-action" />
-                </div> 
+                </div>
             {elseif $accion.type eq 'submit'}
                 <div class="neo-table-header-row-filter">
                     {if !empty($accion.icon)}
                         <img border="0" src="{$accion.icon}" align="absmiddle"  />
                     {/if}
                     <input type="submit" name="{$accion.task}" value="{$accion.alt}" {if !empty($accion.onclick)} onclick="{$accion.onclick}" {/if} class="neo-table-action" />
-                </div>                 
+                </div>
             {elseif $accion.type eq 'text'}
-                <div class="neo-table-header-row-filter" style="cursor:default">                    
+                <div class="neo-table-header-row-filter" style="cursor:default">
                     <input type="text"   id="{$accion.name}" name="{$accion.name}" value="{$accion.value}" {if !empty($accion.onkeypress)} onkeypress="{$accion.onkeypress}" {/if} style="height:22px" />
                     <input type="submit" name="{$accion.task}" value="{$accion.alt}" class="neo-table-action" />
-                </div>                 
+                </div>
             {elseif $accion.type eq 'combo'}
                 <div class="neo-table-header-row-filter" style="cursor:default">
                     <select name="{$accion.name}" id="{$accion.name}" {if !empty($accion.onchange)} onchange="{$accion.onchange}" {/if}>
@@ -38,10 +38,10 @@
                             {html_options options=$accion.arrOptions}
                         {/if}
                     </select>
-                    {if !empty($accion.task)} 
+                    {if !empty($accion.task)}
                         <input type="submit" name="{$accion.task}" value="{$accion.alt}" class="neo-table-action" />
                     {/if}
-                </div> 
+                </div>
             {elseif $accion.type eq 'html'}
                 <div class="neo-table-header-row-filter">
                     {$accion.html}
@@ -120,7 +120,11 @@
     {if !empty($arrFiltersControl)}
         <div class="neo-table-filter-controls">
             {foreach from=$arrFiltersControl key=k item=filterc name=filtersctrl}
-                <div class="neo-filter-control">{$filterc.msg}&nbsp; <a href="{$url}&name_delete_filters={$filterc.filters}"><img src='themes/elastixneo/images/bookmarks_equis.png' width="18" height="16" align='absmiddle' border="0" /></a></div>
+                <div class="neo-filter-control">{$filterc.msg}&nbsp;
+				{if $filterc.defaultFilter eq no}
+					<a href="{$url}&name_delete_filters={$filterc.filters}"><img src='themes/elastixneo/images/bookmarks_equis.png' width="18" height="16" align='absmiddle' border="0" /></a>
+				{/if}
+				</div>
             {/foreach}
         </div>
     {/if}

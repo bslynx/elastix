@@ -27,7 +27,7 @@
 		<br />
 	  	<div class="div_msg_errors" id="message_error">
                     <div style="height:24px">
-                        <div class="div_msg_errors_title">
+                        <div class="div_msg_errors_title" style="padding-left:5px">
                             <b style="color:red;">&nbsp;{$mb_title}</b>
                         </div>
                         <div class="div_msg_errors_dismiss">
