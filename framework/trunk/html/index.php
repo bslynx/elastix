@@ -51,6 +51,13 @@ if(isset($_GET['logout']) && $_GET['logout']=='yes') {
 
 //cargar el archivo de idioma
 load_language();
+$lang = get_language();
+if(file_exists("langmenus/$lang.lang")){
+    include_once "langmenus/$lang.lang";
+    global $arrLangMenu;
+    global $arrLang;
+    $arrLang = array_merge($arrLang,$arrLangMenu);
+}
 
 $pACL = new paloACL($arrConf['elastix_dsn']['acl']);
 
