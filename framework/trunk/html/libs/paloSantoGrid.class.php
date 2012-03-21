@@ -75,6 +75,7 @@ class paloSantoGrid {
 
     public function addFilterControl($msg, &$arrData, $arrFilter = array(), $always_activated=false)
     {
+		$defaultFiler = "yes";
         if((is_array($arrFilter) && count($arrFilter)>0)){
             $name_delete_filters = getParameter('name_delete_filters');
             $keys = array_keys($arrFilter);
@@ -85,21 +86,30 @@ class paloSantoGrid {
                 foreach($arrFilter as $name => $value){
                     $arrData[$name] = $value;
                 }
-                if($always_activated) // a pesar de que fue eliminado el filtro, se desea que el control siga visible.
-                    $this->arrFiltersControl[] = array("msg" => $msg, "filters" => implode(",",$keys));
+                if($always_activated){ // a pesar de que fue eliminado el filtro, se desea que el control siga visible.
+                    $this->arrFiltersControl[] = array("msg" => $msg, "filters" => implode(",",$keys), "defaultFilter" => "yes");
+				}
             }
             else{
                 $filter_apply = true;
                 foreach($arrFilter as $name => $value){
                     $val = (isset($arrData[$name]) && !empty($arrData[$name]))?$arrData[$name]:null;
                     if($val===null){
-                        $filter_apply = false; 
-                        break;                        
+                        $filter_apply = false;
+                        break;
                     }
+					//esto se hace para poder saber si el fitro aplicado corresponde al valor por default del filtro
+					if($always_activated){
+						if($val!=$arrFilter[$name]){
+							$defaultFiler = "no";
+						}
+					}else
+						$defaultFiler = "no";
                 }
-                if($filter_apply) //solo si todos estan seteados o tiene un value asociado (!=null)
-                    $this->arrFiltersControl[] = array("msg" => $msg, "filters" => implode(",",$keys));
-            }                
+                if($filter_apply){ //solo si todos estan seteados o tiene un value asociado (!=null)
+                    $this->arrFiltersControl[] = array("msg" => $msg, "filters" => implode(",",$keys), "defaultFilter" => $defaultFiler);
+				}
+            }
         }
         else{
             echo "Invalid format for variable \$arrFilter.";
