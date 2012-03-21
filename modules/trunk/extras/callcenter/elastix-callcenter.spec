@@ -3,7 +3,7 @@
 Summary: Elastix Call Center 
 Name:    elastix-callcenter
 Version: 2.1.99
-Release: 1.alpha
+Release: 2.alpha
 License: GPL
 Group:   Applications/System
 Source0: %{modname}_%{version}-%{release}.tgz
@@ -92,6 +92,21 @@ fi
 /etc/logrotate.d/elastixdialer
 
 %changelog
+* Wed Mar 21 2012 Alex Villacis Lasso <a_villacis@palosanto.com> 2.1.99-2.alpha
+- Third pre-release version for testing of new dialer code.
+- From CHANGELOG:
+    - Installer: fix invalid SQL syntax on foreign key creation for external URL
+    - Reports Break: some cleanup on language loading
+    - External URL: (trivial) remove useless assignment
+    - Dialer: signaling termination to the process group could result in 
+      subprocesses terminating before receiving shutdown requests, which in turn 
+      caused HubProcess to hang waiting for an answer that will never come.
+      Fixed.
+    - Dialer: fix broken Do Not Call check for outgoing calls by checking
+      whether phone number appears in DNC at time of call. Fixes Elastix 
+      bug #1178.
+    - Campaign Out: do not allow creation of campaigns with 0 retries.
+
 * Wed Feb 22 2012 Alex Villacis Lasso <a_villacis@palosanto.com> 2.1.99-1.alpha
 - Second pre-release version for testing of new dialer code.
 - From CHANGELOG:
