@@ -159,7 +159,7 @@ CREATE TABLE IF NOT EXISTS `campaign` (
   `id_url`  int unsigned,
   
   PRIMARY KEY  (`id`),
-  FOREIGN KEY (id_url)  REFERENCES campaign_external_url
+  FOREIGN KEY (id_url)  REFERENCES campaign_external_url(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 /* Upgrade from old length, if it applies */
@@ -337,7 +337,7 @@ CREATE TABLE IF NOT EXISTS campaign_entry
 
     FOREIGN KEY (id_queue_call_entry) REFERENCES queue_call_entry(id),
     FOREIGN KEY (id_form) REFERENCES form(id),
-    FOREIGN KEY (id_url)  REFERENCES campaign_external_url
+    FOREIGN KEY (id_url)  REFERENCES campaign_external_url(id)
 ) ENGINE=InnoDB;
 
 /*

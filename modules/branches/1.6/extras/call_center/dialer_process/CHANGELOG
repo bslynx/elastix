@@ -1,3 +1,4 @@
+* Installer: fix invalid SQL syntax on foreign key creation for external URL
 * Reports Break: some cleanup on language loading
 * External URL: (trivial) remove useless assignment
 * Dialer: signaling termination to the process group could result in 
