@@ -154,7 +154,7 @@ function _moduleContent(&$smarty, $module_name)
 
     $oGrid  = new paloSantoGrid($smarty);
     if($report){
-        $oGrid->addFilterControl(_tr("Filter applied ")._tr("Start Date")." = ".$arrDate['date_start'].", "._tr("End Date")." = ".$arrDate['date_end'], $arrDate, array('date_start' => date("Y-m-d"),'date_end' => date("Y-m-d")),true);
+        $oGrid->addFilterControl(_tr("Filter applied ")._tr("Start Date")." = ".$arrDate['date_start'].", "._tr("End Date")." = ".$arrDate['date_end'], $arrDate, array('date_start' => date("d M Y"),'date_end' => date("d M Y")),true);
     }
 
     if( getParameter('submit_eliminar') ) {
@@ -203,10 +203,28 @@ function _moduleContent(&$smarty, $module_name)
             if (!is_file($voicemailPath)) { 
                 die("<b>404 ".$arrLang["no_file"]."</b>");
             }
-            $sContenido="";
+           $sContenido="";
+
+			$name = basename($voicemailPath);
+			$format=substr(strtolower($name), -3);
+			 // This will set the Content-Type to the appropriate setting for the file
+            $ctype ='';
+            switch( $format ) {
+
+                case "mp3": $ctype="audio/mpeg"; break;
+                case "wav": $ctype="audio/x-wav"; break;
+                case "Wav": $ctype="audio/x-wav"; break;
+                case "WAV": $ctype="audio/x-wav"; break;
+                case "gsm": $ctype="audio/x-gsm"; break;
+                // not downloadable
+                default: die("<b>404 ".$arrLang["no_file"]."</b>"); break ;
+            }
+
+			if($sContenido == "")
+                $session_id = session_id();
 
             $sContenido=<<<contenido
-                    <embed src='index.php?menu=$module_name&action=download&ext=$ext&name=$file&rawmode=yes' width=300, height=20 autoplay=true loop=false></embed><br>
+                    <embed src='index.php?menu=$module_name&action=download&ext=$ext&name=$file&rawmode=yes&elastixSession=$session_id' width=300, height=20 autoplay=true loop=false type="$ctype"></embed><br>
 contenido;
 
             $smarty->assign("CONTENT", $sContenido);
