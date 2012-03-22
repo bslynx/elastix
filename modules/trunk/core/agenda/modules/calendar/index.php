@@ -503,13 +503,14 @@ function sendMails($data, $arrLang, $type, $arrConf,$pDB, $module_name, $idEvent
     $uid  = Obtain_UID_From_User($user,$arrConf);
     $pDB3 = new paloDB($arrConf['dsn_conn_database1']);
     $user_name = $pCalendar->getNameUsers($uid,$pDB3);
+    $user_name1 = $pCalendar->getDescUsers($uid,$pDB3);
 
     if(!isset($user_name) || $user_name=="")
         $user_name = $user;
 
     if($uid == "" || !isset($uid)) return; // validar el error de envio de email
     //obtain email FROM....
-    $From = 'admin@example.com';
+    $From = 'events@elastixserver.com';
     $subject = $arrLang['New_Event'].": ".$event;
     if($type == "NEW")
         $subject = $arrLang['New_Event'].": ".$event;
@@ -575,7 +576,7 @@ $msg = "
 
              $msg .= "<div style='margin-top:10px; margin-left:40px;'>
                  <div style='margin-top:10px; font-style:italic; font-weight:bolder;'>{$arrLang['Organizer']}: </div>
-                 <div style='margin:0px 0px 0px 60px'>$user_name.</div>
+                 <div style='margin:0px 0px 0px 60px'>".$user_name1." - ".$user_name.".</div>
              </div>
              <div style='margin-top:20px; text-align: center; color: #BEBEBE; font-size: 12px;'>
                  <b>{$arrLang['noResponseNotification']}.</b><br />
@@ -601,7 +602,7 @@ $msg = "
     $mail->IsHTML(true); // El correo se envía como HTML
     $mail->WordWrap = 50;
     $mail->From = $From;
-    $mail->FromName = $user_name;
+    $mail->FromName = $user_name1." (".$user_name.")";
     /*if($val){
         $mail->AddAttachment($dirIcalTmp, "icalout.ics");
     }*/
