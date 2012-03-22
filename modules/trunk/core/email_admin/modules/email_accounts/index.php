@@ -103,9 +103,12 @@ function _moduleContent(&$smarty, $module_name)
 	case "edit_quota":
 	    $content = edit_quota($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
 	    break;
-        default:
-            $content = viewFormAccount($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
-            break;
+	case "reconstruir":
+		$content = reconstruir_mailBox($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+	    break;
+	default:
+		$content = viewFormAccount($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
+		break;
     }
 
     return $content;
@@ -157,6 +160,12 @@ function viewFormAccount($smarty, $module_name, $local_templates_dir, &$pDB, $ar
 
     $arrData = array();
 
+	$pACL = new paloACL(new paloDB($arrConf['elastix_dsn']['acl']));
+	$userAccount = isset($_SESSION['elastix_user'])?$_SESSION['elastix_user']:"";
+    $isAdministrator = $pACL->isUserAdministratorGroup($userAccount);
+
+	$reconstruir = _tr("Reconstruct");
+
     if ($id_domain>0){
 	$arrAccounts = $pEmail->getAccountsByDomain($id_domain);
 //username, password, id_domain, quota
@@ -166,18 +175,10 @@ function viewFormAccount($smarty, $module_name, $local_templates_dir, &$pDB, $ar
 	foreach($arrAccounts as $account) {
 	    $arrTmp    = array();
 	    $username=$account[0];
-	    /*$arrAlias=$pEmail->getAliasAccount($username);
-	    $direcciones='';
-	    if(is_array($arrAlias) && count($arrAlias)>0){
-		foreach($arrAlias as $fila){
-		    $direcciones.=(empty($direcciones))?'':'<br>';
-		    $direcciones.=$fila['1'];
-		}
-	    }
-	    $id_domain=$account[2];
-	    $arrTmp[0]=$direcciones;*/
 	    $arrTmp[0] = "&nbsp;<a href='?menu=$module_name&action=view&username=$username'>$username</a>";
-	    $arrTmp[1] = obtener_quota_usuario($username,$module_name,$arrLang);
+	    $arrTmp[1] = obtener_quota_usuario($username,$module_name,$arrLang,$id_domain);
+		if($isAdministrator)
+			$arrTmp[2] = "&nbsp;<a href='?menu=$module_name&action=reconstruir&username=$username&domain=$id_domain'>$reconstruir</a>";
 	    $link_agregar_direccion="<a href='?action=add_address&id_domain=$id_domain&username=$username'>Add Address</a>";
 	    $link_modificar_direccion="<a href='?action=edit_addresses&id_domain=$id_domain&username=$username'>Addresses</a>";
 	    //$arrTmp[3]=$link_agregar_direccion."&nbsp;&nbsp; ".$link_modificar_direccion;
@@ -201,7 +202,10 @@ function viewFormAccount($smarty, $module_name, $local_templates_dir, &$pDB, $ar
     $smarty->assign("LINK", "?menu=$module_name&action=export&domain=$id_domain&rawmode=yes");
     $smarty->assign("EXPORT", _tr("Export Accounts"));
 
-    $oGrid->setColumns(array(_tr("Account Name"),_tr("Used Space"),));
+    if($isAdministrator)
+		$oGrid->setColumns(array(_tr("Account Name"),_tr("Used Space"),_tr("Reconstruct MailBox")));
+	else
+		$oGrid->setColumns(array(_tr("Account Name"),_tr("Used Space")));
 
     $arrGrid = array(
         "width"    => "99%",
@@ -216,6 +220,29 @@ function viewFormAccount($smarty, $module_name, $local_templates_dir, &$pDB, $ar
     $oGrid->showFilter(trim($htmlFilter));
     $content = $oGrid->fetchGrid($arrGrid,$arrDatosGrid,$arrLang);
     return $content;
+}
+
+function reconstruir_mailBox($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang)
+{
+	$pACL = new paloACL(new paloDB($arrConf['elastix_dsn']['acl']));
+	$pEmail = new paloEmail($pDB);
+
+	$userAccount = isset($_SESSION['elastix_user'])?$_SESSION['elastix_user']:"";
+    $isAdmisnistrator = $pACL->isUserAdministratorGroup($userAccount);
+
+    if($isAdmisnistrator){
+		if($pEmail->resconstruirMailBox(getParameter("username"))){
+			$smarty->assign("mb_title", _tr('MESSAGE').":");
+			$smarty->assign("mb_message", _tr("The MailBox was reconstructed succefully"));
+		}else{
+			$smarty->assign("mb_title", _tr('ERROR').":");
+			$smarty->assign("mb_message",_tr("The MailBox couldn't be reconstructed.\n".$pEmail->errMsg));
+		}
+	}
+
+    unset($_GET['action']);
+
+	return viewFormAccount($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
 }
 
 function viewDetailAccount($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang)
@@ -509,6 +536,12 @@ function viewFormEditQuota($smarty, $module_name, $local_templates_dir, &$pDB, $
     $smarty->assign("username", $username);
     $smarty->assign("old_quota", $arrAccount[0][3]);
     $smarty->assign("icon", "images/list.png");
+
+	$id_domain=getParameter('domain');
+	if($id_domain==null)
+		$id_domain=0;
+	$smarty->assign('domain', $id_domain);
+
     $_POST["quota"] = (isset($quota))?$quota:$arrAccount[0][3];
     $htmlForm = $oForm->fetchForm("$local_templates_dir/edit_quota.tpl", _tr("Edit quota to").": $username", $_POST);
     $content = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";
@@ -728,7 +761,7 @@ function crear_mailbox_usuario($db,$email,$username,&$error_msg){
 }
 
 
-function obtener_quota_usuario($username,$module_name,$arrLang)
+function obtener_quota_usuario($username,$module_name,$arrLang,$id_domain)
 {
     global $CYRUS;
     global $arrLang;
@@ -743,7 +776,7 @@ function obtener_quota_usuario($username,$module_name,$arrLang)
             $q_total = $quota['qmax'];
             if (! $q_total == 0){
                 $q_percent = number_format((100*$q_used/$q_total),2);
-                $tamano_usado="$quota[used] KB / <a href='?menu=$module_name&action=viewFormEditQuota&username=$username' title='$edit_quota'>$quota[qmax] KB</a> ($q_percent%)";
+                $tamano_usado="$quota[used] KB / <a href='?menu=$module_name&action=viewFormEditQuota&username=$username&domain=$id_domain' title='$edit_quota'>$quota[qmax] KB</a> ($q_percent%)";
             }
             else {
                 $tamano_usado=$arrLang["Could not obtain used disc space"];
@@ -873,9 +906,11 @@ function getAction()
     else if(getParameter("action")=="view") //Get parameter by GET (command pattern, links)
         return "view";
     else if(getParameter("action")=="export")
-	return "export";
+		return "export";
     else if(getParameter("action")=="viewFormEditQuota")
-	return "viewFormEditQuota";
+		return "viewFormEditQuota";
+	else if(getParameter("action")=="reconstruir")
+		return "reconstruir";
     else
         return "report";
 }
