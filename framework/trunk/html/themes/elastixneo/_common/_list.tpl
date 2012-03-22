@@ -20,7 +20,7 @@
             {elseif $accion.type eq 'submit'}
                 <div class="neo-table-header-row-filter">
                     {if !empty($accion.icon)}
-                        <img border="0" src="{$accion.icon}" align="absmiddle"  />
+                        <input type="image" src="{$accion.icon}" align="absmiddle" name="{$accion.task}" value="{$accion.alt}" {if !empty($accion.onclick)} onclick="{$accion.onclick}" {/if} class="neo-table-action" />
                     {/if}
                     <input type="submit" name="{$accion.task}" value="{$accion.alt}" {if !empty($accion.onclick)} onclick="{$accion.onclick}" {/if} class="neo-table-action" />
                 </div>
