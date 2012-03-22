@@ -341,7 +341,7 @@ function reportMonitoring($smarty, $module_name, $local_templates_dir, &$pDB, $p
     $_POST["filter_value"]           = $filter;
     $_POST["filter_value_userfield"] = $filter_userfield;
 
-    $oGrid->addFilterControl(_tr("Filter applied ")._tr("Start Date")." = ".$paramFilter['date_start'].", "._tr("End Date")." = ".$paramFilter['date_end'], $paramFilter, array('date_start' => date("Y-m-d"),'date_end' => date("Y-m-d")),true);
+    $oGrid->addFilterControl(_tr("Filter applied ")._tr("Start Date")." = ".$paramFilter['date_start'].", "._tr("End Date")." = ".$paramFilter['date_end'], $paramFilter,  array('date_start' => date("d M Y"),'date_end' => date("d M Y")),true);
 
     if($filter_field == "userfield"){
         $oGrid->addFilterControl(_tr("Filter applied ")." $nameFilterField = $nameFilterUserfield", $_POST, array('filter_field' => "src",'filter_value_userfield' => "incoming"));
