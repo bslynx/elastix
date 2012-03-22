@@ -730,5 +730,35 @@ class paloEmail {
 	else
 	    return false;
     }
+
+	function resconstruirMailBox($username)
+    {
+        $output = $retval = NULL;
+
+		$configPostfix2 = isPostfixToElastix2();// in misc.lib.php
+        $regularExpresion = "";
+        if($configPostfix2)
+           $regularExpresion = '/^[a-z0-9]+([\._\-]?[a-z0-9]+[_\-]?)*@[a-z0-9]+([\._\-]?[a-z0-9]+)*(\.[a-z0-9]{2,6})+$/';
+        else
+           $regularExpresion = '/^([a-z0-9]+([\._\-]?[a-z0-9]+[_\-]?)*)$/';
+
+		if(!is_null($username)){
+			if(!preg_match($regularExpresion,$username)){
+				$this->errMsg = "Username format is not valid";
+			}else{
+				exec('/usr/bin/elastix-helper email_account --reconstruct_mailbox  --mailbox '.escapeshellcmd($username).' 2>&1', $output, $retval);
+			}
+		}else{
+			$this->errMsg = "Username must not be null";
+		}
+
+		if ($retval != 0) {
+            $this->errMsg = implode('', $output);
+            return FALSE;
+        }
+
+		return TRUE;
+    }
+
 }
 ?>
