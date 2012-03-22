@@ -497,6 +497,11 @@ PETICION_CAMPANIAS_ENTRANTES;
 
     private function _actualizarLlamadasCampania($infoCampania)
     {
+        $iTimeoutOriginate = $this->_configDB->dialer_timeout_originate;
+        if (is_null($iTimeoutOriginate) || $iTimeoutOriginate <= 0)
+            $iTimeoutOriginate = NULL;
+        else $iTimeoutOriginate *= 1000; // convertir a milisegundos
+
         $iNumLlamadasColocar = 0;
 
         // Construir patrón de marcado a partir de trunk de campaña
@@ -776,12 +781,13 @@ SQL_LLAMADA_COLOCADA;
                     "\tTrunk....... ".(is_null($infoCampania['trunk']) ? '(por plan de marcado)' : $infoCampania['trunk'])."\n" .
                     "\tPlantilla... ".$datosTrunk['TRUNK']."\n" .
                     "\tCaller ID... ".(isset($datosTrunk['CID']) ? $datosTrunk['CID'] : "(no definido)")."\n".
-                    "\tCadena de marcado {$tupla['dialstring']}");
+                    "\tCadena de marcado... {$tupla['dialstring']}\n".
+                    "\tTimeout marcado..... ".(is_null($iTimeoutOriginate) ? '(por omisión)' : $iTimeoutOriginate.' ms.'));
             }
             if (is_null($tupla['agent'])) {
                 $resultado = $this->_ami->Originate(
                     $tupla['dialstring'], $infoCampania['queue'], $infoCampania['context'], 1,
-                    NULL, NULL, NULL, 
+                    NULL, NULL, $iTimeoutOriginate, 
                     (isset($datosTrunk['CID']) ? $datosTrunk['CID'] : NULL), 
                     $sCadenaVar,
                     NULL, 
@@ -789,7 +795,7 @@ SQL_LLAMADA_COLOCADA;
             } else {
                 $resultado = $this->_ami->Originate(
                     $tupla['dialstring'], 
-                    NULL, NULL, NULL,
+                    NULL, NULL, $iTimeoutOriginate,
                     'Dial', $this->_construirListaParametros(array($tupla['agent'], 300, 't')), 
                     NULL, 
                     (isset($datosTrunk['CID']) ? $datosTrunk['CID'] : NULL), 

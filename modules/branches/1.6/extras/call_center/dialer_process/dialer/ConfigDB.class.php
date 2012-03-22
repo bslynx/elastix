@@ -158,6 +158,15 @@ class ConfigDB
                 'mostrar_valor' =>  TRUE,
                 'cast'          =>  'bool',
             ),
+            'timeout_originate' => array(
+                'descripcion'   =>  'tiempo de espera de marcado de llamadas',
+                'regex'         =>  '^\d+$',
+                'valor_omision' =>  0,
+                'valor_viejo'   =>  NULL,
+                'valor_actual'  =>  NULL,
+                'mostrar_valor' =>  TRUE,
+                'cast'          =>  'int',
+            ),
 		),
 	);
 

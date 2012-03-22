@@ -54,5 +54,6 @@ $arrLangModule=array(
 'AMI Session Duration' => 'AMI Session Duration (0 for persistent session)',
 'Service percent' => 'Service percent',
 'Enable predictive dialer behavior' => 'Enable predictive dialer behavior',
+'Per-call dial timeout' => 'Per-call dial timeout',
 );
 ?>

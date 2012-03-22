@@ -89,6 +89,7 @@ function form_Configuration(&$oDB, $smarty, $module_name, $local_templates_dir)
         'dialer.overcommit' => 'dialer_overcommit',
         'dialer.qos' => 'dialer_qos',
         'dialer.predictivo' => 'dialer_predictivo',
+        'dialer.timeout_originate' => 'dialer_timeout_originate',
     );
     $valoresForm = array(
         'asterisk_asthost' => '127.0.0.1',
@@ -103,6 +104,7 @@ function form_Configuration(&$oDB, $smarty, $module_name, $local_templates_dir)
         'dialer_overcommit' => 'off',
         'dialer_qos' => '0.97',
         'dialer_predictivo' => 'on',
+        'dialer_timeout_originate' => '0',
     );
     foreach ($camposConocidos as $dbfield => $formfield) {
         if (isset($listaConf[$dbfield])) {
@@ -321,6 +323,14 @@ function createFieldForm()
             'VALIDATION_TYPE'           =>  'text',
             'INPUT_EXTRA_PARAM'         =>  '',
             'VALIDATION_EXTRA_PARAM'    =>  '',
+        ),
+        'dialer_timeout_originate'=> array(
+            'LABEL'                     =>  _tr('Per-call dial timeout'),
+            'REQUIRED'                  =>  'yes',
+            'INPUT_TYPE'                =>  'TEXT',
+            'VALIDATION_TYPE'           =>  'ereg',
+            'INPUT_EXTRA_PARAM'         =>  '',
+            'VALIDATION_EXTRA_PARAM'    =>  '^[[:digit:]]+$',
         ),
     );
 }
