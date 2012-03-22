@@ -404,6 +404,17 @@ class paloSantoCalendar {
             return $username;
     }
 
+    function getDescUsers($id_user,$db)
+    {
+        $query = "SELECT description FROM acl_user WHERE id=$id_user";
+    	$username1 = $_SESSION["elastix_user"];
+        $result = $db->getFirstRowQuery($query,true);
+        if($result != FALSE || $result != "")
+            return $result['description'];
+        else
+            return $username1;
+    }
+
     function existPassword($pass){
         $query = "SELECT password FROM share_calendar WHERE password = '$pass'";
         $result = $this->_DB->getFirstRowQuery($query,true);
