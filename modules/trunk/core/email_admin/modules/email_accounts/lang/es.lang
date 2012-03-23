@@ -78,6 +78,7 @@ $arrLangModule=array(
 "Error saving the account" => "Error al guardar la cuenta",
 "Edit quota" => "Editar cuota",
 "The following account does not exist" => "La siguiente cuenta no existe",
-"Edit quota to" => "Editar cuota a"
+"Edit quota to" => "Editar cuota a",
+"The passwords must not be empty" => "La contraseña no debe ser vacia"
 );
 ?>
