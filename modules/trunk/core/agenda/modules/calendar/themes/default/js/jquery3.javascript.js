@@ -111,6 +111,10 @@ $(document).ready(function(){
     });
 
     $('#edit').click(function(){
+		$('#f-calendar-trigger-1').attr("style","display:inline;");
+		$('#f-calendar-trigger-2').attr("style","display:inline;");
+		$('#colorSelector').attr("style","display:block;");
+		$('#colorLabel').attr("style","display:block;");
         $('#new_box').attr("style","display:none;");
         $('#edit_box').attr("style","display:block;");
         $('#view_box').attr("style","display:none;");
@@ -153,28 +157,30 @@ $(document).ready(function(){
     });
 
     $('#delete').click(function(){ //hace un submit sin pasar por el submit validador
-        var id_event = $('#id_event').val();
-        $("#box").hide();
-        var urlImaLoading = "<div style='margin: 10px;'><div align='center'><img src='images/loading2.gif' /></div><div align='center'><span style='font-size: 14px; '>"+$('#lblDeleting').val()+"</span></div></div>";
-        $.blockUI({ message: urlImaLoading });
-        var order = "menu="+module_name+"&action=delete_box&id_event="+id_event+"&rawmode=yes";
-        $.post("index.php", order,
-                function(theResponse){
-                    $.unblockUI();
-                    var message = JSONtoString(theResponse);
-                    var error = message['error_delete_JSON'];
-                    var status_error = message['error_delete_status'];
-                    if(status_error == "on"){
-                        //then close box
-                        $('#box').hide();
-                        $('#title_box').html("");
-                        document.formNewEvent.submit();
-                        alert(error);
-                    }else{
-                        $('#box').show();
-                        alert(error);
-                    }
-        });
+		if(confirm("Are you sure you wish to continue?")){
+			var id_event = $('#id_event').val();
+			$("#box").hide();
+			var urlImaLoading = "<div style='margin: 10px;'><div align='center'><img src='images/loading2.gif' /></div><div align='center'><span style='font-size: 14px; '>"+$('#lblDeleting').val()+"</span></div></div>";
+			$.blockUI({ message: urlImaLoading });
+			var order = "menu="+module_name+"&action=delete_box&id_event="+id_event+"&rawmode=yes";
+			$.post("index.php", order,
+					function(theResponse){
+						$.unblockUI();
+						var message = JSONtoString(theResponse);
+						var error = message['error_delete_JSON'];
+						var status_error = message['error_delete_status'];
+						if(status_error == "on"){
+							//then close box
+							$('#box').hide();
+							$('#title_box').html("");
+							document.formNewEvent.submit();
+							alert(error);
+						}else{
+							$('#box').show();
+							alert(error);
+						}
+			});
+		}
     });
 
     $('#box').draggable({handle: 'tr.titleBox'}); //, opacity: 0.7
@@ -601,6 +607,10 @@ $(document).ready(function(){
         $('#new_box').attr("style","display:none;");
         $('#edit_box').attr("style","display:none;");
         $('#view_box').attr("style","display:none;");
+		$('#f-calendar-trigger-1').attr("style","visibility:hidden;");
+		$('#f-calendar-trigger-2').attr("style","visibility:hidden;");
+		$('#colorSelector').attr("style","visibility:hidden;");
+		$('#colorLabel').attr("style","visibility:hidden;");
         $('.remin').attr("style","display:none;");
         $('.noti_email').attr("style","display:none;");
         $('#notification_email').hide();
@@ -628,7 +638,7 @@ $(document).ready(function(){
                     var email_noti        = message['emails_notification'];  //emails to notify
                     var visibility_noti   = message['visibility'];      //visible or not emails_notification
                     var visibility_rep    = message['visibility_repeat'];//visible or not days_repeat
-                                        var reminderTimer     = message['reminderTimer']; //reminderTimer
+					var reminderTimer     = message['reminderTimer']; //reminderTimer
                     var color             = message['color'];
              /***********************      var by DOM      **************************/
                     var title_evt         = document.getElementById('title_box');
@@ -1020,6 +1030,10 @@ $(document).ready(function(){
             $('#new_box').attr("style","display:none;");
             $('#edit_box').attr("style","display:none;");
             $('#view_box').attr("style","display:none;");
+			$('#f-calendar-trigger-1').attr("style","visibility:hidden;");
+			$('#f-calendar-trigger-2').attr("style","visibility:hidden;");
+			$('#colorSelector').attr("style","visibility:hidden;");
+			$('#colorLabel').attr("style","visibility:hidden;");
             $('.remin').attr("style","display:none;");
             $('.noti_email').attr("style","display:none;");
             $('#notification_email').hide();
