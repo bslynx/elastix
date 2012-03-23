@@ -290,7 +290,7 @@ function report_AsteriskLogs($smarty, $module_name, $local_templates_dir, $arrLa
     $_POST['offset'] = $offset;
 
     //$defaultEnd=end($comboFechas);
-    $oGrid->addFilterControl(_tr("Filter applied: ")._tr("Date")." = ".$_POST['filter'], $_POST, array('filter' => date("Y d m")),true);
+    $oGrid->addFilterControl(_tr("Filter applied: ")._tr("Date")." = ".$_POST['filter'], $_POST, array('filter' => $listaFechas[count($listaFechas) - 1]),true);
     $oGrid->addFilterControl(_tr("Filter applied: ")._tr('Search string')." = ".$busqueda, $_POST, array('busqueda' => ""));
 
     $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/filter.tpl", "", $_POST);
