@@ -299,8 +299,13 @@ function viewDetailAccount($smarty, $module_name, $local_templates_dir, &$pDB, $
 	$arrAccount = $pEmail->getAccount($userName);
 	//username, password, id_domain, quota
 	$arrTmp['username']  = $arrAccount[0][0];
-	$arrTmp['password1'] = "****";
-	$arrTmp['password2'] = "****";
+	if($oForm->modo == "view"){
+		$arrTmp['password1'] = "****";
+		$arrTmp['password2'] = "****";
+	}else{
+		$arrTmp['password1'] = "";
+		$arrTmp['password2'] = "";
+	}
 	$arrTmp['quota']     = isset($quota)?$quota:$arrAccount[0][3];
 	$id_domain           = $arrAccount[0][2];
 	$smarty->assign("username", $userName);
@@ -476,34 +481,46 @@ function saveOneAccount($smarty, &$pDB, $arrLang, $isFromFile)
 	if($noCambioPass) $password1 = $password2 = '';
 	if($password1 != $password2) {
 	    // Error claves
-	    if(!$isFromFile){
 		$smarty->assign("mb_title", $arrLang["Error"]);
 		$smarty->assign("mb_message", $arrLang["The passwords don't match"]);
-	    }
+		
 	    $content = false;
 	}else{
 	    $pDB->beginTransaction();
-	    if(getParameter("save"))
-		$bExito = create_email_account($pDB,$domain_name,$error);
-	    else
-		$bExito = edit_email_account($pDB,$error);
+	    if(getParameter("save")){
+			if($password1==""){
+				if(!$isFromFile){
+					$smarty->assign("mb_title", _tr("Error"));
+					$smarty->assign("mb_message", _tr("The passwords must not be empty"));
+					$smarty->assign("id_domain", $id_domain);
+					$smarty->assign("username", $userName);
+					$smarty->assign("old_quota", getParameter("quota"));
+					$smarty->assign("account_name_label", $arrLang['Account Name']);
+				}
+				return false;
+			}else
+				$bExito = create_email_account($pDB,$domain_name,$error);
+	    }else
+			$bExito = edit_email_account($pDB,$error);
 	    if (!$bExito || ($bExito && !empty($error))){
-		if(!$isFromFile)
-		    $smarty->assign("mb_message", _tr("Error applying changes").". ".$error);
-		$pDB->rollBack();
-		$configPostfix2 = isPostfixToElastix2();// in misc.lib.php
-		if($configPostfix2)
-		    $username=$_POST['address'].'@'.$domain_name;
-		else
-		    $username=$_POST['address'].'.'.$domain_name;
-		$pEmail->eliminar_cuenta($pDB,$username,"",false);
-		$content = false;
+			if(!$isFromFile){
+				$smarty->assign("mb_title", _tr('ERROR').":");
+				$smarty->assign("mb_message", _tr("Error applying changes").". ".$error);}
+			$pDB->rollBack();
+			$configPostfix2 = isPostfixToElastix2();// in misc.lib.php
+			if($configPostfix2)
+				$username=$_POST['address'].'@'.$domain_name;
+			else
+				$username=$_POST['address'].'.'.$domain_name;
+			$pEmail->eliminar_cuenta($pDB,$username,"",false);
+			$content = false;
 	    }
 	    else{
-		$pDB->commit();
-		if(!$isFromFile)
-		    $smarty->assign("mb_message", _tr("Changes Applied successfully"));
-		$content = true;
+			$pDB->commit();
+			if(!$isFromFile){
+				$smarty->assign("mb_title", _tr('MESSAGE').":");
+				$smarty->assign("mb_message", _tr("Changes Applied successfully"));}
+			$content = true;
 	    }
 	}
 	/////////////////////////////////
@@ -669,6 +686,7 @@ function create_email_account($pDB,$domain_name,&$errMsg)
     // -- creo el mailbox para la cuenta (si hay error deshacer lo realizado)
     $username = "";
     $configPostfix2 = isPostfixToElastix2();// in misc.lib.php
+
 
     if($configPostfix2)
         $username=$_POST['address'].'@'.$domain_name;
@@ -843,13 +861,13 @@ function createFieldFormNewAccount($arrLang)
                                                     "VALIDATION_TYPE"        => "numeric",
                                                     "VALIDATION_EXTRA_PARAM" => ""),
                              "password1"   => array("LABEL"                  => $arrLang["Password"],
-                                                    "REQUIRED"               => "yes",
+                                                    "REQUIRED"               => "no",
                                                     "INPUT_TYPE"             => "PASSWORD",
                                                     "INPUT_EXTRA_PARAM"      => "",
                                                     "VALIDATION_TYPE"        => "text",
                                                     "VALIDATION_EXTRA_PARAM" => ""),
                              "password2"   => array("LABEL"                  => $arrLang["Retype password"],
-                                                    "REQUIRED"               => "yes",
+                                                    "REQUIRED"               => "no",
                                                     "INPUT_TYPE"             => "PASSWORD",
                                                     "INPUT_EXTRA_PARAM"      => "",
                                                     "VALIDATION_TYPE"        => "text",
