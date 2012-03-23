@@ -51,7 +51,7 @@
                                         </div>
                                         <div id="view_box" style="display:none">
                                             <input id="edit" class="button" type="button" name="edit" value="{$EDIT}">
-                                            <input id="delete" class="button" type="button" name="delete" value="{$DELETE}" onClick="return confirmSubmit('{$Alert_continue}')">
+                                            <input id="delete" class="button" type="button" name="delete" value="{$DELETE}">
                                             <input id="cancel" class="button cancel" type="button" name="cancel" value="{$CANCEL}">
                                         </div>
                                         <div id="edit_box" style="display:none">
@@ -72,15 +72,15 @@
                                 </tr>
                                 <tr class="letra12" height="30px">
                                     <td align="left" width="90px"><b>{$Start_date}: <span  class="required">*</span></b></td>
-                                    <td align="left" width="175px">{$date.INPUT}</td>
-                                    <td align="left"><b>{$Color}:</b></td>
-                                    <td align="left">
-                                        <div id="colorSelector"><div style="background-color: #3366CC"></div></div>
-                                    </td>
+									<td align="left" width="175px">{$date.INPUT}</td>
+									<td align="left"><div id="colorLabel"><b>{$Color}:</b></div></td>
+									<td align="left">
+										<div id="colorSelector"><div style="background-color: #3366CC"></div></div>
+									</td>
                                 </tr>
                                 <tr class="letra12">
                                     <td align="left" width="90px"><b>{$End_date}: <span  class="required">*</span></b></td>
-                                    <td align="left" width="175px" colspan="3">{$to.INPUT}</td>
+									<td align="left" width="175px" colspan="3">{$to.INPUT}</td>
                                 </tr>
                                 <tr>
                                     <td align="left" colspan="4">
