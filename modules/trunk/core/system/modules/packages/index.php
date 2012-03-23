@@ -170,7 +170,7 @@ function listPackages($smarty, $module_name, $local_templates_dir,$arrConf) {
     $smarty->assign("InstallPackage",$arrLang['Installing Package']);
     $smarty->assign("accionEnProceso",$arrLang['There is an action in process']);
 
-    $oGrid->addFilterControl(_tr("Filter applied ")._tr("Status")." =  $tipoPaquete", $arrFilter, array("submitInstalado" => "installed"));
+    $oGrid->addFilterControl(_tr("Filter applied ")._tr("Status")." =  $tipoPaquete", $arrFilter, array("submitInstalado" => "installed"),true);
     $oGrid->addFilterControl(_tr("Filter applied ")._tr("Name")." = $nombre_paquete", $arrFilter, array("nombre_paquete" => ""));
 
     $oGrid->addButtonAction("update_repositorios",_tr('Repositories Update'),null,'mostrarReloj()');
