@@ -152,7 +152,7 @@ function reportPuertos($smarty, $module_name, $local_templates_dir, &$pDB, $arrC
         $nameFieldType = $arrFormFilterPuertos["filter_type"]["INPUT_EXTRA_PARAM"][$field_type];
     }
 
-    $oGrid->addFilterControl(_tr("Filter applied: ").$nameFieldType." = ".$field_pattern,$_POST, array("filter_type" => "name","filter_txt" => ""));
+    $oGrid->addFilterControl(_tr("Filter applied: ").$nameFieldType." = ".$field_pattern,$_POST, array("filter_type" => "name","filter_txt" => "x"));
 
     $htmlFilter = $oFilterForm->fetchForm("$local_templates_dir/filter.tpl","",$_POST);
     //end section filter

@@ -707,7 +707,7 @@ class paloSantoControlPanel {
                 $xmlRecords .= "  <area_box>\n";
                 $xmlRecords .= "    <id>{$area_data['a.id']}</id>\n";
                 $xmlRecords .= "    <name>{$area_data['a.name']}</name>\n";
-                $xmlRecords .= "    <height>{$area_data['a.height']}</height>\n";
+                $xmlRecords .= "    <height>auto</height>\n";
                 $xmlRecords .= "    <width>{$area_data['a.width']}</width>\n";
                 $xmlRecords .= "    <color>{$area_data['a.color']}</color>\n";
                 //$xmlRecords .= "    <description>{$area_data['a.description']}</description>\n";
