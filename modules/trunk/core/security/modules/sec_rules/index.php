@@ -612,11 +612,15 @@ function reportRules($smarty, $module_name, $local_templates_dir, &$pDB, $arrCon
     $oGrid->setColumns($arrColumns);
     if(is_array($arrResult) && $total>0){
         foreach($arrResult as $key => $value){
-            if(!$first_time)
+            if(!$first_time){
                 $arrTmp[0] = "<input type='checkbox' name='id_".$value['id']."' />";
-            $arrTmp[1] = "<div id='div_$value[id]' style='width: 22px; font-size: 14pt;color:#E35332;float:left;text-align:right'>$value[rule_order] </div>";
-            if(!$first_time)
-                $arrTmp[1].="<a href='javascript:void(0);' class='up' id='rulerup_$value[id]_$value[rule_order]'>"."<img src='modules/$module_name/images/up.gif' border=0 title='"._tr('Up')."'</a>"."<a href='javascript:void(0);' class='down' id='rulerdown_$value[id]_$value[rule_order]'>"."<img src='modules/$module_name/images/down.gif' border=0 title='"._tr('Down')."'</a>";
+            $arrTmp[1] = "<div id='div_$value[id]' style='width: 22px; font-size: 14pt;color:#E35332;float:left;text-align:right'>$value[rule_order] </div>";}
+            if(!$first_time){
+				//if($offset!=0)
+					$arrTmp[1].="<a href='javascript:void(0);' class='up' id='rulerup_$value[id]_$value[rule_order]'>"."<img src='modules/$module_name/images/up.gif' border=0 title='"._tr('Up')."' /></a>"."<a href='javascript:void(0);' class='down' id='rulerdown_$value[id]_$value[rule_order]'>"."<img src='modules/$module_name/images/down.gif' border=0 title='"._tr('Down')."' /></a>";
+				/*else
+					$arrTmp[1].="<a href='?menu=$module_name&action=$changeOrder&id=$value[id]&order=$value[rule_order]&direction=up;' class='up' id='rulerup_$value[id]_$value[rule_order]'>"."<img src='modules/$module_name/images/up.gif' border=0 title='"._tr('Up')."' /></a>"."<a href='javascript:void(0);' class='down' id='rulerdown_$value[id]_$value[rule_order]'>"."<img src='modules/$module_name/images/down.gif' border=0 title='"._tr('Down')."' /></a>";*/
+			}
             if($value['traffic'] == "INPUT"){
                 $image = "modules/$module_name/images/fw_input.gif";
                 $title = _tr("INPUT");
@@ -684,10 +688,10 @@ function reportRules($smarty, $module_name, $local_templates_dir, &$pDB, $arrCon
                     $activated = "Activate";
                 }
 		
-		if($offset!=0)
-		    $arrTmp[9] = "<a href='?menu=$module_name&action=".$activated."&id=".$value['id']."&nav=next&start=$start'>"."<img src='$image' border=0 title='"._tr($activated)."'</a>";
-		else
-		    $arrTmp[9] = "<a href='?menu=$module_name&action=".$activated."&id=".$value['id']."'>"."<img src='$image' border=0 title='"._tr($activated)."'</a>";
+				if($offset!=0)
+					$arrTmp[9] = "<a href='?menu=$module_name&action=".$activated."&id=".$value['id']."&nav=next&start=$start'>"."<img src='$image' border=0 title='"._tr($activated)."'</a>";
+				else
+					$arrTmp[9] = "<a href='?menu=$module_name&action=".$activated."&id=".$value['id']."'>"."<img src='$image' border=0 title='"._tr($activated)."'</a>";
                 $arrTmp[10] = "<a href='?menu=$module_name&action=edit&id=".$value['id']."'>"."<img src='modules/$module_name/images/edit.gif' border=0 title='"._tr('Edit')."'</a>";
             }
             $arrData[] = $arrTmp;
@@ -789,6 +793,7 @@ function getPorts($pDB)
     return $jsonObject->createJSON();
 }
 
+
 function change($pDB)
 {
     $jsonObject = new PaloSantoJSON();
@@ -805,18 +810,18 @@ function change($pDB)
         $Exito1 = $pRules->updateOrder($actual_id,$neighbor_order);
         $Exito2 = $pRules->updateOrder($neighbor_id,$actual_order);
         if($pRules->isFirstTime()){
+			$mensaje = _tr("The firewall is totally desactivated. It is recommended to activate the firewall rules");
             $smarty->assign("mb_message", "<b>"._tr("The firewall is totally desactivated. It is recommended to activate the firewall rules")."</b>");
             $smarty->assign("mb_title",_tr("WARNING"));
+			$mensaje2 = _tr("Activate FireWall");
             $oGrid->customAction("exec",$mensaje2);
-            $mensaje = _tr("The firewall is totally desactivated. It is recommended to activate the firewall rules");
-            $mensaje2 = _tr("Activate FireWall");
         }
         else{
+			$mensaje2 = _tr("Save Changes");
             $mensaje = _tr("You have made changes to the definition of firewall rules, for this to take effect in the system press the next button");
-            $mensaje2 = _tr("Save Changes");
         }
         if($Exito1 && $Exito2)
-            $jsonObject->set_status(_tr("Successful Change").":$mensaje:$mensaje2"); 
+            $jsonObject->set_status(_tr("Successful Change").":$mensaje:$mensaje2:"._tr("Dismiss"));
         else
             $jsonObject->set_error($pRules->errMsg);
     }else
@@ -851,7 +856,7 @@ function changeOtherPage($pDB, $module_name)
 	    $mensaje = _tr("You have made changes to the definition of firewall rules, for this to take effect in the system press the next button");
             $mensaje2 = _tr("Save Changes");
 	    if($Exito1 && $Exito2){
-		$jsonObject->set_status(_tr("Successful Change").":$mensaje:$mensaje2");
+		$jsonObject->set_status(_tr("Successful Change").":$mensaje:$mensaje2:"._tr("Dismiss"));
 		$arrayResult["id"] = $rule["id"];
 		if($rule['traffic'] == "INPUT"){
 		    $arrayResult["traffic"]["image"] = "modules/$module_name/images/fw_input.gif";
