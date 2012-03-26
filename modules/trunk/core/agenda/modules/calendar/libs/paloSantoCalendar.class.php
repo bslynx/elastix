@@ -526,10 +526,10 @@ class paloSantoCalendar {
     function festivalUp()
     {
         exec("ps aux | grep 'festival_server'", $flag, $status);
+		sleep(3);
         if($status == 0){
             if(count($flag) <= 1){
-                //exec("festival_server &", $flags, $status2);
-                return false;
+				return false;
             }
         }
         return true;
