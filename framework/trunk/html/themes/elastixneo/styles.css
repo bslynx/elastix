@@ -195,7 +195,7 @@ TD.table_data {
     cursor: default;
     outline: medium none;  
     z-index: 1000;
-    margin: 0 3px;
+    margin: -1px 3px;
     -moz-user-select: none;
     -webkit-user-select: none;
     min-width: 43px;
