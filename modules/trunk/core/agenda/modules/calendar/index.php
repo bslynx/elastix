@@ -179,6 +179,7 @@ function viewCalendar($smarty, $module_name, $local_templates_dir, &$pDB, $arrCo
 
     $festival = $pCalendar->festivalUp(); // verifica si esta levantado el festival
     if(!$festival){
+		$smarty->assign("mb_title", _tr("Message"));
         $smarty->assign("mb_message", $arrLang['Festival is not up']);
     }
                     // yyyy-mm-dd
@@ -246,6 +247,7 @@ function viewCalendarById($smarty, $module_name, $local_templates_dir, &$pDB, $a
 
     $festival = $pCalendar->festivalUp(); // verifica si esta levantado el festival
     if(!$festival){
+		$smarty->assign("mb_title", _tr("Message"));
         $smarty->assign("mb_message", $arrLang['Festival is not up']);
     }
                     // yyyy-mm-dd
