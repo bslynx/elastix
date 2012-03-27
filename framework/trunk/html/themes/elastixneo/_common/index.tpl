@@ -66,5 +66,12 @@
 			<div id="neo-sticky-note-text-edit-delete"></div>
 		  </div>
 		</div>
+		<!-- Neo Progress Bar -->
+		<div class="neo-modal-elastix-popup-box">
+			<div class="neo-modal-elastix-popup-title"></div>
+			<div class="neo-modal-elastix-popup-close"></div>
+			<div class="neo-modal-elastix-popup-content"></div>
+		</div>
+		<div class="neo-modal-elastix-popup-blockmask"></div>
     </body>
 </html>

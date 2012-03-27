@@ -1088,3 +1088,51 @@ td a.link_summary_on{
     color:#444;
     text-decoration:none;
 }
+/* Nuevo estilo */
+
+.neo-modal-elastix-popup-blockmask {
+    position:absolute;
+    z-index:10100;
+    background-color:#000;
+    top:0px;
+    left:0px;
+    display:none;
+}
+.neo-modal-elastix-popup-box {
+    position:fixed;
+    width:440px;
+    height:150px;
+    z-index:10200;
+    padding:20px 25px 20px 25px;
+    display:none;
+    -moz-border-radius: 6px;
+    -webkit-border-radius: 6px;
+    border-radius: 6px;
+    background:url(/images/modalbox_bg.png) top left repeat-x #fff;
+    top: 50%;
+    left: 45%;
+}
+.neo-modal-elastix-popup-title {
+    position: absolute;
+    top:0px;
+    left:0px;
+    padding:10px 0px 0px 0px;
+    width:100%;
+    text-align:center;
+    text-shadow: rgba(255,255,255, 0.3) 0 1px 0px;
+    font: 13px Verdana, Arial,Helvetica,sans-serif;
+    color: #333;
+}
+.neo-modal-elastix-popup-close {
+    position: absolute;
+    top:12px;
+    right:10px;
+    width:18px;
+    height:15px;
+    background:url(/images/bookmarks_equis.png) no-repeat;
+    cursor: pointer;
+}
+.neo-modal-elastix-popup-content {
+    position: relative;
+    top: 20px;
+}
