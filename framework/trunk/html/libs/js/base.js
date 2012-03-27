@@ -92,6 +92,7 @@
         else
 	    return false ;
     }
+
     function popUp(path,width_value,height_value)
     {
         var features = 'width='+width_value+',height='+height_value+',resizable=no,scrollbars=yes,toolbar=no,location=no,menubar=no,status=no';
@@ -176,36 +177,55 @@ function hide_message_error(){
     document.getElementById("message_error").style.display = 'none';
 }
 
-function showPopupElastix(id,titles,widths,heights){
-    //var arrAction              = new Array();
-    //arrAction["action"]        = "registration";
-    //arrAction["rawmode"]       = "yes";
+var modal_elastix_popup_shown = false;
+
+function ShowModalPopUP(title, width, height, html){
+    $('.neo-modal-elastix-popup-content').html(html);
+    $('.neo-modal-elastix-popup-title').text(title);
+
+    var maskHeight = $(document).height();
+    var maskWidth = $(window).width();
+
+    $('.neo-modal-elastix-popup-blockmask').css({'width':maskWidth,'height':maskHeight});
+
+    $('.neo-modal-elastix-popup-blockmask').fadeIn(600);
+    $('.neo-modal-elastix-popup-blockmask').fadeTo("fast",0.8);
+
+    var winH = $(window).height();
+    var winW = $(window).width();
+
+    $('.neo-modal-elastix-popup-box').height(height);
+    $('.neo-modal-elastix-popup-box').width(width);
+    $('.neo-modal-elastix-popup-box').css('top',  winH/2-height/2);
+    $('.neo-modal-elastix-popup-box').css('left', winW/2-width/2);
+
+    $('.neo-modal-elastix-popup-box').fadeIn(2000);
+
+    modal_elastix_popup_shown = true;
+
+    $('.neo-modal-elastix-popup-close').click(function() {
+        hideModalPopUP();
+    });
+}
+
+function hideModalPopUP()
+{
+    $('.neo-modal-elastix-popup-box').fadeOut(10);
+    $('.neo-modal-elastix-popup-blockmask').fadeOut(20);
+    $('.neo-modal-elastix-popup-content').html("");
+
+    modal_elastix_popup_shown = false;
+}
+
+function showPopupElastix(id, title, width, height){
     var arrAction = "action=registration&rawmode=yes";
     $.post("register.php",arrAction,
         function(arrData,statusResponse,error)
         {
-            jBoxPopupAero(id ,titles, widths, heights, arrData);
+            ShowModalPopUP(title,width,height,arrData);
+            getDataWebServer();
         }
     );
-}
-
-function jBoxPopupAero(id ,titulo, ancho, alto, html){
-    var div = "<div id='"+id+"' style='position: absolute;'></div>";
-    $('#PopupElastix').append(div);
-    $('body').data(id , null);
-    $("#"+id).html(html);
-
-    $("#"+id).AeroWindow({
-        WindowTitle:          titulo,
-        //WindowDesktopIconFile:
-        WindowDesktopIcon:    false,
-        WindowPositionTop:    'center',
-        WindowPositionLeft:   'center',
-        WindowWidth:          ancho,
-        WindowHeight:         alto,
-        WindowAnimation:      'easeOutCubic'
-    });
-    getDataWebServer();
 }
 
 function registration(){
@@ -255,27 +275,29 @@ function registration(){
     if(error)
         alert(txtError);
     else{
-		$('#tdButtons').hide();
-        $('#tdloaWeb').attr("style", "padding-left: 5px; display: block;");
+	$('#tdButtons').hide();
+        $('#tdloaWeb').show();
         var arrAction = "action=saveregister&contactNameReg="+contactName+"&emailReg="+email+"&phoneReg="+phone+"&companyReg="+company+"&addressReg="+address+"&cityReg="+city+"&countryReg="+country+"&idPartnerReg="+idPartner+"&rawmode=yes";
         $.post("register.php",arrAction,
             function(arrData,statusResponse,error)
             {
-				var response = JSONRPMtoString(arrData);
-				var registerText   = $('#lblRegisterCm').val();
-				var registeredText = $('#lblRegisteredCm').val();
+                var response = JSONRPMtoString(arrData);
+                var registerText   = $('#lblRegisterCm').val();
+                var registeredText = $('#lblRegisteredCm').val();
                 alert(response["message"]);
-				if(response["statusResponse"]=="TRUE"){
-					$('#registrar').hide();
-					$('.register_link').css('color','#008800');
-					$('.register_link').text(registeredText);
-					getElastixKey();
-				}else{
-					$('#tdButtons').show();
-					$('.register_link').css('color','#FF0000');
-					$('.register_link').text(registerText);
-					$('#tdloaWeb').attr("style", "padding-left: 5px; display: none;");
-				}
+                if(response["statusResponse"]=="TRUE"){
+                        $('#registrar').hide();
+                        $('.register_link').css('color','#008800');
+                        $('.register_link').text(registeredText);
+                        getElastixKey();
+                        $('#tdButtons').show();
+                        $('#tdloaWeb').hide();
+                }else{
+                        $('.register_link').css('color','#FF0000');
+                        $('.register_link').text(registerText);
+                        $('#tdloaWeb').hide();
+                        $('#tdButtons').show();
+                }
             }
         );
     }
@@ -363,44 +385,32 @@ function getElastixKey(){
 }
 
 function setAdminPassword(){
-    var id = "changePasswordAdmin";
-	var titles = $('#lblChangePass').val();
-	var lblCurrentPass = $('#lblCurrentPass').val();
-	var lblNewPass = $('#lblNewPass').val();
-	var lblRetypeNewPass = $('#lblRetypePass').val();
-	var btnChange = $('#btnChagePass').val();
-	var heights = 200;
-	var widths = 400;
-	var arrData =
-"<div style='margin: 0px auto;'>"+
-  "<div style= 'position: relative; width: 375px; float: left; margin-top: 0px; margin-right: 10px; margin-bottom: 10px; margin-left: 15px;'>"+
-	  "<div class='neo-module-title'>" +
-		  "<div class='neo-module-name-left'></div>" +
-		  "<span class='neo-module-name'>"+titles+"</span>" +
-		  "<div class='neo-module-name-right'></div>" +
-	  "</div>"+
-	  "<div class='neo-module-content'>" +
-		  "<table class='tabForm' style='font-size: 16px;' width='100%' >" +
-			"<tr class='letra12'>" +
-			  "<td align='left'><b>"+lblCurrentPass+"</b></td>" +
-			  "<td align='left'><input type='password' id='curr_pass' name='curr_pass' value='' /></td>" +
-			"</tr>" +
-			"<tr class='letra12'>" +
-			  "<td align='left'><b>"+lblNewPass+"</b></td>" +
-			  "<td align='left'><input type='password' id='curr_pass_new' name='curr_pass_new' value='' /></td>" +
-			"</tr>" +
-			"<tr class='letra12'>" +
-			  "<td align='left'><b>"+lblRetypeNewPass+"</b></td>" +
-			  "<td align='left'><input type='password' id='curr_pass_renew' name='curr_pass_renew' value='' /></td>" +
-			"</tr>" +
-			"<tr class='letra12'>" +
-			  "<td align='center'  colspan='2'><input type='button' id='sendChanPass' name='sendChanPss' value='"+btnChange+"' onclick='saveNewPasswordElastix()' /></td>" +
-			"</tr>" +
-		  "</table>" +
-	  "</div>" +
-  "</div>" +
-"</div>";
-    jBoxPopupAero(id ,titles, widths, heights, arrData);
+    var title = $('#lblChangePass').val();
+    var lblCurrentPass = $('#lblCurrentPass').val();
+    var lblNewPass = $('#lblNewPass').val();
+    var lblRetypeNewPass = $('#lblRetypePass').val();
+    var btnChange = $('#btnChagePass').val();
+    var height = 160;
+    var width = 380;
+    var html =
+        "<table class='tabForm' style='font-size: 16px;' width='100%' >" +
+            "<tr class='letra12'>" +
+                "<td align='left'><b>"+lblCurrentPass+"</b></td>" +
+                "<td align='left'><input type='password' id='curr_pass' name='curr_pass' value='' /></td>" +
+            "</tr>" +
+            "<tr class='letra12'>" +
+                "<td align='left'><b>"+lblNewPass+"</b></td>" +
+                "<td align='left'><input type='password' id='curr_pass_new' name='curr_pass_new' value='' /></td>" +
+            "</tr>" +
+            "<tr class='letra12'>" +
+                "<td align='left'><b>"+lblRetypeNewPass+"</b></td>" +
+                "<td align='left'><input type='password' id='curr_pass_renew' name='curr_pass_renew' value='' /></td>" +
+            "</tr>" +
+            "<tr class='letra12'>" +
+                "<td align='center'  colspan='2'><input type='button' id='sendChanPass' name='sendChanPss' value='"+btnChange+"' onclick='saveNewPasswordElastix()' /></td>" +
+            "</tr>" +
+        "</table>";
+    ShowModalPopUP(title,width,height,html);
 }
 
 function saveNewPasswordElastix(){
@@ -436,7 +446,7 @@ function saveNewPasswordElastix(){
 				alert(error);
 			else{
 				alert(error);
-				$('#changePasswordAdmin').remove();
+				hideModalPopUP();
 			}
 		}
 	);
@@ -551,7 +561,7 @@ function deleteBookmarkByEquis(ref){
 						$("#togglebookmark").attr('title', labeli);
 						$("#togglebookmark").attr('src',"themes/"+themeName[1]+"/images/bookmark.png");
 					}
-					
+
 					var labeli = $("#toolTip_addBookmark").val();
 					$("#togglebookmark").attr('title', labeli);
 					// el anterior debe tener la clase neo-historybox-tabmid
@@ -848,4 +858,3 @@ function changeColorMenu()
 	);
 
 }
-
