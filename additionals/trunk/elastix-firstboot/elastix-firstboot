@@ -85,6 +85,8 @@ elastix_mysql_init(){
 		# Prompt for web passwords on first boot
 		elastix_prompt_web_passwd
 		ret=$?
+		# Firewall will be activated by default, It action is independet from mysql script
+		elastix_activate_firewall
 	fi
 
 	return $ret
@@ -329,9 +331,6 @@ start(){
 		echo "No running MySQL server has been found."
 		ret=1
 	fi
-
-	# Firewall will be activated by default, It action is independet from mysql script
-	elastix_activate_firewall
 
     [ $ret -eq 0 -a -d /var/lock/subsys ] && touch /var/lock/subsys/elastix-firstboot
 	return $ret
