@@ -68,7 +68,8 @@ function reconstruct_mailbox($opt){
 		$bExito = FALSE;
         fprintf(STDERR, "ERR: mailbox must be specified\n");
 	}else{
-		exec("su - cyrus -c '/usr/lib/cyrus-imapd/reconstruct -r -f user/rmera@palosanto.com'", $output, $ret);
+		$mailbox = escapeshellarg($username);
+		exec("su - cyrus -c '/usr/lib/cyrus-imapd/reconstruct -r -f user/$mailbox'", $output, $ret);
 		if($ret==0){
 			exec("/etc/init.d/cyrus-imapd restart", $output, $ret);
 		}

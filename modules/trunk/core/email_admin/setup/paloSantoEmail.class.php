@@ -746,7 +746,7 @@ class paloEmail {
 			if(!preg_match($regularExpresion,$username)){
 				$this->errMsg = "Username format is not valid";
 			}else{
-				exec('/usr/bin/elastix-helper email_account --reconstruct_mailbox  --mailbox '.escapeshellcmd($username).' 2>&1', $output, $retval);
+				exec('/usr/bin/elastix-helper email_account --reconstruct_mailbox  --mailbox '.escapeshellarg($username).' 2>&1', $output, $retval);
 			}
 		}else{
 			$this->errMsg = "Username must not be null";
