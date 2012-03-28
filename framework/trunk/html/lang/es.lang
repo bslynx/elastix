@@ -247,6 +247,6 @@ $arrLang=array(
 "Hide Filter" => "Ocultar Filtro",
 "More Options" => "Más Opciones",
 "Filter applied: " => "Filtro aplicado: ",
-"Filter applied " => "Filtro aplicado ",
+"Filter applied " => "Filtro aplicado: "
 );
 ?>

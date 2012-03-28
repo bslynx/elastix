@@ -233,6 +233,8 @@ $arrLang=array(
 "WARNING" => "WARNING",
 "Show Filter" => "Show Filter",
 "Hide Filter" => "Hide Filter",
-"More Options" => "More Options"
+"More Options" => "More Options",
+"Filter applied: " => "Filter applied: ",
+"Filter applied " => "Filter applied: "
 );
 ?>
