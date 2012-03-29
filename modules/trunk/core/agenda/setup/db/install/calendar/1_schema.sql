@@ -15,8 +15,6 @@ CREATE TABLE events(
        emails_notification   LONGTEXT,
        endtime               DATETIME,
        each_repeat           INTEGER,
-       days_repeat           VARCHAR(30),
-       reminderTimer         VARCHAR(5),
-       color                 VARCHAR(10)      DEFAULT '#3366CC'
+       days_repeat           VARCHAR(30)
 );
 COMMIT;
