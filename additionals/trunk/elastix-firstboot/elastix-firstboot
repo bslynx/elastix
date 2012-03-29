@@ -92,7 +92,7 @@ elastix_mysql_init(){
 			ret=$?
 		fi
 			# Firewall will be activated by default, It action is independet from mysql script
-			elastix_activate_firewall
+			# elastix_activate_firewall
 	fi
 
 	return $ret
