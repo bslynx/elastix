@@ -8,7 +8,7 @@
 # description:	Elastix setup for first boot.
 
 # Source function library.
-. /etc/rc.d/init.d/functions
+# . /etc/rc.d/init.d/functions
 
 # Source networking configuration.
 . /etc/sysconfig/network
