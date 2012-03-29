@@ -86,12 +86,15 @@ function listPackages($smarty, $module_name, $local_templates_dir,$arrConf) {
     $offset = $oGrid->calculateOffset();
     $end    = $oGrid->getEnd();
 
+	$actualizar=false;
+	//print($arrConf['ruta_yum']);
     if($submitInstalado =='all'){
-        $arrPaquetes = $oPackages->getAllPackages($arrConf['ruta_yum'],$nombre_paquete);
-	$arrPaquetes = $oPackages->getDataPagination($arrPaquetes,$limit,$offset);
+        $arrPaquetes = $oPackages->getAllPackages($arrConf['ruta_yum'],$nombre_paquete, $offset, $limit, $total,$actualizar);
+		$arrPaquetes = $oPackages->getDataPagination($arrPaquetes,$limit,$offset);
     }
     else{  //si no hay post por default los instalados
         $arrPaquetes = $oPackages->getPackagesInstalados($arrConf['ruta_yum'],$nombre_paquete, $offset, $limit, $total);
+		$arrPaquetes = $oPackages->getDataPagination($arrPaquetes,$limit,$offset);
     }
 
 
@@ -129,17 +132,17 @@ function listPackages($smarty, $module_name, $local_templates_dir,$arrConf) {
         "url"      => $url,
         "columns"  => array(0 => array("name"      => $arrLang["Package Name"],
                                        "property1" => ""),
-                            1 => array("name"      => $arrLang["Package Info"], 
+                            1 => array("name"      => $arrLang["Package Info"],
                                        "property1" => ""),
-                            2 => array("name"      => $arrLang["Package Version"], 
+                            2 => array("name"      => $arrLang["Package Version"],
                                        "property1" => ""),
-                            3 => array("name"      => $arrLang["Package Release"], 
+                            3 => array("name"      => $arrLang["Package Release"],
                                        "property1" => ""),
-                            4 => array("name"      => $arrLang["Repositor Place"], 
+                            4 => array("name"      => $arrLang["Repositor Place"],
                                        "property1" => ""),
-                            5 => array("name"     => $arrLang["Status"], 
+                            5 => array("name"     => $arrLang["Status"],
                                        "property1" => ""),
-                            6 => array("name"      => $arrLang["Package Delete"], 
+                            6 => array("name"      => $arrLang["Package Delete"],
                                        "property1" => ""),));
 
     /*Inicion Parte del Filtro*/
@@ -149,7 +152,7 @@ function listPackages($smarty, $module_name, $local_templates_dir,$arrConf) {
     if(getParameter('submitInstalado')=='all'){
         $arrFilter["submitInstalado"] = 'all';
         $tipoPaquete = _tr('All Package');
-    }else{ 
+    }else{
         $arrFilter["submitInstalado"] = 'installed';
         $tipoPaquete = _tr('Package Installed');
     }
@@ -169,6 +172,11 @@ function listPackages($smarty, $module_name, $local_templates_dir,$arrConf) {
     $smarty->assign("UpdatingRepositories",$arrLang['Updating Repositories']);
     $smarty->assign("InstallPackage",$arrLang['Installing Package']);
     $smarty->assign("accionEnProceso",$arrLang['There is an action in process']);
+
+	if($actualizar){
+		$smarty->assign("mb_title",_tr("Message"));
+		$smarty->assign("mb_message",_tr("Your repositories aren't update. Give click in")." <b> "._tr('Repositories Update')." </b>"._tr("to see all available package"));
+	}
 
     $oGrid->addFilterControl(_tr("Filter applied ")._tr("Status")." =  $tipoPaquete", $arrFilter, array("submitInstalado" => "installed"),true);
     $oGrid->addFilterControl(_tr("Filter applied ")._tr("Name")." = $nombre_paquete", $arrFilter, array("nombre_paquete" => ""));
