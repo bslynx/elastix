@@ -826,9 +826,12 @@ function keyPressed(e)
     if (window.event) keycode = window.event.keyCode;
     else if (e) keycode = e.which;
     else return true;
-    if(keycode == 13){
-	$("form").submit();
-	return false;
+        
+    if (!$("#neo-sticky-note-textarea").is(":focus") && !$("#neo-submit-button").is(":focus")) {
+	  if(keycode == 13){
+		$("form").submit();
+		return false;
+	  }
     }
 }
 

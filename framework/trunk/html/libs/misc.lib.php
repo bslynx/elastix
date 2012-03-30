@@ -1104,6 +1104,7 @@ function getStickyNote($menu)
 				$arrResult['status'] = TRUE;
 				$arrResult['msg'] = "";
 				$arrResult['data'] = $arr_result1['description'];
+                $arrResult['popup'] = $arr_result1['auto_popup'];
 				return $arrResult;
 			}else{
 				$arrResult['status'] = FALSE;
@@ -1126,7 +1127,7 @@ function getStickyNote($menu)
  * @author Eduardo Cueva
  * @author ecueva@palosanto.com
  */
-function saveStickyNote($menu, $description)
+function saveStickyNote($menu, $description, $popup)
 {
 	include_once "libs/paloSantoACL.class.php";
 	$arrResult['status'] = FALSE;
@@ -1148,8 +1149,8 @@ function saveStickyNote($menu, $description)
 
 			if($exist){
 				$pdbACL->beginTransaction();
-				$query = "UPDATE sticky_note SET description = ?, date_edit = ? WHERE id_user = ? AND id_resource = ?";
-				$r = $pdbACL->genQuery($query, array($description, $date_edit, $uid, $id_resource));
+				$query = "UPDATE sticky_note SET description = ?, date_edit = ?, auto_popup = ? WHERE id_user = ? AND id_resource = ?";
+				$r = $pdbACL->genQuery($query, array($description, $date_edit, $popup, $uid, $id_resource));
 				if(!$r){
 					$pdbACL->rollBack();
 					$arrResult['status'] = FALSE;
@@ -1163,8 +1164,8 @@ function saveStickyNote($menu, $description)
 				}
 			}else{
 				$pdbACL->beginTransaction();
-				$query = "INSERT INTO sticky_note(id_user, id_resource, date_edit, description) VALUES(?, ?, ?, ?)";
-				$r = $pdbACL->genQuery($query, array($uid, $id_resource, $date_edit, $description));
+				$query = "INSERT INTO sticky_note(id_user, id_resource, date_edit, description, auto_popup) VALUES(?, ?, ?, ?, ?)";
+				$r = $pdbACL->genQuery($query, array($uid, $id_resource, $date_edit, $description, $popup));
 				if(!$r){
 					$pdbACL->rollBack();
 					$arrResult['status'] = FALSE;

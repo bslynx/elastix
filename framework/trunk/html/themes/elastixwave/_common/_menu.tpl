@@ -1,3 +1,14 @@
+{* SE GENERA EL AUTO POPUP SI ESTA ACTIVADO *} 
+{if $AUTO_POPUP eq '1'}
+   {literal}
+   	<script type='text/javascript'>
+ 	$('.togglestickynote').ready(function(e) {
+            $("#neo-sticky-note-auto-popup").attr('checked', true);
+	    note();
+	});
+	</script>
+   {/literal}
+{/if}
 <div id="fullMenu">
         <table cellspacing="0" cellpadding="0" width="100%" border="0" class="fondomenu_headertop">
             <tr>

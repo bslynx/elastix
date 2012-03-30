@@ -254,8 +254,9 @@ if (isset($_SESSION['elastix_user']) &&
 		include_once "libs/paloSantoJSON.class.php";
 		$jsonObject = new PaloSantoJSON();
 		$description_note = getParameter("description");
-		$output = saveStickyNote($menuBookmark, $description_note);
-		if($output['status'] === TRUE){
+        $popup_note = getParameter("popup");    
+	    $output = saveStickyNote($menuBookmark, $description_note, $popup_note);
+	    if($output['status'] === TRUE){
 			$jsonObject->set_status("OK");
 		}else
 			$jsonObject->set_status("ERROR");
@@ -301,8 +302,11 @@ if (isset($_SESSION['elastix_user']) &&
 	$statusStickyNote = getStickyNote($menuBookmark); // se obtiene si ese menu tiene una nota agregada
 	
 	if($statusStickyNote['status'] === TRUE){
-		if($statusStickyNote['data'] != "")
+		if($statusStickyNote['data'] != ""){
 			$smarty->assign("STATUS_STICKY_NOTE", "true");
+            if($statusStickyNote['popup']==1)
+                $smarty->assign("AUTO_POPUP", "1");
+        }
 		else
 			$smarty->assign("STATUS_STICKY_NOTE", "false");
 	}else

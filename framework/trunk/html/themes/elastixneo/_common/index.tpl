@@ -62,9 +62,10 @@
 		  <div id="neo-sticky-note-text-edit" class="neo-display-none">
 			<textarea id="neo-sticky-note-textarea"></textarea>
 			<div id="neo-sticky-note-text-char-count"></div>
-			<input type="button" value="{$SAVE_NOTE}" class="neo-submit-button" onclick="send_sticky_note()" />
-			<div id="neo-sticky-note-text-edit-delete"></div>
+			<input type="button" value="{$SAVE_NOTE}" class="neo-submit-button" id="neo-submit-button" onclick="send_sticky_note()" />
+			<div id="auto-popup">AutoPopUp <input type="checkbox" id="neo-sticky-note-auto-popup" value="1"></div>
 		  </div>
+		  <div id="neo-sticky-note-text-edit-delete"></div>
 		</div>
 		<!-- Neo Progress Bar -->
 		<div class="neo-modal-elastix-popup-box">

@@ -1,4 +1,14 @@
-
+{* SE GENERA EL AUTO POPUP SI ESTA ACTIVADO *} 
+{if $AUTO_POPUP eq '1'}
+   {literal}
+   	<script type='text/javascript'>
+ 	$('.togglestickynote').ready(function(e) {
+            $("#neo-sticky-note-auto-popup").attr('checked', true);
+	    note();
+	});
+	</script>
+   {/literal}
+{/if}
 <div id='acerca_de'>
     <table border='0' cellspacing="0" cellpadding="2" width='100%'>
         <tr class="moduleTitle">
