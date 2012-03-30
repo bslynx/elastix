@@ -523,7 +523,7 @@ function do_clearYum($smarty, $module_name, $local_templates_dir)
 
     $oAddons = new paloSantoAddons();
     $oAddons->clearYum();
-    return $json->encode();
+    return $json->encode(NULL);
 }
 
 function do_deleteActionTmp($smarty, $module_name, $local_templates_dir)
@@ -533,7 +533,7 @@ function do_deleteActionTmp($smarty, $module_name, $local_templates_dir)
 
     $oAddons = new paloSantoAddons();
     $oAddons->deleteActionTmp();
-    return $json->encode();
+    return $json->encode(NULL);
 }
 
 function do_getServerKey($smarty, $module_name, $local_templates_dir)
