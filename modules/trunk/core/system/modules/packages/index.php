@@ -28,8 +28,8 @@
   $Id: packages.php $ */
 
 include_once "libs/paloSantoGrid.class.php";
-include_once "libs/xajax/xajax.inc.php";
 include_once "libs/paloSantoForm.class.php";
+include_once "libs/paloSantoJSON.class.php";
 
 function _moduleContent(&$smarty, $module_name)
 {
@@ -57,12 +57,18 @@ function _moduleContent(&$smarty, $module_name)
     $templates_dir=(isset($arrConf['templates_dir']))?$arrConf['templates_dir']:'themes';
     $local_templates_dir="$base_dir/modules/$module_name/".$templates_dir.'/'.$arrConf['theme'];
 
-    $xajax = new xajax();
-    $xajax->registerFunction("actualizarRepositorios");
-    $xajax->registerFunction("installPaquete");
-    $xajax->processRequests();
-    $contenidoModulo  = $xajax->printJavascript("libs/xajax/");
-    $contenidoModulo .= listPackages($smarty, $module_name, $local_templates_dir,$arrConf);
+    $action = getParameter("action");
+    switch($action){
+        case "updateRepositories":
+            $contenidoModulo = actualizarRepositorios();
+            break;
+        case "install":
+            $contenidoModulo = installPaquete($paquete);
+            break;
+        default:
+            $contenidoModulo = listPackages($smarty, $module_name, $local_templates_dir,$arrConf);
+            break;
+    }
 
     return $contenidoModulo;
 }
@@ -175,7 +181,7 @@ function listPackages($smarty, $module_name, $local_templates_dir,$arrConf) {
 
 	if($actualizar){
 		$smarty->assign("mb_title",_tr("Message"));
-		$smarty->assign("mb_message",_tr("Your repositories aren't update. Give click in")." <b> "._tr('Repositories Update')." </b>"._tr("to see all available package"));
+		$smarty->assign("mb_message",_tr("Your repositories aren't update. Give click in button")." <b> \""._tr('Repositories Update')." \"</b>"._tr("to see all available package."));
 	}
 
     $oGrid->addFilterControl(_tr("Filter applied ")._tr("Status")." =  $tipoPaquete", $arrFilter, array("submitInstalado" => "installed"),true);
@@ -213,29 +219,22 @@ function filterField(){
 
 function actualizarRepositorios()
 {
-    global $arrLang;
-    $respuesta = new xajaxResponse();
     $oPackages = new PaloSantoPackages();
     $resultado = $oPackages->checkUpdate();
-    $respuesta->addAlert($resultado);
-    $respuesta->addAssign("relojArena","innerHTML","");
-    $respuesta->addAssign("nombre_paquete","value","");
-    $respuesta->addAssign("estaus_reloj","value","apagado");
-    $respuesta->addScript("document.getElementById('form_packages').submit();\n");
-    return $respuesta;
+
+    $jsonObject = new PaloSantoJSON();
+    $jsonObject->set_status($resultado);
+    return $jsonObject->createJSON();
 }
 
-function installPaquete($paquete)
+function installPaquete()
 {
-    global $arrLang;
-    $respuesta = new xajaxResponse();
     $oPackages = new PaloSantoPackages();
+    $paquete = getParameter("paquete");
     $resultado = $oPackages->installPackage($paquete);
-    $respuesta->addAlert($resultado);
-    $respuesta->addAssign("relojArena","innerHTML","");
-    $respuesta->addAssign("nombre_paquete","value","");
-    $respuesta->addAssign("estaus_reloj","value","apagado");
-    $respuesta->addScript("document.getElementById('form_packages').submit();\n");
-    return $respuesta;
+
+    $jsonObject = new PaloSantoJSON();
+    $jsonObject->set_status($resultado);
+    return $jsonObject->createJSON();
 }
 ?>
