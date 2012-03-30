@@ -181,7 +181,7 @@ function listPackages($smarty, $module_name, $local_templates_dir,$arrConf) {
 
 	if($actualizar){
 		$smarty->assign("mb_title",_tr("Message"));
-		$smarty->assign("mb_message",_tr("Your repositories aren't update. Give click in button")." <b> \""._tr('Repositories Update')." \"</b>"._tr("to see all available package."));
+		$smarty->assign("mb_message",_tr("Your repositories aren't update. Give click in button")." <b>\" "._tr('Repositories Update')." \"</b>"._tr("to see all available package."));
 	}
 
     $oGrid->addFilterControl(_tr("Filter applied ")._tr("Status")." =  $tipoPaquete", $arrFilter, array("submitInstalado" => "installed"),true);
