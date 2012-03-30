@@ -26,7 +26,7 @@
 {$MENU}
 <div id="elx-blackmin-content">
 {if !empty($mb_message)}
-<div class="ui-state-highlight ui-corner-all">
+<div class="ui-state-highlight ui-corner-all" id="message_error">
     <p>
         <span class="ui-icon ui-icon-info" style="float: left; margin-right: .3em;"></span>
         <span id="elastix-callcenter-info-message-text">{if !empty($mb_title)}{$mb_title} - {/if}{$mb_message}</span>
