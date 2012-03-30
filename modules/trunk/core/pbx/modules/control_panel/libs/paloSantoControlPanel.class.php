@@ -720,14 +720,27 @@ class paloSantoControlPanel {
     } 
 
     function getDesignArea() {
-        $query = "select a.id, a.name, a.height, a.width, a.description, a.no_column, a.color, count(i.id_area) no_items from area a left join item_box i on a.id=i.id_area group by a.id;";
+        $query = "select a.id AS a_id, a.name AS a_name, a.height AS a_height, a.width AS a_width, a.description AS a_description, a.no_column AS a_no_column, a.color AS a_color, count(i.id_area) no_items from area a left join item_box i on a.id=i.id_area group by a.id;";
         $result=$this->_DB2->fetchTable($query, true);
 
         if($result==FALSE){
             $this->errMsg = $this->_DB2->errMsg;
             return array();
         }
-        return $result;
+        $r = array();
+        foreach ($result as $tupla) {
+            $r[] = array(
+                'a.id' => $tupla['a_id'],
+                'a.name' => $tupla['a_name'],
+                'a.height' => $tupla['a_height'],
+                'a.width' => $tupla['a_width'],
+                'a.description' => $tupla['a_description'],
+                'a.no_column' => $tupla['a_no_column'],
+                'a.color' => $tupla['a_color'],
+                'no_items' => $tupla['no_items'],
+            );
+        }
+        return $r;
     }
 
     function updateDescriptionArea($description, $id_area){
