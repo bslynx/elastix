@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# elastix-firstboot	This shell script sets up the various MySQL databases for the 
+# elastix-firstboot	This shell script sets up the various MySQL databases for the
 #                       modules that need an initialized database to work. Other tasks
 #                       to be performed on first boot should be placed here.
 #
@@ -103,7 +103,7 @@ elastix_prompt_mysql_passwd(){
 of important telephony information. In order to protect your data, a master password must \
 be set up for the database.\n\n\
 This screen will now ask for a password for the 'root' account of MySQL.\n\n"
-	
+
 	# Read and set new MySQL root password
 	while [ "$MYSQL_PASSWD1" == "" ] ; do
 	    MYSQL_PASSWD1=""
@@ -130,12 +130,12 @@ This screen will now ask for a password for the 'root' account of MySQL.\n\n"
 	        MYSQL_PASSWD2=""
 	    fi
 	done
-	rm -f $OPTFILE	
+	rm -f $OPTFILE
 	if ! /usr/bin/mysqladmin -u root password "$MYSQL_PASSWD1" ; then
 	    echo "Unable to set root password for MySQL - password already set or server not running!"
 	    return 1
 	fi
-	
+
 	echo "UPDATE mysql.user SET Password=PASSWORD('$MYSQL_PASSWD1') WHERE User='root';" | mysql -u root "-p$MYSQL_PASSWD1"
 	ret=$?
 	if [ $? -ne 0 ]; then
@@ -144,7 +144,7 @@ This screen will now ask for a password for the 'root' account of MySQL.\n\n"
 	fi
 	echo "FLUSH PRIVILEGES;" | mysql -u root "-p$MYSQL_PASSWD1"
 	echo "mysqlrootpwd=$MYSQL_PASSWD1" > $PASSWD_PATH
-	
+
 	# ****Add the user cyrus with the command saslpasswd2 ***************
 	echo "$MYSQL_PASSWD1" | /usr/sbin/saslpasswd2 -c cyrus -u example.com
 	ret=$?
@@ -158,11 +158,11 @@ This screen will now ask for a password for the 'root' account of MySQL.\n\n"
 	sed -ie 's/127.0.0.1/127.0.0.1\tlocalhost/'  /etc/hosts      # reemplaza 127.0.0.1 por 127.0.0.1\tlocalhost
 
 
-	# Cambiar permisos del archivo /etc/sasldb2 a 644 
+	# Cambiar permisos del archivo /etc/sasldb2 a 644
 	chmod 644 /etc/sasldb2
 	echo "cyrususerpwd=$MYSQL_PASSWD1" >> $PASSWD_PATH
 	# *******************************************************************
-	
+
 	chmod 600 $PASSWD_PATH
 	chown asterisk.asterisk $PASSWD_PATH
 }
@@ -172,7 +172,7 @@ elastix_prompt_web_passwd() {
 through the Web. A web login password must be set for these components in order to prevent \
 unauthorized access to these administration interfaces.\n\n\
 This screen will now ask for a password for user 'admin' that will be used for: Elastix Web Login, FreePBX, VTiger, A2Billing and FOP.\n\n"
-	
+
 	MYSQL_PASSWD1=`grep mysqlrootpwd= /etc/elastix.conf | sed 's/^mysqlrootpwd=//'`
 
 	# Read and set new FreePBX admin password. This procedure works with FreePBX 2.7.0
@@ -185,7 +185,7 @@ This screen will now ask for a password for user 'admin' that will be used for: 
 	        FREEPBX_PASSWD1=`cat $OPTFILE`
 	        if [ "$FREEPBX_PASSWD1" == "" ] ; then
 	            dialog --backtitle "$BACKTITLE" --msgbox "Admin password must be nonempty." 7 40
-		else 
+		else
 			if cat $OPTFILE | perl -ne 'exit(1) if /^([a-zA-Z0-9 .&@=_!<>-]+)$/; exit(0);' ; then
 				dialog --backtitle "$BACKTITLE" --msgbox "Admin password may only contain alphanumeric characters, spaces, or the following: .&@=_!<>-." 7 40
 				FREEPBX_PASSWD1=""
@@ -203,14 +203,14 @@ This screen will now ask for a password for user 'admin' that will be used for: 
 	    fi
 	done
 	rm -f $OPTFILE
-	
+
 	echo "UPDATE asterisk.ampusers SET password_sha1=sha1('$FREEPBX_PASSWD1') WHERE username = 'admin';" | mysql -u root "-p$MYSQL_PASSWD1"
 	ret=$?
 	if [ $? -ne 0 ]; then
 	    echo "Unable to set admin password for FreePBX !"
 	    return 1
 	fi
-	
+
 	# Use the same password for freePBX login and for updating /etc/amportal.conf
 	echo "GRANT USAGE ON *.* TO 'asteriskuser'@'localhost' IDENTIFIED BY '$FREEPBX_PASSWD1'" | mysql -u root "-p$MYSQL_PASSWD1"
 	ret=$?
@@ -246,7 +246,7 @@ This screen will now ask for a password for user 'admin' that will be used for: 
 	# Set password for Elastix login. Requires sed, md5sum, sqlite3.
 	MD5HASH=`echo -n "$FREEPBX_PASSWD1" | md5sum | sed 's/^\(.\{32\}\)  -/\1/'`
 	sqlite3 /var/www/db/acl.db "UPDATE acl_user SET md5_password = '$MD5HASH' WHERE name = 'admin'"
-	
+
 	# Set password for A2Billing
         WHIRLPOOL=`php -r "echo hash('whirlpool','$FREEPBX_PASSWD1');"`
         echo "UPDATE mya2billing.cc_ui_authen SET pwd_encoded='$WHIRLPOOL' WHERE login='admin' OR login='root';" | mysql -u root "-p$MYSQL_PASSWD1"
@@ -256,6 +256,11 @@ This screen will now ask for a password for user 'admin' that will be used for: 
 	    echo "Unable to set admin password for A2Billing !"
 	    return 1
 	fi
+
+		# cambios en todas aquellas tablas que necesitan saber quien esel usuario administrador y su clave
+		echo "update mya2billing.cc_config set config_value='admin' where config_group_title='global' and config_key='manager_username';" | mysql -u root "-p$MYSQL_PASSWD1"
+		echo "update mya2billing.cc_config set config_value='$FREEPBX_PASSWD1' where config_group_title='global' and config_key='manager_secret';" | mysql -u root "-p$MYSQL_PASSWD1"
+		echo "update mya2billing.cc_server_manager set manager_username='admin',manager_secret='$FREEPBX_PASSWD1' where id=1 and id_group=1;" | mysql -u root "-p$MYSQL_PASSWD1"
 
     #preguntando si existe el usuario admin
 	echo "SELECT count(*) FROM mya2billing.cc_ui_authen WHERE login='admin';" | mysql -u root "-p$MYSQL_PASSWD1" > /tmp/mys2billingTest
@@ -292,8 +297,8 @@ This screen will now ask for a password for user 'admin' that will be used for: 
 	  fi
 	fi
 
-	
-	# Set password for VTiger. This assumes the vtigercrm521 database is already created. 
+
+	# Set password for VTiger. This assumes the vtigercrm521 database is already created.
 	# This procedure works for VTigerCRM 5.2.1
 	echo "UPDATE $dbvtiger.vtiger_users SET user_password = ENCRYPT('$FREEPBX_PASSWD1', CONCAT('\$1\$', SUBSTRING('admin' FROM 1 FOR 2), '\$')), user_hash = md5('$FREEPBX_PASSWD1') WHERE user_name = 'admin'" | mysql -u root "-p$MYSQL_PASSWD1"
 	ret=$?
@@ -312,7 +317,7 @@ elastix_activate_firewall(){
 		tmp=$?
 		if [ $tmp -eq 0 ]; then
 			sqlite3 /var/www/db/iptables.db "update tmp_execute set first_time = 0 ,exec_in_sys = 1" > /dev/null 2>&1
-			if [ $? -eq 0 ]; then 
+			if [ $? -eq 0 ]; then
 				echo "Firewall actived successfully."
 				salida=0
 			fi
