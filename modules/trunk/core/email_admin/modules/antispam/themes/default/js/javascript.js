@@ -1,14 +1,15 @@
 $(document).ready(function (){
     verifySieve();
-    changeActivateDefault();
 
     $(":checkbox").iButton({
         labelOn: "On",
         labelOff: "Off",
         change: function ($input){
-            $("#status").val($input.is(":checked") ? "active" : "disactive");
+            $("#status").val($input.is(":checked") ? "on" : "off");
         }
     }).trigger("change");
+
+	changeActivateDefault();
 
     $( "#slider-range-max" ).slider({
             range: "max",
@@ -27,7 +28,7 @@ $(document).ready(function (){
     $("#politica").change(function(){
         var opcion = $("#politica option:selected").val();
         if(opcion == "capturar_spam"){
-             $('#time_spam').show();
+            $('#time_spam').show();
             $("input[name=header]").hide();
         }else{
             $('#time_spam').hide();
@@ -42,34 +43,20 @@ function changeActivateDefault()
     var status = $('#statusSpam').val();
     if(status=="active"){
         $("input[name=chkoldstatus]").attr("checked", "checked");
-        $("#status").val("activate");
+        $("#status").val("on");
     }else{
         $("input[name=chkoldstatus]").removeAttr("checked");
-        $("#status").val("disactive");
+        $("#status").val("off");
     }
 }
 
 function verifySieve()
 {
-    var status = $('#statusSieve').val();
-    if(status == "on"){
-        $("#politica option").each(function(){
-            var opcion = $(this).val();
-            if(opcion == "capturar_spam")
-                $(this).attr("selected", "selected");
-            else
-                $(this).removeAttr("selected");
-        });
+    var statusSieve = $('#statusSieve').val();
+    if(statusSieve == "on"){
         $('#time_spam').show();
         $("input[name=header]").hide();
     }else{
-        $("#politica option").each(function(){
-            var opcion = $(this).val();
-            if(opcion == "marcar_asusto")
-                $(this).attr("selected", "selected");
-            else
-                $(this).removeAttr("selected");
-        });
         $('#time_spam').hide();
         $("input[name=header]").show();
     }
