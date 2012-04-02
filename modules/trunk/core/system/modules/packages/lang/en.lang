@@ -65,7 +65,7 @@ $arrLangModule=array(
 "Search"    => "Search",
 "Name" => "Name",
 "Status"=>"Status",
-"Your repositories aren't update. Give click in"=>"Your repositories aren't update. Give click in",
-"to see all available package"=>"to see all available package",
+"The repositories are not up to date. Click on the"=>"The repositories are not up to date. Click on the",
+"button to list all available packages."=>"button to list all available packages.",
 );
 ?>
