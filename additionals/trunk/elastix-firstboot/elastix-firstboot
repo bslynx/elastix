@@ -259,8 +259,19 @@ This screen will now ask for a password for user 'admin' that will be used for: 
 
 		# cambios en todas aquellas tablas que necesitan saber quien esel usuario administrador y su clave
 		echo "update mya2billing.cc_config set config_value='admin' where config_group_title='global' and config_key='manager_username';" | mysql -u root "-p$MYSQL_PASSWD1"
+		if [ $? -ne 0 ]; then
+			echo "Unable to set config_value='admin' where config_key=manager_username for A2Billing in cc_config!"
+		fi
+
 		echo "update mya2billing.cc_config set config_value='$FREEPBX_PASSWD1' where config_group_title='global' and config_key='manager_secret';" | mysql -u root "-p$MYSQL_PASSWD1"
+		if [ $? -ne 0 ]; then
+			echo "Unable to set config_value config_key='manager_secret' for A2Billing in cc_config!"
+		fi
+
 		echo "update mya2billing.cc_server_manager set manager_username='admin',manager_secret='$FREEPBX_PASSWD1' where id=1 and id_group=1;" | mysql -u root "-p$MYSQL_PASSWD1"
+		if [ $? -ne 0 ]; then
+			echo "Unable to set manager_username, manager_secret for A2Billing in cc_server_manager!"
+		fi
 
     #preguntando si existe el usuario admin
 	echo "SELECT count(*) FROM mya2billing.cc_ui_authen WHERE login='admin';" | mysql -u root "-p$MYSQL_PASSWD1" > /tmp/mys2billingTest
