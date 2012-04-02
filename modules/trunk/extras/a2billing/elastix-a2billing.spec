@@ -2,17 +2,18 @@
 Summary: Package that installs A2Billing.
 Name: elastix-%{modname}
 Version: 1.9.4
-Release: 1
+Release: 3
 License: GPL
 Group: Applications/System
 Source0: %{modname}_%{version}.tar.gz
-#Source1: %{modname}_%{version}-1.tgz
-Source1: %{modname}_%{version}-%{release}.tgz
+Source1: %{modname}_%{version}-3.tgz
 Patch0:  elastix-a2billing-1.8.1.patch
 BuildRoot: %{_tmppath}/%{name}-%{version}
 BuildArch: noarch
 Prereq: asterisk, php, elastix-firstboot, python-setuptools, MySQL-python, python-sqlalchemy		
 Prereq: elastix-framework >= 2.2.0-18
+Prereq: freePBX >= 2.8.1
+
 %description
 A2billing is a full featured telecom platform and softswitch providing converged services, with self contained billing (pre or post-paid), reporting and statistics for IP and TDM based voice networks and can be configured to supply a wide range of services, rate calls, prepare and send out invoices, as well as accept payments via a number of payment service providers.
 %prep
@@ -249,12 +250,25 @@ rm -rf $RPM_BUILD_ROOT
 /var/lib/asterisk/agi-bin/*
 %defattr(755, asterisk, asterisk)
 /usr/share/a2billing/*
-/etc/asterisk/additional_a2billing_sip.conf
-/etc/asterisk/additional_a2billing_iax.conf
-/etc/asterisk/extension_a2billing_additionals.conf
+%config(noreplace) /etc/asterisk/additional_a2billing_sip.conf
+%config(noreplace) /etc/asterisk/additional_a2billing_iax.conf
+%config(noreplace) /etc/asterisk/extension_a2billing_additionals.conf
 %config(noreplace) /etc/a2billing.conf
 
 %changelog
+* Mon Apr 02 2012 Bruno Macias <bmacias@palosanto.com> 1.9.4-3
+- UPDATED: script setup/changeencodepass.php was updated for support
+  change manager asterisk config username and password for a2billing
+  configure.
+
+* Mon Apr 02 2012 Bruno Macias <bmacias@palosanto.com> 1.9.4-2
+- FIXED: Bug config files additional_a2billing_xxx.conf were changed.
+  In this spec add noreplace option.
+- ADDED: Prereq freePBX, It is used by manager user "admin" for edit
+  config file additional_a2billing_xxx.conf.
+- ADDED: Pacth0 added, change user mya2billing to admin in config file.
+  variable fakeuser.
+
 * Fri Dec 02 2011 Eduardo Cueva <ecueva@palosanto.com> 1.9.4-1
 - CHANGED: In spec files changes to support updating of a2billing
 - UPDATED: In elastix-a2billing-1.8.1.patch add the port by default
