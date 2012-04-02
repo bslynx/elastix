@@ -91,6 +91,7 @@ function viewFormEmailRelay($smarty, $module_name, $local_templates_dir, &$pDB, 
     }
     else{
         $_DATA['status'] = "off";
+		$_DATA['SMTP_Server'] = "custom";
     }
 
     $smarty->assign("CONFIGURATION_UPDATE",$arrLang['Save']);
