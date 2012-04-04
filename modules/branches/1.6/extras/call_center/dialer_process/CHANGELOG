@@ -1,3 +1,5 @@
+* Dialer: parse manager.conf manually as it may contain characters that choke
+  parse_ini_file(). Fixes Elastix bug #1211.
 * Dialer: add new configuration parameter to specify the maximum number of
   seconds to wait for the Originate AMI request before timeout.
 * Installer: fix invalid SQL syntax on foreign key creation for external URL

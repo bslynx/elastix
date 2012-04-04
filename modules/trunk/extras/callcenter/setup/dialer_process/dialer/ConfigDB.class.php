@@ -281,7 +281,8 @@ class ConfigDB
             $log->output("WARN: $sNombreArchivo no puede leerse por usuario de marcador.");
             return NULL;        	
         }
-        $infoConfig = parse_ini_file($sNombreArchivo, TRUE);
+        //$infoConfig = parse_ini_file($sNombreArchivo, TRUE);
+        $infoConfig = $this->parse_ini_file_literal($sNombreArchivo);
         if (is_array($infoConfig)) {
             foreach ($infoConfig as $login => $infoLogin) {
             	if ($login != 'general') {
@@ -296,6 +297,29 @@ class ConfigDB
             $log->output("ERR: $sNombreArchivo no puede parsearse correctamente.");        	
         }
         return NULL;
+    }
+
+    private function parse_ini_file_literal($sNombreArchivo)
+    {
+    	$h = fopen($sNombreArchivo, 'r');
+        if (!$h) return FALSE;
+        $r = array();
+        $seccion = NULL;
+        while (!feof($h)) {
+        	$s = fgets($h);
+            $s = rtrim($s, " \r\n");
+            $regs = NULL;
+            if (preg_match('/^\s*\[(\w+)\]/', $s, $regs)) {
+            	$seccion = $regs[1];
+            } elseif (preg_match('/^(\w+)\s*=\s*(.*)/', $s, $regs)) {
+            	if (is_null($seccion))
+                    $r[$regs[1]] = $regs[2];
+                else
+                    $r[$seccion][$regs[1]] = $regs[2];
+            }
+        }
+        fclose($h);
+        return $r;
     }
 
 	// Reporte de la lista de variables cambiadas
