@@ -180,6 +180,7 @@ function hide_message_error(){
 var modal_elastix_popup_shown = false;
 
 function ShowModalPopUP(title, width, height, html){
+
     $('.neo-modal-elastix-popup-content').html(html);
     $('.neo-modal-elastix-popup-title').text(title);
 
@@ -193,12 +194,19 @@ function ShowModalPopUP(title, width, height, html){
 
     var winH = $(window).height();
     var winW = $(window).width();
-
-    $('.neo-modal-elastix-popup-box').height(height);
+  
+    var top = winH/2-height/2;
+    if(top<0){
+	top=10;
+        $('.neo-modal-elastix-popup-box').css({'height':"auto", 'bottom':10});
+	$('.neo-modal-elastix-popup-content').css({'overflow-y':"auto", 'overflow-x':"visible", 'bottom':20, 'position': "absolute", 'top':40, 'width':"93%"});
+	
+    }else{
+    	$('.neo-modal-elastix-popup-box').height(height);
+    }
     $('.neo-modal-elastix-popup-box').width(width);
-    $('.neo-modal-elastix-popup-box').css('top',  winH/2-height/2);
+    $('.neo-modal-elastix-popup-box').css('top',  top);
     $('.neo-modal-elastix-popup-box').css('left', winW/2-width/2);
-
     $('.neo-modal-elastix-popup-box').fadeIn(2000);
 
     modal_elastix_popup_shown = true;
@@ -224,6 +232,20 @@ function showPopupElastix(id, title, width, height){
         {
             ShowModalPopUP(title,width,height,arrData);
             getDataWebServer();
+        }
+    );
+}
+
+function mostrar()
+{
+    var arrAction = new Array();
+    arrAction["action"]  = "showAboutAs";
+    arrAction["rawmode"] = "yes";
+
+    request("register.php",arrAction,false,
+        function(arrData,statusResponse,error)
+        {
+            ShowModalPopUP(arrData['title'],380,100,arrData['html']);
         }
     );
 }
@@ -626,34 +648,13 @@ function saveToggleTab(){
 	);
 }
 
-$(document).ready(function(){
-    //***Para los módulos con filtro se llama a la función pressKey
-    if(document.getElementById("filter_value") || document.getElementById("pageup") || document.getElementById("neo-sticky-note-textarea"))
-	document.onkeypress = keyPressed;
-    //*****************************************/
-    $(".close_image_box").click(function(){
-            $("#boxRPM").attr("style","display: none;");
-            $("#fade_overlay").attr("style","display: none;");
-        });
 
-    $("#viewDetailsRPMs").click(function(){
-        $("#changeMode").attr("style", "visibility: hidden;");
-        $("#boxRPM").attr("style","display: block;");
-        $("#fade_overlay").attr("style","display: block;");
-        $("#loadingRPM").attr("style","display: block;");
-        $("#tdTa").attr("style","display: none;");
-        $("#tdRpm").attr("style","display: block;");
-        $("#tableRMP").html("");
-        $("#tdTa").val("");
-        var lbltextMode = $("#lblTextMode").val();
-        $("#changeMode").text("("+lbltextMode+")");
-        $("#txtMode").val("");
+//***Genera la Tabla de los Detalles de la Versión
+function loadDetails(){
         var order = "action=versionRPM&rawmode=yes";
         $.post("index.php", order, function(theResponse){
-            $("#loadingRPM").attr("style","display: none;");
-            $("#boxRPM").attr("style","display: block;");
-            $("#fade_overlay").attr("style","display: block;");
-            $("#changeMode").attr("style", "visibility: visible;");
+            //$("#loadingRPM").hide();
+            $("#changeMode").show();
             var message = JSONRPMtoString(theResponse);
             var html = "";
             var html2 = "";
@@ -663,7 +664,8 @@ $(document).ready(function(){
             var i = 0;
             var cont = 0;
             for(key in message){
-                html += "<tr class='letra12'>" +
+                html += "<table  width='96%' border='0' cellspacing='0' cellpadding='0' align='left' style='border:1px solid #999'>"+
+                           "<tr class='letra12'>" +
                             "<td class='letra12 tdRPMNamesCol'>&nbsp;&nbsp;<b>Name</b></td>" +
                             "<td class='letra12 tdRPMNamesCol'>&nbsp;&nbsp;<b>Package Name</b></td>" +
                             "<td class='letra12 tdRPMNamesCol'>&nbsp;&nbsp;<b>Version</b></td>" +
@@ -703,33 +705,75 @@ $(document).ready(function(){
 
             }
             cont = cont + 2;
+            html +="</table>";
             $("#txtMode").attr("rows", cont);
             $("#tableRMP").html(html);
+	    $("#changeMode").show();
             $("#txtMode").val(html2);
+            
         });
-    });
+}
 
-    $("#fade_overlay").click(function(){
-        $("#boxRPM").attr("style","display: none;");
-        $("#fade_overlay").attr("style","display: none;");
-    });
 
-    $("#changeMode").click(function(){
-        var viewTbRpm = $("#tdRpm").attr("style");
+//***Cambia de (Texto->Html)(Html->Texto)
+function changeMode(){	
+        var viewTbRpm = $(".tdRpm").attr("style");
         if(viewTbRpm == "display: block;"){
             //change lbltextMode
             var lblhtmlMode = $("#lblHtmlMode").val();
             $("#changeMode").text("("+lblhtmlMode+")");
 
-            $("#tdRpm").attr("style","display: none;");
+            $(".tdRpm").attr("style","display: none;");
             $("#tdTa").attr("style","display: block;");
         }else{
             //change lblHtmlMode
             var lbltextMode = $("#lblTextMode").val();
             $("#changeMode").text("("+lbltextMode+")");
-            $("#tdRpm").attr("style","display: block;");
+            $(".tdRpm").attr("style","display: block;");
             $("#tdTa").attr("style","display: none;");
         }
+}
+
+//***POPUP VERSION
+function showVersion(){
+	var arrAction = new Array();
+        arrAction["action"]  = "showRPMS_Version";
+        arrAction["rawmode"] = "yes";
+
+        request("register.php",arrAction,false,
+            function(arrData,statusResponse,error)
+            {
+	        ShowModalPopUP(arrData['title'],380,800,arrData['html']);  
+		loadDetails();
+            }
+        );
+       
+	$("#loadingRPM").show();
+        $("#tdTa").hide();
+        $(".tdRpm").show();
+        $("#tdTa").val("");
+        var lbltextMode = $("#lblTextMode").val();
+        $("#changeMode").text("("+lbltextMode+")");
+        $("#txtMode").val("");
+        
+}
+
+
+$(document).ready(function(){
+    //***Para los módulos con filtro se llama a la función pressKey
+    if(document.getElementById("filter_value") || document.getElementById("pageup") || document.getElementById("neo-sticky-note-textarea"))
+	document.onkeypress = keyPressed;
+    //*****************************************/
+    $(".close_image_box").click(function(){
+            $("#boxRPM").attr("style","display: none;");
+            $("#fade_overlay").attr("style","display: none;");
+        });
+  
+    $("#viewDetailsRPMs").click(function(){ showVersion(); });
+
+    $("#fade_overlay").click(function(){
+        $("#boxRPM").attr("style","display: none;");
+        $("#fade_overlay").attr("style","display: none;");
     });
 
 	$( "#search_module_elastix" )
@@ -827,7 +871,7 @@ function keyPressed(e)
     else if (e) keycode = e.which;
     else return true;
         
-    if (!$("#neo-sticky-note-textarea").is(":focus") && !$("#neo-submit-button").is(":focus")) {
+    if (!$("textarea").is(":focus") && !$("#neo-submit-button").is(":focus")) {
 	  if(keycode == 13){
 		$("form").submit();
 		return false;
