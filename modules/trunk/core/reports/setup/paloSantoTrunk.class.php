@@ -231,7 +231,9 @@ function getTrunks($oDB)
 						foreach($arrResult as $key => $trunk){
 									$tmpTrunk = str_replace("ZAP","DAHDI",$trunk); //para soportar dahdi, freepbx aun conserva el formato ZAP y esto es para entender q se usa dahdi
 									//$tmpTrunk = str_replace("IAX","IAX2",$trunk); //para iax a iax2
-									$arrTrunk[$key] = str_replace("AMP:","",$tmpTrunk);
+									$tmpTrunk = str_replace("AMP:","",$tmpTrunk);
+                                    $tmpTrunk = str_replace('CUSTOM/',"",$tmpTrunk);
+                                    $arrTrunk[$key] = str_replace('$OUTNUM$@',"",$tmpTrunk);
 						}
 						return $arrTrunk;
 					}
@@ -246,7 +248,9 @@ function getTrunks($oDB)
 					if (is_array($arrResult) && count($arrResult)>0) {
 						foreach($arrResult as $key => $trunk){
 									$tmpTrunk = str_replace("ZAP","DAHDI",$trunk); //para soportar dahdi, freepbx aun conserva el formato ZAP y esto es para entender q se usa dahdi
-									$arrTrunk[$key] = str_replace("AMP:","",$tmpTrunk);
+									$tmpTrunk = str_replace("AMP:","",$tmpTrunk);
+                                    $tmpTrunk = str_replace('CUSTOM/',"",$tmpTrunk);
+                                    $arrTrunk[$key] = str_replace('$OUTNUM$@',"",$tmpTrunk);
 						}
 						return $arrTrunk;
     				}
