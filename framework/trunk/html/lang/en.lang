@@ -100,6 +100,7 @@ $arrLang=array(
 "Bad Format"=>"Bad Format",
 "No option was selected"=>"No option was selected",
 "Octets out of range" => "Octets out of range",
+"Undefined validation type" => "Undefined validation type",
 /*end paloSantoValidar.class.php*/
 
 /*version 0.8*/

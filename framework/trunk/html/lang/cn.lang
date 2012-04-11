@@ -90,6 +90,7 @@ $arrLang=array(
 "Bad Format"=>"格式错误",
 "No option was selected"=>"没有选中任何选项",
 "Octets out of range"=>"八位数超过范围",
+"Undefined validation type" => "Undefined validation type",
 /*end paloSantoValidar.class.php*/
 
 //version 0.8

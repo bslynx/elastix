@@ -92,6 +92,7 @@ $arrLang=array(
 "Bad Format"=>"Dåligt format",
 "No option was selected"=>"Du har inte valt något val",
 "Octets out of range"=>"Okteter utom räckvidd",
+"Undefined validation type" => "Undefined validation type",
 /*end paloSantoValidar.class.php*/
 
 /*version 0.8*/

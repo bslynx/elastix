@@ -101,6 +101,7 @@ $arrLang=array(
 "Bad Format" => "Rossz formátum",
 "No option was selected" => "Opció nem lett kiválasztva",
 "Octets out of range" => "Oktettek intervallumon kívül",
+"Undefined validation type" => "Undefined validation type",
 /*end paloSantoValidar.class.php*/
 
 /*version 0.8*/

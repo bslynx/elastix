@@ -80,6 +80,7 @@ $arrLang=array(
 "Bad Format" => "Mauvais format",
 "No option was selected" => "Aucune option sélectionnée",
 "Octets out of range" => "Octets en dehors de la plage",
+"Undefined validation type" => "Undefined validation type",
 "View User" => "Voir Utilisateur",
 "Date/Time" => "Date & Heure",
 "Load Module" => "Chargement de Modules",

@@ -91,6 +91,7 @@ $arrLang=array(
 "Bad Format"=>"不正なフォーマット",
 "No option was selected"=>"オプション未選択",
 "Octets out of range"=>"ビット数範囲外",
+"Undefined validation type" => "Undefined validation type",
 
 //version 0.8
 //user

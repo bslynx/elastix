@@ -106,6 +106,7 @@ $arrLang=array(
 "Bad Format"=>"Format incorrecte",
 "No option was selected"=>"Cap Opció seleccionada",
 "Octets out of range"=>"Octets fora de rang",
+"Undefined validation type" => "Undefined validation type",
 /*end paloSantoValidar.class.php*/
 
 /*version 0.8*/

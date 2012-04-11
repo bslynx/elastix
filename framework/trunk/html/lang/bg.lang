@@ -71,6 +71,7 @@ $arrLang=array(
 "Bad Format" => "Неправилен Формат",
 "No option was selected" => "Не е избрана опция",
 "Octets out of range" => "Не е в допустимите граници",
+"Undefined validation type" => "Undefined validation type",
 "Choose Menu" => "Избери Меню",
 "ID for new menu" => "ID за новото меню",
 "Menu Name" => "Име на Менюто",

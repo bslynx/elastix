@@ -88,7 +88,7 @@ $arrLang=array(
 "Bad Format"=>"Formato Incorreto",
 "No option was selected"=>"Nenhuma opção foi selecionada",
 "Octets out of range"=>"Octetos fora do limite",
-
+"Undefined validation type" => "Undefined validation type",
 
 "View User" => "Visualizar usuário",
 
