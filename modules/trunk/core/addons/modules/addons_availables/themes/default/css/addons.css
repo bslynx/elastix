@@ -8,6 +8,7 @@
 	position:relative;
 	left: 0px;
 	padding: 5px 12px 12px 16px;
+	min-height: 105px;
 	border-bottom: 1px solid #ccc;
 }
 .neo-addons-row-moreinfo {
