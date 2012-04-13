@@ -503,8 +503,9 @@ cursor: pointer;
     width: 90%;
     display: block;
     font-family: verdana,arial,helvetica,sans-serif;
-    color: #2E6E9E;
+    color: #666;
     font-size: 13px;
+	font-weight: bold;
 }
 
 
@@ -632,8 +633,8 @@ cursor: pointer;
 
 .counter{
     position: relative;
-    top: -3px;
-    right: 32px;
+    top: -4px;
+    right: 0px;
 }
 
 .countExceeded{
@@ -642,4 +643,8 @@ cursor: pointer;
 
 #ui-datepicker-div{
     display: none;
+}
+
+#table_box textarea {
+	resize: none;
 }

@@ -33,13 +33,14 @@ include_once "libs/paloSantoGrid.class.php";
 include_once "libs/paloSantoForm.class.php";
 include_once "libs/paloSantoACL.class.php";
 include_once "libs/phpmailer/class.phpmailer.php";
+include_once "libs/paloSantoJSON.class.php";
 
 function _moduleContent(&$smarty, $module_name)
 {
     //include module files
     include_once "modules/$module_name/configs/default.conf.php";
     include_once "modules/$module_name/libs/paloSantoCalendar.class.php";
-    include_once "modules/$module_name/libs/JSON.php";
+//    include_once "modules/$module_name/libs/JSON.php";
 
     //include file language agree to elastix configuration
     //if file language not exists, then include language by default (en)
@@ -94,10 +95,10 @@ function _moduleContent(&$smarty, $module_name)
             $content = setDataCalendar($arrLang,$pDB,$arrConf);
             break;
         case "view_box":
-            $content = viewBoxCalendar($arrConf,$arrLang,$pDB);
+            $content = viewBoxCalendar($arrConf,$arrLang,$pDB,$local_templates_dir,$smarty,$module_name);
             break;
         case "new_box":
-            $content = newBoxCalendar($arrConf,$arrLang,$pDB);
+            $content = newBoxCalendar($arrConf,$arrLang,$pDB,$local_templates_dir,$smarty,$module_name);
             break;
         case "delete_box":
             $content = deleteBoxCalendar($arrConf,$arrLang,$pDB,$module_name);
@@ -162,20 +163,19 @@ function getNameDayToday($arrLang)
 function viewCalendar($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang)
 {
     $pCalendar = new paloSantoCalendar($pDB);
+
     $arrForm = createFieldForm($arrLang);
     $oForm = new paloForm($smarty,$arrForm);
 
-    $_DATA['ReminderTime'] = isset($_DATA['ReminderTime'])?$_DATA['ReminderTime']:"10";
+	$id_event="";
+	$visibility_alert="";
+	$visibility_emails="";
 
     $date_ini = getParameter("event_date");
     $date_end = getParameter("to");
-    $id_event = "";
 
     $user = isset($_SESSION['elastix_user'])?$_SESSION['elastix_user']:"";
     $uid = Obtain_UID_From_User($user,$arrConf);
-
-    $visibility_emails = "visibility: visible;";
-    $visibility_alert  = "display: none;";
 
     $festival = $pCalendar->festivalUp(); // verifica si esta levantado el festival
     if(!$festival){
@@ -190,7 +190,7 @@ function viewCalendar($smarty, $module_name, $local_templates_dir, &$pDB, $arrCo
     $dateServer = gmdate("D M d Y H:i:s TO (e)", strtotime($date_ini));//Fri Nov 12 2010 00:00:00 GMT-0500 (ECT)
     $icalFile = $arrLang["Download ical calendar"];
 
-    $smarty->assign("add_phone",$arrLang["Search in Address Book"]);
+	$smarty->assign("add_phone",$arrLang["Search in Address Book"]);
     $smarty->assign("SAVE", $arrLang["Save"]);
     $smarty->assign("EDIT", $arrLang["Edit"]);
     $smarty->assign("DELETE", $arrLang["Delete"]);
@@ -219,9 +219,8 @@ function viewCalendar($smarty, $module_name, $local_templates_dir, &$pDB, $arrCo
     $smarty->assign("Listen", $arrLang["Listen"]);
     $smarty->assign("Listen_here", _tr("Click here to listen"));
 
-    $htmlForm = $oForm->fetchForm("$local_templates_dir/form.tpl",$arrLang["Calendar"], $_DATA);
-
-    $content = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name' name='formNewEvent' id='formNewEvent'>".$htmlForm."</form>";
+    $htmlForm = $oForm->fetchForm("$local_templates_dir/form.tpl",$arrLang["Calendar"], array());
+    $content = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name' name='formCalendar' id='formCalendar'>".$htmlForm."</form>";
 
 
     return $content;
@@ -234,16 +233,13 @@ function viewCalendarById($smarty, $module_name, $local_templates_dir, &$pDB, $a
     $arrForm = createFieldForm($arrLang);
     $oForm = new paloForm($smarty,$arrForm);
 
-    $_DATA['ReminderTime'] = isset($_DATA['ReminderTime'])?$_DATA['ReminderTime']:"10";
+    //$_DATA['ReminderTime'] = isset($_DATA['ReminderTime'])?$_DATA['ReminderTime']:"10";
 
     $date_ini = getParameter("event_date");
     $id = getParameter("id");
 
     $user = isset($_SESSION['elastix_user'])?$_SESSION['elastix_user']:"";
     $uid = Obtain_UID_From_User($user,$arrConf);
-
-    $visibility_emails = "visibility: visible;";
-    $visibility_alert  = "display: none;";
 
     $festival = $pCalendar->festivalUp(); // verifica si esta levantado el festival
     if(!$festival){
@@ -257,45 +253,24 @@ function viewCalendarById($smarty, $module_name, $local_templates_dir, &$pDB, $a
     if(!preg_match("/^[1-9][0-9]*$/",$id))
         $id = "";
 
-    $id_event = "";
-
                          //D M d Y H:i:s TO (e)
     $dateServer = gmdate("D M d Y H:i:s TO (e)", strtotime($date_ini));//Fri Nov 12 2010 00:00:00 GMT-0500 (ECT)
     $icalFile = $arrLang["Download ical calendar"];
 
-
-    $smarty->assign("add_phone",$arrLang["Search in Address Book"]);
-    $smarty->assign("SAVE", $arrLang["Save"]);
-    $smarty->assign("EDIT", $arrLang["Edit"]);
-    $smarty->assign("DELETE", $arrLang["Delete"]);
-    $smarty->assign("CANCEL", $arrLang["Cancel"]);
-    $smarty->assign("Start_date", $arrLang["Start_date"]);
-    $smarty->assign("Notification_Alert", $arrLang["Notification_Alert"]);
-    $smarty->assign("End_date", $arrLang["End_date"]);
-    $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
-    $smarty->assign("module_name", $module_name);
-    $smarty->assign("notification_email", $arrLang["notification_email"]);
     $smarty->assign("ID",$id);
-    $smarty->assign("id_event",$id_event);
-    $smarty->assign("Call_alert",$arrLang["Call_alert"]);
-    $smarty->assign("visibility_emails",$visibility_emails);
+    $smarty->assign("module_name", $module_name);
     $smarty->assign("Export_Calendar",$arrLang["Export_Calendar"]);
     $smarty->assign("ical",$icalFile);
-    $smarty->assign("icon", "images/list.png");
-    $smarty->assign("visibility_alert", $visibility_alert);
     $smarty->assign("LBL_EDIT", $arrLang["Edit Event"]);
     $smarty->assign("LBL_LOADING", $arrLang["Loading"]);
     $smarty->assign("LBL_DELETING", $arrLang["Deleting"]);
     $smarty->assign("LBL_SENDING", $arrLang["Sending Request"]);
     $smarty->assign("START_TYPE", $arrLang["START_TYPE"]);
     $smarty->assign("DATE_SERVER", $dateServer);
-    $smarty->assign("Color", $arrLang["Color"]);
     $smarty->assign("CreateEvent", $arrLang["Create New Event"]);
-    $smarty->assign("Listen", $arrLang["Listen"]);
-    $smarty->assign("Listen_here", _tr("Click here to listen"));
 
     $htmlForm = $oForm->fetchForm("$local_templates_dir/form.tpl",$arrLang["Calendar"], $_DATA);
-    $content = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name' name='formNewEvent' id='formNewEvent'>".$htmlForm."</form>";
+    $content = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name' name='formCalendar' id='formCalendar'>".$htmlForm."</form>";
 
     return $content;
 }
@@ -366,6 +341,7 @@ function saveEvent($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf,
                 $call_to = "";
                 $asterisk_calls = "off";
                 $recording = "";
+				$remainerTime = "";
             }
 
             if($notification == "on"){ // si ingresa emails o contactos
@@ -830,25 +806,31 @@ function getLanguages($arrLang, $arrConf)
 {
     $pDBACL    = new paloDB($arrConf['dsn_conn_database1']);
     $pACL      = new paloACL($pDBACL);
+	$mensajeError = getParameter("mensajeError");
     $id_user   = $pACL->getIdUser($_SESSION["elastix_user"]);
-    $json      = new Services_JSON();
+    $jsonObject = new PaloSantoJSON();
     if($id_user)
-        return $json->encode($arrLang);
+        $jsonObject->set_message(_tr($mensajeError));
     else
-        return array();
+		$jsonObject->set_message("");
+    return $jsonObject->createJSON();
 }
 
-function viewBoxCalendar($arrConf,$arrLang,$pDB){
+function viewBoxCalendar($arrConf,$arrLang,$pDB,$local_templates_dir,$smarty,$module_name){
     $pCalendar = new paloSantoCalendar($pDB);
     $id        = getParameter('id_event');
     $action    = getParameter('action');
     $pDBACL    = new paloDB($arrConf['dsn_conn_database1']);
     $pACL      = new paloACL($pDBACL);
     $id_user   = $pACL->getIdUser($_SESSION["elastix_user"]);
-    $json = new Services_JSON();
-        $data = $pCalendar->getEventById($id, $id_user);
+    $jsonObject = new PaloSantoJSON();
+
+	$data = $pCalendar->getEventById($id, $id_user);
     $val  = false;
-    if($data=="" && !isset($data))  return $json->encode(array());
+    if($data=="" && !isset($data)){
+		$jsonObject->set_error(_tr("Don't exist the event"));
+		return $jsonObject->createJSON();
+	}
     if($action == "view_box"){
         $data = $pCalendar->get_event_by_id($id);
         $type_event = $data['it_repeat'];
@@ -857,12 +839,13 @@ function viewBoxCalendar($arrConf,$arrLang,$pDB){
         $data['visibility'] = "visibility: hidden;";
         $data['visibility_repeat'] = "visibility: hidden;";
         $data['notification_status'] = $data['notification'];
-        $title = "View Event";
-        $data['title'] = $title;
+        $data['title'] = _tr("View Event");
         $new_date_ini = $data['starttime'];
         $new_date_end = $data['endtime'];
         $data['date'] = date("d M Y H:i",strtotime($new_date_ini));
         $data['to'] = date("d M Y H:i",strtotime($new_date_end));
+		$data['Contact'] = $arrLang['Contact'];
+		$data['Email'] = $arrLang['Email'];
 
         if($data['notification']=="on"){
             $arrContacts = getEmailToTables($data['emails_notification']);
@@ -884,13 +867,54 @@ function viewBoxCalendar($arrConf,$arrLang,$pDB){
             $arr = getDaysByCheck($days_repeat,2);
             $data = array_merge($data,$arr);
         }
-                $data['New_Event'] = $arrLang['New_Event'];
-                $data['Edit Event'] = $arrLang['Edit Event'];
-                $data['View Event'] = $arrLang['View Event'];
-                $data['Contact'] = $arrLang['Contact'];
-                $data['Email'] = $arrLang['Email'];
+
+		if($data['call_to']!=""){
+			$visibility_alert = "";
+		}else
+			$visibility_alert = "display:none";
+
+		$date_ini = getParameter("event_date");
+		if(!preg_match("/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/",$date_ini))
+			$date_ini = date("M d Y");
+
+		$dateServer = gmdate("D M d Y H:i:s TO (e)", strtotime($date_ini));//Fri Nov 12 2010 00:00:00 GMT-0500 (ECT)
+
+		$arrForm = createFieldForm($arrLang);
+		$oForm = new paloForm($smarty,$arrForm);
+
+		$smarty->assign("add_phone",$arrLang["Search in Address Book"]);
+		$smarty->assign("SAVE", $arrLang["Save"]);
+		$smarty->assign("EDIT", $arrLang["Edit"]);
+		$smarty->assign("DELETE", $arrLang["Delete"]);
+		$smarty->assign("CANCEL", $arrLang["Cancel"]);
+		$smarty->assign("Start_date", $arrLang["Start_date"]);
+		$smarty->assign("Notification_Alert", $arrLang["Notification_Alert"]);
+		$smarty->assign("End_date", $arrLang["End_date"]);
+		$smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
+		$smarty->assign("module_name", $module_name);
+		$smarty->assign("notification_email", $arrLang["notification_email"]);
+		$smarty->assign("id_event",$id);
+		$smarty->assign("Call_alert",$arrLang["Call_alert"]);
+//		$smarty->assign("visibility_emails",$visibility_emails);
+		$smarty->assign("icon", "modules/$module_name/images/agenda_calendar.png");
+		$smarty->assign("visibility_alert", $visibility_alert);
+		$smarty->assign("LBL_EDIT", $arrLang["Edit Event"]);
+		$smarty->assign("LBL_LOADING", $arrLang["Loading"]);
+		$smarty->assign("LBL_DELETING", $arrLang["Deleting"]);
+		$smarty->assign("LBL_SENDING", $arrLang["Sending Request"]);
+		$smarty->assign("START_TYPE", $arrLang["START_TYPE"]);
+		$smarty->assign("DATE_SERVER", $dateServer);
+		$smarty->assign("Color", $arrLang["Color"]);
+		$smarty->assign("Listen", $arrLang["Listen"]);
+		$smarty->assign("Listen_here", _tr("Click here to listen"));
     }
-    return $json->encode($data);
+
+	$htmlForm = $oForm->fetchForm("$local_templates_dir/evento.tpl",$arrLang["Calendar"], array());
+    $content = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name' name='formNewEvent' id='formNewEvent' onsubmit='return sendNewEvent();'>".$htmlForm."</form>";
+	$data["html"]=$content;
+
+    $jsonObject->set_message($data);
+	return $jsonObject->createJSON();
 }
 
 function download_icals($arrLang,&$pDB,$module_name, $arrConf){
@@ -958,12 +982,18 @@ function createTmpIcal($arrLang,&$pDB,$module_name, $arrConf, $idEvent){
     return $document_output;
 }
 
-function newBoxCalendar($arrConf,$arrLang,$pDB){
+
+function newBoxCalendar($arrConf,$arrLang,$pDB,$local_templates_dir,$smarty,$module_name){
     $pCalendar = new paloSantoCalendar($pDB);
+	$jsonObject = new PaloSantoJSON();
     $pDBACL  = new paloDB($arrConf['dsn_conn_database1']);
     $pACL    = new paloACL($pDBACL);
     $id_user = $pACL->getIdUser($_SESSION["elastix_user"]);
     $ext = "";
+	$id_event = "";
+
+	$_DATA['ReminderTime'] = isset($_DATA['ReminderTime'])?$_DATA['ReminderTime']:"10";
+
     if($id_user){
         $pDB3 = new paloDB($arrConf['dsn_conn_database1']);
         $ext = $pCalendar->obtainExtension($pDB3,$id_user);
@@ -971,21 +1001,62 @@ function newBoxCalendar($arrConf,$arrLang,$pDB){
     }else{
         $ext = "empty";
     }
-    $json = new Services_JSON();
     $data['now']       = date("d M Y H:i");// convert times to (d M Y) like (02 Feb 2010)
     $data['after']     = date("d M Y H:i",strtotime($data['now']." + 5 minutes"));
     $data['New_Event'] = $arrLang["New_Event"];
     $data['ext']       = $ext;
-    return $json->encode($data);
+
+	$arrForm = createFieldForm($arrLang);
+    $oForm = new paloForm($smarty,$arrForm);
+
+	$date_ini = getParameter("event_date");
+	if(!preg_match("/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/",$date_ini))
+        $date_ini = date("M d Y");
+
+	$dateServer = gmdate("D M d Y H:i:s TO (e)", strtotime($date_ini));//Fri Nov 12 2010 00:00:00 GMT-0500 (ECT)
+	$visibility_emails = "visibility: visible;";
+    $visibility_alert  = "display: none;";
+
+	$smarty->assign("add_phone",$arrLang["Search in Address Book"]);
+    $smarty->assign("SAVE", $arrLang["Save"]);
+    $smarty->assign("EDIT", $arrLang["Edit"]);
+    $smarty->assign("DELETE", $arrLang["Delete"]);
+    $smarty->assign("CANCEL", $arrLang["Cancel"]);
+    $smarty->assign("Start_date", $arrLang["Start_date"]);
+    $smarty->assign("Notification_Alert", $arrLang["Notification_Alert"]);
+    $smarty->assign("End_date", $arrLang["End_date"]);
+    $smarty->assign("REQUIRED_FIELD", $arrLang["Required field"]);
+    $smarty->assign("module_name", $module_name);
+    $smarty->assign("notification_email", $arrLang["notification_email"]);
+    $smarty->assign("id_event",$id_event);
+    $smarty->assign("Call_alert",$arrLang["Call_alert"]);
+    $smarty->assign("visibility_emails",$visibility_emails);
+    $smarty->assign("icon", "modules/$module_name/images/agenda_calendar.png");
+    $smarty->assign("visibility_alert", $visibility_alert);
+    $smarty->assign("LBL_EDIT", $arrLang["Edit Event"]);
+    $smarty->assign("LBL_LOADING", $arrLang["Loading"]);
+    $smarty->assign("LBL_DELETING", $arrLang["Deleting"]);
+    $smarty->assign("LBL_SENDING", $arrLang["Sending Request"]);
+    $smarty->assign("START_TYPE", $arrLang["START_TYPE"]);
+    $smarty->assign("DATE_SERVER", $dateServer);
+    $smarty->assign("Color", $arrLang["Color"]);
+    $smarty->assign("Listen", $arrLang["Listen"]);
+    $smarty->assign("Listen_here", _tr("Click here to listen"));
+
+	$htmlForm = $oForm->fetchForm("$local_templates_dir/evento.tpl",$arrLang["Calendar"], $_DATA);
+    $content = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name' name='formNewEvent' id='formNewEvent' onsubmit='return sendNewEvent();'>".$htmlForm."</form>";
+	$data["html"]=$content;
+	$jsonObject->set_message($data);
+    return $jsonObject->createJSON(); 
 }
 
 function deleteBoxCalendar($arrConf,$arrLang,$pDB,$module_name){
     $pCalendar = new paloSantoCalendar($pDB);
     $pDBACL    = new paloDB($arrConf['dsn_conn_database1']);
     $pACL      = new paloACL($pDBACL);
+	$jsonObject = new PaloSantoJSON();
     $id_user   = $pACL->getIdUser($_SESSION["elastix_user"]);
     $id   = getParameter('id_event');
-    $json = new Services_JSON();
     $data = $pCalendar->getEventById($id, $id_user);
     $dir_outgoing = $arrConf['dir_outgoing'];
     $val = false;
@@ -1008,7 +1079,9 @@ function deleteBoxCalendar($arrConf,$arrLang,$pDB,$module_name){
         $data["error_delete_JSON"] = $arrLang['error_delete'];
         $data["error_delete_status"] = "off";
     }
-    return $json->encode($data);
+
+	$jsonObject->set_message($data);
+    return $jsonObject->createJSON();
 }
 
 function getNumExtesion($arrConf,&$pDB,$arrLang){
@@ -1016,7 +1089,7 @@ function getNumExtesion($arrConf,&$pDB,$arrLang){
     $pACL    = new paloACL($pDBACL);
     $id_user = $pACL->getIdUser($_SESSION["elastix_user"]);
     $pCalendar = new paloSantoCalendar($pDB);
-    $json = new Services_JSON();
+	$jsonObject = new PaloSantoJSON();
     if($id_user){
         $pDB3 = new paloDB($arrConf['dsn_conn_database1']);
         $ext = $pCalendar->obtainExtension($pDB3,$id_user);
@@ -1025,18 +1098,20 @@ function getNumExtesion($arrConf,&$pDB,$arrLang){
     }else{
         $arr = array();
     }
-    return $json->encode($arr);
+	$jsonObject->set_message($arr);
+    return $jsonObject->createJSON();
 }
 
 function getTextToSpeach($arrLang,&$pDB)
 {
     $data = array();
-    $json = new Services_JSON();
+    $jsonObject = new PaloSantoJSON();
     $pCalendar = new paloSantoCalendar($pDB);
     $number    = getParameter('call_to');
     $text      = getParameter('tts');
     $pCalendar->makeCalled($number, $number, $text);
-    return $json->encode($data);
+	$jsonObject->set_message($data);
+    return $jsonObject->createJSON();
 }
 
 function getAllDataCalendar($arrLang,&$pDB,$module_name, $arrConf){
@@ -1307,6 +1382,7 @@ function getDataCalendar($arrLang,&$pDB,$module_name,$arrConf){
     $pDBACL  = new paloDB($arrConf['dsn_conn_database1']);
     $pACL    = new paloACL($pDBACL);
     $id_user = $pACL->getIdUser($_SESSION["elastix_user"]);
+	$jsonObject = new PaloSantoJSON();
 
     $pCalendar = new paloSantoCalendar($pDB);
     $start = getParameter('start');
@@ -1316,8 +1392,7 @@ function getDataCalendar($arrLang,&$pDB,$module_name,$arrConf){
     $end_time = date('Y-m-d', $end);
     if(!$id_user){
         $json = new Services_JSON();
-        $arrLanJSON = $json->encode(array());
-        return $arrLanJSON;
+		$arrLanJSON = $json->encode($arr);
     }
 
     $year  = date('Y');
@@ -1366,7 +1441,9 @@ function getDataCalendar($arrLang,&$pDB,$module_name,$arrConf){
         }
         $j++;
     }
-    $json = new Services_JSON();
+	/*$jsonObject->set_message($arr);
+	return $jsonObject->createJSON();*/
+	$json = new Services_JSON();
     $arrLanJSON = $json->encode($arr);
     return $arrLanJSON;
 }
@@ -1458,8 +1535,9 @@ function getContactEmails($arrConf)
     }
 
     // se instancia a JSON
-    $json = new Services_JSON();
-    return $json->encode($salida);
+    $jsonObject = new PaloSantoJSON();
+	$jsonObject->set_message($salida);
+	return $jsonObject->createJSON();
 }
 
 function getRepeatDate($each_repeat,$day_repeat,$starttime,$endtime,$j,&$k,&$arr,$arrDates,$type,$module_name){
@@ -1653,7 +1731,7 @@ function createFieldForm($arrLang)
             "description"   => array(      "LABEL"                  => $arrLang["Description"],
                                             "REQUIRED"               => "no",
                                             "INPUT_TYPE"             => "TEXTAREA",
-                                            "INPUT_EXTRA_PARAM"      => array("style"=>"width: 272px;"),
+                                            "INPUT_EXTRA_PARAM"      => array("style"=>"width: 271px; height: 36px;"),
                                             "VALIDATION_TYPE"        => "text",
                                             "VALIDATION_EXTRA_PARAM" => "",
                                             "COLS"                   => "36px",
@@ -1670,7 +1748,7 @@ function createFieldForm($arrLang)
             "tts"   => array(         "LABEL"                  => $arrLang["Text to Speech"],
                                             "REQUIRED"               => "no",
                                             "INPUT_TYPE"             => "TEXTAREA",
-                                            "INPUT_EXTRA_PARAM"      => array("style"=>"width: 352px;", "maxlength"=>"140"),
+                                            "INPUT_EXTRA_PARAM"      => array("style"=>"width: 365px; height: 36px;","maxlength"=>"140", "onchange" => "changeTextAreaTTs();", "onkeyup"=>"KeyUpTextAreaTTs();"),
                                             "VALIDATION_TYPE"        => "text",
                                             "VALIDATION_EXTRA_PARAM" => "",
                                             "COLS"                   => "48px",
