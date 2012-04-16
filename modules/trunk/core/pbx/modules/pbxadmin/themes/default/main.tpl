@@ -1,7 +1,7 @@
 <table cellspacing="0" cellpadding="0" border="0" width="100%">
   <tr>
-    <td valign="top" width="220"><div id="nav"><ul>
-    <li>{$Basic}</li>
+    <td valign="top" width="220"><div id="nav"><div id="nav-setup"><ul>
+    <li class="category category-header">{$Basic}</li>
     <li><a href="/?menu=pbxconfig&amp;type=setup&amp;display=extensions"  >{$Extensions}</a></li>
     <li><a href="/?menu=pbxconfig&amp;type=setup&amp;display=featurecodeadmin"  >{$Feature_Codes}</a></li>
     <li><a href="/?menu=pbxconfig&amp;type=setup&amp;display=general"  >{$General_Settings}</a></li>
@@ -39,7 +39,7 @@
     <li><a href="/?menu=pbxconfig&amp;type=setup&amp;display=disa"  >{$DISA}</a></li>
     <li>{$Option}</li>
     <li><a href="/admin/"  class="info" target="_blank">{$Unembedded_freePBX} <span style='margin-left:2.9cm; margin-top:-2.8cm; width:303px'>{$INFO}</span></a></li>
-</ul></div></td>
+</ul></div></div></td>
 <td valign="top">{$htmlFPBX}</td>
 </tr>
 </table>
