@@ -333,6 +333,10 @@ class paloSantoLoadExtension {
         $path = "/etc/asterisk/voicemail.conf";
         $VoiceMail = strtolower($VoiceMail);
 
+        // Only numeric voicemail password allowed (Elastix bug #1238)
+        if ($VoiceMail_PW != '' && !ctype_digit($VoiceMail_PW))
+            return false;
+
         if(eregi("^enable",$VoiceMail)){
             exec("sed -ie '/^$Ext =>/d' $path");
             if($VM_Options!="") $VM_Options .= "|";
