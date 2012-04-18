@@ -1,4 +1,4 @@
-/h#!/bin/bash
+#!/bin/bash
 echo "Beginning script to migrate elastix 1.6 to lastest version..."
 
 #Ask for the directory that conatins the script for migration
