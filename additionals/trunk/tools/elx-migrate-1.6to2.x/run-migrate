@@ -1,4 +1,4 @@
-#!/bin/bash
+/h#!/bin/bash
 echo "Beginning script to migrate elastix 1.6 to lastest version..."
 
 #Ask for the directory that conatins the script for migration
@@ -205,6 +205,7 @@ if [ $stage -eq 7 ]; then
 fi
 
 rm -f $STAGE_FILE
+rm -rf /var/spool/elastix-mysqldbscripts/*
 echo "Migration Complete Successful!!!..."
 
 
