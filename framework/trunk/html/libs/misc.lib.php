@@ -28,9 +28,9 @@
   $Id: misc.lib.php,v 1.3 2007/08/10 01:32:51 gcarrillo Exp $ */
 
 
-function recoger_valor($key, &$_GET, &$_POST, $default = NULL) {
-    if (isset($_POST[$key])) return $_POST[$key];
-    elseif (isset($_GET[$key])) return $_GET[$key];
+function recoger_valor($key, &$get, &$post, $default = NULL) {
+    if (isset($post[$key])) return $post[$key];
+    elseif (isset($get[$key])) return $get[$key];
     else return $default;
 }
 
