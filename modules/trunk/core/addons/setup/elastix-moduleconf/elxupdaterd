@@ -56,6 +56,23 @@ $iRes = main($opt,
     'ElastixInstallerProcess');
 exit($iRes);
 
+function load_default_timezone()
+{
+    $sDefaultTimezone = @date_default_timezone_get();
+    if ($sDefaultTimezone == 'UTC') {
+        $sDefaultTimezone = 'America/New_York';
+        if (file_exists('/etc/sysconfig/clock')) {
+            foreach (file('/etc/sysconfig/clock') as $s) {
+                $regs = NULL;
+                if (preg_match('/^ZONE\s*=\s*"(.+)"/', $s, $regs)) {
+                    $sDefaultTimezone = $regs[1];
+                }
+            }
+        }
+    }
+    date_default_timezone_set($sDefaultTimezone);
+}
+
 // Punto de entrada del programa demonio (plantilla)
 function main($paramConfig, $sDescDemonio, $sNombreDemonio /* , ... */)
 {
@@ -65,7 +82,7 @@ function main($paramConfig, $sDescDemonio, $sNombreDemonio /* , ... */)
 
     // Para silenciar avisos de fecha/hora
     if (function_exists('date_default_timezone_get')) {
-        date_default_timezone_set(date_default_timezone_get());
+        load_default_timezone();
     }
 
     // Esta es la tabla de procesos a monitorear
