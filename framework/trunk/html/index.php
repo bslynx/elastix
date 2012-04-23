@@ -34,6 +34,8 @@ include_once "libs/paloSantoDB.class.php";
 include_once "libs/paloSantoMenu.class.php";
 include_once("libs/paloSantoACL.class.php");// Don activate unless you know what you are doing. Too risky!
 
+load_default_timezone();
+
 $developerMode=false;
 
 session_name("elastixSession");
