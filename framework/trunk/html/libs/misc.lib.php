@@ -1186,12 +1186,15 @@ function saveStickyNote($menu, $description, $popup)
 // Set default timezone from /etc/sysconfig/clock for PHP 5.3+ compatibility
 function load_default_timezone()
 {
-    $sDefaultTimezone = 'America/New_York';
-    if (file_exists('/etc/sysconfig/clock')) {
-        foreach (file('/etc/sysconfig/clock') as $s) {
-            $regs = NULL;
-            if (preg_match('/^ZONE\s*=\s*"(.+)"/', $s, $regs)) {
-                $sDefaultTimezone = $regs[1];
+    $sDefaultTimezone = @date_default_timezone_get();
+    if ($sDefaultTimezone == 'UTC') {
+        $sDefaultTimezone = 'America/New_York';
+        if (file_exists('/etc/sysconfig/clock')) {
+            foreach (file('/etc/sysconfig/clock') as $s) {
+                $regs = NULL;
+                if (preg_match('/^ZONE\s*=\s*"(.+)"/', $s, $regs)) {
+                    $sDefaultTimezone = $regs[1];
+                }
             }
         }
     }
