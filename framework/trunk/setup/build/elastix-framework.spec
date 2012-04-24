@@ -23,6 +23,9 @@ Conflicts: elastix-fax <= 2.2.0-5
 Conflicts: kernel-module-dahdi
 Conflicts: kernel-module-rhino
 Conflicts: kernel-module-wanpipe
+Conflicts: kernel-module-dahdi-xen
+Conflicts: kernel-module-rhino-xen
+Conflicts: kernel-module-wanpipe-xen
 Obsoletes: elastix <= 2.2.0-17
 
 %description
@@ -290,6 +293,10 @@ rm -rf $RPM_BUILD_ROOT
 /usr/share/elastix/privileged/*
 
 %changelog
+* Tue Apr 24 2012 Alex Villacis Lasso <a_villacis@palosanto.com>
+- CHANGED: Add proper conflicts for kernel-module-*-xen as well as ordinary
+  kernel-module-* as neither are supported anymore.
+
 * Fri Mar 30 2012 Rocio Mera <rmera@palosanto.com> 2.3.0-6
 - CHANGED: Framework - Themes/blackmin/index.tpl: Added id='message_error' 
   in div that show the message on top of the window
