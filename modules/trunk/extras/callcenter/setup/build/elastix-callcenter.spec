@@ -3,7 +3,7 @@
 Summary: Elastix Call Center 
 Name:    elastix-callcenter
 Version: 2.1.99
-Release: 2.alpha
+Release: 3.alpha
 License: GPL
 Group:   Applications/System
 Source0: %{modname}_%{version}-%{release}.tgz
@@ -50,6 +50,12 @@ mv CHANGELOG $RPM_BUILD_ROOT/usr/share/elastix/module_installer/%{name}-%{versio
 # Run installer script to fix up ACLs and add module to Elastix menus.
 elastix-menumerge /usr/share/elastix/module_installer/%{name}-%{version}-%{release}/menu.xml
 
+# Workaround for missing elastix-menuremove in old Elastix versions (before 2.0.0-20)
+if [ -e /usr/bin/elastix-menuremove ] ; then
+  # TODO: Remove this when campaign_monitoring is actually implemented
+  elastix-menuremove campaign_monitoring
+fi
+
 # The installer script expects to be in /tmp/new_module
 mkdir -p /tmp/new_module/%{modname}
 cp -r /usr/share/elastix/module_installer/%{name}-%{version}-%{release}/* /tmp/new_module/%{modname}/
@@ -92,6 +98,15 @@ fi
 /etc/logrotate.d/elastixdialer
 
 %changelog
+* Tue Apr 24 2012 Alex Villacis Lasso <a_villacis@palosanto.com> 2.1.99-3.alpha
+- Comment out menu item for not-yet-committed module in development.
+- From CHANGELOG:
+    - Dialer: set the timezone explictly for PHP 5.3+ compatibility.
+    - Dialer: parse manager.conf manually as it may contain characters that 
+      choke parse_ini_file(). Fixes Elastix bug #1211.
+    - Dialer: add new configuration parameter to specify the maximum number of
+      seconds to wait for the Originate AMI request before timeout.
+
 * Wed Mar 21 2012 Alex Villacis Lasso <a_villacis@palosanto.com> 2.1.99-2.alpha
 - Third pre-release version for testing of new dialer code.
 - From CHANGELOG:
