@@ -296,6 +296,18 @@ rm -rf $RPM_BUILD_ROOT
 * Tue Apr 24 2012 Alex Villacis Lasso <a_villacis@palosanto.com>
 - CHANGED: Add proper conflicts for kernel-module-*-xen as well as ordinary
   kernel-module-* as neither are supported anymore.
+- CHANGED: Framework: attempt to pick any educated guess for the default 
+  timezone before hitting the filesystem.
+- FIXED: Framework: PHP 5.3+ requires the timezone to be explicitly set. Load 
+  timezone from /etc/sysconfig/clock if it exists.
+- FIXED: Framework: Workaround for PHP bug #44639 in PHP 5.3.x and later. 
+  Instead of executing the PDO database statement directly, the parameters are 
+  bound with a PDO datatype derived from the underlying PHP data type. 
+- FIXED: Framework: do not use reserved superglobal names as parameters for a 
+  function.
+- FIXED: framework - base.js: when press enter event in textarea html not work 
+  it.
+- FIXED: New validation type when it is empty.
 
 * Fri Mar 30 2012 Rocio Mera <rmera@palosanto.com> 2.3.0-6
 - CHANGED: Framework - Themes/blackmin/index.tpl: Added id='message_error' 
