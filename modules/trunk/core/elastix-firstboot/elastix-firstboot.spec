@@ -101,6 +101,21 @@ rm -rf $RPM_BUILD_ROOT
 /usr/bin/change-passwords
 
 %changelog
+* Tue Apr 24 2012 Alex Villacis Lasso <a_villacis@palosanto.com>
+- CHANGED: Remove greater-than and less-than characters from accepted characters
+  in passwords, since amportal/FOP choke on these.
+- CHANGED: Additionals - Elastix_Firstboot: Changed in elastix-firstboot and 
+  elastix-chance-password for change manager asterisk config username and
+  password for a2billing.
+- CHANGED: elastix-firstboot: comment-out /etc/init.d/functions inclusion. This
+  inclusion is useless in CentOS and actually harmful in Fedora, since (in 
+  Fedora) it sends dialog output to /dev/console instead of controlling console
+  which might be a SSH session.
+- FIXED: elastix-firstboot: the character sequence &-@ unexpectedly created a 
+  character range, instead of the intended three literal characters. This 
+  allowed more characters to be accepted as valid passwords than intended. Now 
+  only the three intended characters are accepted.
+
 * Fri Mar 09 2012 Alex Villacis Lasso <a_villacis@palosanto.com> 2.3.0-1
 - CHANGED: Remove fix for Elastix bug 595. This workaround is rendered obsolete
   with the use of kmod-dahdi. 
