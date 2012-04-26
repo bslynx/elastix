@@ -107,6 +107,15 @@ fi
 /var/lib/asterisk/sounds/custom/*
 
 %changelog
+* Thu Apr 26 2012 Alex Villacis Lasso <a_villacis@palosanto.com>
+- FIXED: module calenadar, some functional points use a callback with a function
+  called "_rechazar_correo_vacio" that was not implemented. Now that function is
+  implemented in the class.
+  SVN Rev[3890]
+- CHANGED: Modules - Calendar: Changed the format of the popup that appear when 
+  a user want create, view or edit a event.
+  SVN Rev[3844]
+
 * Fri Mar 30 2012 Bruno Macias <bmacias@palosanto.com> 2.3.0-3
 - CHANGED: In spec file, changed prereq elastix-framework >= 2.3.0-5
 - FIXED: modules - SQLs DB: se quita SQL redundante de alter table y nuevos 
