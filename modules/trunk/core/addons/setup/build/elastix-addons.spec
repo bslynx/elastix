@@ -111,11 +111,14 @@ fi
 * Thu Apr 25 2012 Alex Villacis Lasso <a_villacis@palosanto.com>
 - FIXED: Addons: the elastix updater daemon should explicitly set the default 
   timezone.
+  SVN Rev[3884]
 - CHANGED: modules addons_availables, added a min-height of 105px to the class 
   .neo-addons-row
+  SVN Rev[3827]
 - CHANGED: modules addons_availables, in class neo-addons-row deleted the line
   "height:120px;" so the row for each addon can increase depending on its 
-  description
+  description.
+  SVN Rev[3826]
 
 * Mon Apr 2 2012 Rocio Mera <rmera@palosanto.com> 2.3.0-3
 - FIXED: Addons Availables: parameter to $json->encode() is not optional.
