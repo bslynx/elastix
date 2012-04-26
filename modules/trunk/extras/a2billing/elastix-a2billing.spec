@@ -6,7 +6,7 @@ Release: 4
 License: GPL
 Group: Applications/System
 Source0: %{modname}_%{version}.tar.gz
-Source1: %{modname}_%{version}-3.tgz
+Source1: %{modname}_%{version}-%{release}.tgz
 Patch0:  elastix-a2billing-1.8.1.patch
 BuildRoot: %{_tmppath}/%{name}-%{version}
 BuildArch: noarch
