@@ -104,21 +104,26 @@ rm -rf $RPM_BUILD_ROOT
 * Tue Apr 24 2012 Alex Villacis Lasso <a_villacis@palosanto.com>
 - CHANGED: Remove greater-than and less-than characters from accepted characters
   in passwords, since amportal/FOP choke on these.
+  SVN Rev[3888]
 - CHANGED: Additionals - Elastix_Firstboot: Changed in elastix-firstboot and 
   elastix-chance-password for change manager asterisk config username and
   password for a2billing.
+  SVN Rev[3817]
 - CHANGED: elastix-firstboot: comment-out /etc/init.d/functions inclusion. This
   inclusion is useless in CentOS and actually harmful in Fedora, since (in 
   Fedora) it sends dialog output to /dev/console instead of controlling console
   which might be a SSH session.
+  SVN Rev[3800]
 - FIXED: elastix-firstboot: the character sequence &-@ unexpectedly created a 
   character range, instead of the intended three literal characters. This 
   allowed more characters to be accepted as valid passwords than intended. Now 
   only the three intended characters are accepted.
+  SVN Rev[3770]
 
 * Fri Mar 09 2012 Alex Villacis Lasso <a_villacis@palosanto.com> 2.3.0-1
 - CHANGED: Remove fix for Elastix bug 595. This workaround is rendered obsolete
   with the use of kmod-dahdi. 
+  SVN Rev[3726]
 
 * Wed Dec 22 2011 Eduardo Cueva <ecueva@palosanto.com> 2.2.0-9
 - CHANGED: In spec file remove actions over vtiger database because the
@@ -126,6 +131,7 @@ rm -rf $RPM_BUILD_ROOT
 - FIXED: Elastix-firstboot: Changes in elastix-firstboot script to fix 
   the bug with elastix.conf where is created that file by elastix-framework 
   for adding "amiadminpwd" to ami password.
+  SVN Rev[3480]
 - FIXED: Fixed bug in  "elastix-firstboot" after intallation of an iso 
   where all passwords are never changed after the first reboot. SVN Rev[3478]
 - CHANGED: Elastix-Firstboot: Support update change password to 
