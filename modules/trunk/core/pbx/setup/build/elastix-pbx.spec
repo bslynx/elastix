@@ -3,7 +3,7 @@
 Summary: Elastix Module PBX 
 Name:    elastix-%{modname}
 Version: 2.3.0
-Release: 5
+Release: 6
 License: GPL
 Group:   Applications/System
 Source0: %{modname}_%{version}-%{release}.tgz
@@ -292,6 +292,27 @@ fi
 /bin/asterisk.reload
 
 %changelog
+* Fri Apr 27 2012 Rocio Mera <rmera@palosanto.com> 2.3.0-6
+- CHANGED: Addons - Build/elastix-addons.spec: update specfile with latest
+  SVN history. Changed release in specfile
+- FIXED: Monitoring: queue recording file names are written with full absolute
+  path in DB, so a LIKE operator is required to select on the file name.
+  Rewrite recording file download to add more checks. Part of fix for Elastix
+  bug #1225.
+  SVN Rev[3873]
+- FIXED: Batch of Extensions: voicemail password (if any) should be
+  numeric-only. Part of the fix for Elastix bug #1238.
+  SVN Rev[3871]
+- FIXED: PBX Admin: add enough of the FreePBX validation javascripts so that
+  field validations work. Part of the fix for Elastix bug #1238.
+  SVN Rev[3870]
+- ADDED: Build - SPEC's: The spec files were added to the corresponding modules
+  and the framework.
+  SVN Rev[3854]
+  SVN Rev[3836]
+- FIXED: PBX - Festival: Fixed problem when chance status to festival. Bug 1219
+  SVN Rev[3814]
+
 * Mon Apr 02 2012 Rocio Mera <rmera@palosanto.com> 2.3.0-5
 - FIXED: PBX - Festival: Fixed problem when chance status to festival. Bug 1219
   SVN Rev[3814]
