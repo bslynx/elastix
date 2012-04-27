@@ -3,7 +3,7 @@
 Summary: Elastix Module System 
 Name:    elastix-%{modname}
 Version: 2.3.0
-Release: 6
+Release: 7
 License: GPL
 Group:   Applications/System
 #Source0: %{modname}_%{version}-2.tgz
@@ -128,6 +128,24 @@ fi
 %config(noreplace) /etc/dahdi/genconf_parameters
 
 %changelog
+* Fri Apr 27 2012 Rocio Mera <rmera@palosanto.com> 2.3.0-7
+- CHANGED: System - Build/elastix-system.spec: update specfile with latest
+  SVN history. Changed release in specfile
+- CHANGED: modules - hardware_detector:change the modal popup form of
+  Configuration of Span and Span Parameter  to ShowModalPopUp form, to keep the
+  same PopUp form in the system.
+  SVN Rev[3874]
+- CHANGED: modules - dashboard: add _register.tpl file that contains the
+  application form of Register Card to show in the ModalPopUp form.
+  SVN Rev[3869]
+- CHANGED: modules - dashboard: Change the application form of Register Card to
+  ShowModalPopUp form, to mantain the same popup format in the system.
+  SVN Rev[3868]
+- ADDED: Build - SPEC's: The spec files were added to the corresponding modules
+  and the framework.
+  SVN Rev[3857]
+  SVN Rev[3839]
+
 * Mon Apr 02 2012 Rocio Mera <rmera@palosanto.com> 2.3.0-6
 - CHANGED: System - Package: Changed message that appear when repositories
   aren't update in english and spanish
