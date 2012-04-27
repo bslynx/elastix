@@ -590,7 +590,7 @@ $(document).ready(function(){
 		arrAction["menu"]="calendar";
 		arrAction["action"]="get_num_ext";
 		arrAction["rawmode"]="yes";
-		arrAction["userid"]="id";
+		arrAction["userid"]=id;
         var message = "";
         request("index.php", arrAction, false,
                 function(arrData,statusResponse,error){
