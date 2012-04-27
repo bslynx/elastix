@@ -3,7 +3,7 @@
 Summary: Elastix Module Agenda 
 Name:    elastix-%{modname}
 Version: 2.3.0
-Release: 5
+Release: 6
 License: GPL
 Group:   Applications/System
 Source0: %{modname}_%{version}-%{release}.tgz
@@ -107,6 +107,12 @@ fi
 /var/lib/asterisk/sounds/custom/*
 
 %changelog
+* Fri Apr 27 2012 Rocio Mera <rmera@palosanto.com> 2.3.0-6
+- CHANGED: Agenda - Build/elastix-agenda.spec: Changed release in specfile
+- ADDED: CHANGED: Agenda - themes/js: Changed javascript3.js to solve bug 
+  introduce in commit 3908. Didn't work color picker when was created a event. 
+  SVN Rev[3910]
+  
 * Fri Apr 27 2012 Rocio Mera <rmera@palosanto.com> 2.3.0-5
 - CHANGED: Agenda - Build/elastix-agenda.spec: Changed release in specfile
 - ADDED: Calendar - themes/evento.tpl: Added file evento.tpl. File required 
