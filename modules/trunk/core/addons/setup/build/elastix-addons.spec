@@ -108,9 +108,9 @@ fi
 /etc/yum.repos.d/*
 
 %changelog
-* Fri Apr 27 2012 Rocio Mera <rmera@palosanto.com>
+* Fri Apr 27 2012 Rocio Mera <rmera@palosanto.com> 2.3.0-4
 - CHANGED: Addons - Build/elastix-addons.spec: update specfile with latest
-  SVN history. SVN Rev[3898]
+  SVN history. Changed release in specfile
 
 * Thu Apr 25 2012 Alex Villacis Lasso <a_villacis@palosanto.com>
 - FIXED: Addons: the elastix updater daemon should explicitly set the default 
