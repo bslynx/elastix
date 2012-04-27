@@ -1,7 +1,7 @@
 Summary: Elastix First Boot Setup
 Name:    elastix-firstboot
 Version: 2.3.0
-Release: 1
+Release: 6
 License: GPL
 Group:   Applications/System
 Source0: %{name}-%{version}.tar.bz2
@@ -22,7 +22,7 @@ either prepare their databases on their own, or delegate this task to this
 package.
 
 %prep
-%setup 
+%setup -n %{name}
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -101,24 +101,52 @@ rm -rf $RPM_BUILD_ROOT
 /usr/bin/change-passwords
 
 %changelog
-* Tue Apr 24 2012 Alex Villacis Lasso <a_villacis@palosanto.com>
-- CHANGED: Remove greater-than and less-than characters from accepted characters
-  in passwords, since amportal/FOP choke on these.
+* Fri Apr 27 2012 Rocio Mera <rmera@palosanto.com> 2.3.0-6
+- CHANGED: Addons - Build/elastix-addons.spec: update specfile with latest
+  SVN history. Changed release in specfile
+- CHANGED: elastix-firstboot: Remove greater-than and less-than characters
+  from accepted characters in passwords, since amportal/FOP choke on these.
   SVN Rev[3888]
-- CHANGED: Additionals - Elastix_Firstboot: Changed in elastix-firstboot and 
+
+* Mon Apr 02 2012 Rocio Mera <rmera@palosanto.com> 2.3.0-5
+- CHANGED: Additionals - Elastix_Firstboot: Changed in elastix-firstboot and
   elastix-chance-password for change manager asterisk config username and
-  password for a2billing.
-  SVN Rev[3817]
+  password for a2billing
+  SVN Rev[3817]-[3815]
+
+* Fri Mar 30 2012 Rocio Mera <rmera@palosanto.com> 2.3.0-4
 - CHANGED: elastix-firstboot: comment-out /etc/init.d/functions inclusion. This
-  inclusion is useless in CentOS and actually harmful in Fedora, since (in 
+  inclusion is useless in CentOS and actually harmful in Fedora, since (in
   Fedora) it sends dialog output to /dev/console instead of controlling console
   which might be a SSH session.
   SVN Rev[3800]
-- FIXED: elastix-firstboot: the character sequence &-@ unexpectedly created a 
-  character range, instead of the intended three literal characters. This 
-  allowed more characters to be accepted as valid passwords than intended. Now 
+- CHANGED: elastix-firsboot, se revierte los cambios del firewall activado por
+  omisión hasta mejorar el diseño y conjunto de reglas activas.
+  SVN Rev[3798]
+- FIXED: Additional - Elastix-FistBoot/elastix-firstboot: problem with restart
+  firewall
+  SVN Rev[3794]
+
+* Wed Mar 28 2012 Rocio Mera <rmera@palosanto.com> 2.3.0-3
+- FIXED: Additional - Elastix-FistBoot/elastix-firstboot: problem with
+  restart firewall
+  SVN Rev[3791]
+- FIXED: Additional - Elastix-FistBoot/elastix-firstboot: Solved the problem
+  that firewall be activated each time restart elastix
+  SVN Rev[3783]
+
+* Tue Mar 27 2012 Rocio Mera <rmera@palosanto.com> 2.3.0-2
+- CHANGED: Elastix-Firstboot - elastix-firstboot: Changed the message that
+  appear when the firewall is activated
+  SVN Rev[3783]
+- FIXED: elastix-firstboot: the character sequence &-@ unexpectedly created a
+  character range, instead of the intended three literal characters. This
+  allowed more characters to be accepted as valid passwords than intended. Now
   only the three intended characters are accepted.
   SVN Rev[3770]
+- CHANGED: Additionals - elastix-fistboot/elastix-firstboot: Now the Firewall
+  will be activated in the installations process
+  SVN Rev[3766]
 
 * Fri Mar 09 2012 Alex Villacis Lasso <a_villacis@palosanto.com> 2.3.0-1
 - CHANGED: Remove fix for Elastix bug 595. This workaround is rendered obsolete
