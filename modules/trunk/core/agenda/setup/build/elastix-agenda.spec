@@ -3,7 +3,7 @@
 Summary: Elastix Module Agenda 
 Name:    elastix-%{modname}
 Version: 2.3.0
-Release: 4
+Release: 5
 License: GPL
 Group:   Applications/System
 Source0: %{modname}_%{version}-%{release}.tgz
@@ -107,9 +107,13 @@ fi
 /var/lib/asterisk/sounds/custom/*
 
 %changelog
+* Fri Apr 27 2012 Rocio Mera <rmera@palosanto.com> 2.3.0-5
+- CHANGED: Agenda - Build/elastix-agenda.spec: Changed release in specfile
+- ADDED: Calendar - themes/evento.tpl: Added file evento.tpl. File required 
+  for commit 3488. SVN Rev[3908]
+
 * Fri Apr 27 2012 Rocio Mera <rmera@palosanto.com> 2.3.0-4
-- CHANGED: Addons - Build/elastix-addons.spec: update specfile with latest
-  SVN history. Changed release in specfile
+- CHANGED: Agenda - Build/elastix-agenda.spec: Changed release in specfile
 
 * Thu Apr 26 2012 Alex Villacis Lasso <a_villacis@palosanto.com>
 - FIXED: module calenadar, some functional points use a callback with a function
