@@ -952,6 +952,26 @@ $(document).ready(function(){
 					});
 					$("#table_box textarea" ).parent("div.ui-wrapper").css("padding-top","0px");
 					$("#table_box textarea").parent("div.ui-wrapper").css("padding-bottom","0px");
+
+					$('#colorSelector').ColorPicker({
+						color: '#3366CC',
+						onShow: function (colpkr) {
+							$(colpkr).fadeIn(500);
+							return false;
+						},
+						onHide: function (colpkr) {
+							$(colpkr).fadeOut(500);
+							return false;
+						},
+						//onSubmit: function(hsb, hex, rgb, el) {
+						onSubmit: function(hsb, hex, rgb, el) {
+							$(el).ColorPickerHide();
+						},
+						onChange: function (hsb, hex, rgb) {
+							$('#colorSelector div').css('backgroundColor', '#' + hex);
+							$('#colorHex').val('#' + hex);
+						}
+					});
 				});
 	}
 
