@@ -3,7 +3,7 @@
 Summary: Elastix Module Agenda 
 Name:    elastix-%{modname}
 Version: 2.3.0
-Release: 3
+Release: 4
 License: GPL
 Group:   Applications/System
 Source0: %{modname}_%{version}-%{release}.tgz
@@ -107,6 +107,10 @@ fi
 /var/lib/asterisk/sounds/custom/*
 
 %changelog
+* Fri Apr 27 2012 Rocio Mera <rmera@palosanto.com> 2.3.0-4
+- CHANGED: Addons - Build/elastix-addons.spec: update specfile with latest
+  SVN history. Changed release in specfile
+
 * Thu Apr 26 2012 Alex Villacis Lasso <a_villacis@palosanto.com>
 - FIXED: module calenadar, some functional points use a callback with a function
   called "_rechazar_correo_vacio" that was not implemented. Now that function is
