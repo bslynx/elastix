@@ -3,7 +3,7 @@
 Summary: Elastix Module Reports 
 Name:    elastix-reports
 Version: 2.3.0
-Release: 3
+Release: 4
 License: GPL
 Group:   Applications/System
 Source0: %{modname}_%{version}-%{release}.tgz
@@ -91,6 +91,17 @@ fi
 /usr/share/elastix/module_installer/*
 
 %changelog
+* Fri Apr 27 2012 Rocio Mera <rmera@palosanto.com> 2.3.0-4
+- CHANGED: Reports - Build/elastix-reports.spec: update specfile with latest
+  SVN history. Changed release in specfile
+- ADDED: Build - SPEC's: The spec files were added to the corresponding modules
+  and the framework.
+  SVN Rev[3855]
+  SVN Rev[3837]
+- FIXED: Modules - Report: The Graphic Report now display the correct data of
+  custom trunks.
+  SVN Rev[3825]
+
 * Fri Mar 30 2012 Bruno Macias <bmacias@palosanto.com> 2.3.0-3
 - CHANGED: In spec file, changed prereq elastix-framework >= 2.3.0-5
 - FIXED: modules - SQLs DB: se quita SQL redundante de alter table y nuevos 
