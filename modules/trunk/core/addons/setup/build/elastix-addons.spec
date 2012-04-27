@@ -3,7 +3,7 @@
 Summary: Elastix Addons 
 Name:    elastix-%{modname}
 Version: 2.3.0
-Release: 3
+Release: 4
 License: GPL
 Group:   Applications/System
 Source0: %{modname}_%{version}-%{release}.tgz
@@ -108,6 +108,10 @@ fi
 /etc/yum.repos.d/*
 
 %changelog
+* Fri Apr 27 2012 Rocio Mera <rmera@palosanto.com>
+- CHANGED: Addons - Build/elastix-addons.spec: update specfile with latest
+  SVN history. SVN Rev[3898]
+
 * Thu Apr 25 2012 Alex Villacis Lasso <a_villacis@palosanto.com>
 - FIXED: Addons: the elastix updater daemon should explicitly set the default 
   timezone.
