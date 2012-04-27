@@ -2,7 +2,7 @@ Summary: Elastix is a Web based software to administrate a PBX based in open sou
 Name: elastix-framework
 Vendor: Palosanto Solutions S.A.
 Version: 2.3.0
-Release: 6
+Release: 7
 License: GPL
 Group: Applications/System
 #Source: elastix-framework_%{version}-%{release}.tgz
@@ -293,6 +293,10 @@ rm -rf $RPM_BUILD_ROOT
 /usr/share/elastix/privileged/*
 
 %changelog
+* Fri Apr 27 2012 Rocio Mera <rmera@palosanto.com>
+- CHANGED: Framework - Build/elastix-framework.spec: update specfile with
+  latest SVN history. SVN Rev[3897]
+
 * Tue Apr 24 2012 Alex Villacis Lasso <a_villacis@palosanto.com>
 - CHANGED: Add proper conflicts for kernel-module-*-xen as well as ordinary
   kernel-module-* as neither are supported anymore.
