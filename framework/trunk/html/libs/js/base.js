@@ -653,7 +653,7 @@ function saveToggleTab(){
 function loadDetails(){
         var order = "action=versionRPM&rawmode=yes";
         $.post("index.php", order, function(theResponse){
-            //$("#loadingRPM").hide();
+            $("#loadingRPM").hide();
             $("#changeMode").show();
             var message = JSONRPMtoString(theResponse);
             var html = "";
@@ -731,6 +731,7 @@ function changeMode(){
             $("#changeMode").text("("+lbltextMode+")");
             $(".tdRpm").attr("style","display: block;");
             $("#tdTa").attr("style","display: none;");
+            $("#txtMode").css("height","auto");
         }
 }
 

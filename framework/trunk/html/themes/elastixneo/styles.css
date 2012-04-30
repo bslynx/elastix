@@ -11,6 +11,7 @@ body {
 	/*background-image:url(images/bgbodytest.png);*/
 	font: 13px Verdana, Arial,Helvetica,sans-serif;
 	color: #444;
+	c
 }
 input {
 	/**/
@@ -1276,10 +1277,26 @@ td.botonon {
 #changeMode{
     font-size: 10px;
     cursor: pointer;
+    position: relative;
+    display: none;
+    left:80%;
+    width:20%;
+    color:blue;
+    top:5px;
+    
 }
 
 .loadingRPMimg{
     padding: 10px;
+}
+
+#loadingRPM{
+    display: block;
+    text-align:center;	
+    position: absolute;
+    top:45%;
+    left:45%; 
+
 }
 
 
@@ -1429,6 +1446,13 @@ TABLE.table_data {
     background:url(/images/modalbox_bg.png) top left repeat-x #fff;
     top: 50%;
     left: 45%;
+   scrollbar-face-color: #6685CA;
+	scrollbar-highlight-color: #6685CA;
+	scrollbar-shadow-color: #6685CA;
+	scrollbar-3dlight-color:red;
+	scrollbar-arrow-color:#FFFFFF;
+	scrollbar-track-color:#E5E5E5;
+	scrollbar-drakshadow-color:#000000;
 }
 .neo-modal-elastix-popup-title {
     position: absolute;
@@ -1453,4 +1477,21 @@ TABLE.table_data {
 .neo-modal-elastix-popup-content {
     position: relative;
     top: 20px;
+}
+#tableRMP{
+    border:0px solid;
+    border-right: 1px solid;
+    display: block;
+    position:relative;
+    top:10px;
+
+}
+#txtMode{
+    width: 95%;
+    position:relative;
+    top:10px;
+    height:750px;
+}
+#tdTa{
+    display: none;
 }

@@ -76,11 +76,56 @@ function _moduleContent(&$smarty, $module_name)
 	case "getDataRegisterServer":
 	    $content = getDataRegistration($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang,$pDBACL);
 	    break;
+        case "showAboutAs":
+            $content = showFormAboutAs($smarty, $module_name, $local_templates_dir, $arrConf);
+            break;
+        case "showRPMS_Version":
+            $content = showFormRPMS_Version($smarty, $module_name, $local_templates_dir, $arrConf);
+            break;
         default: // view_form
             $content = viewFormRegister($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang,$pDBACL);
             break;
     }
     return $content;
+}
+
+function showFormAboutAs($smarty, $module_name, $local_templates_dir, $arrConf)
+{
+    $oForm = new paloForm($smarty,array());
+    
+    $smarty->assign("ABOUT_ELASTIX",  _tr('About Elastix')." ".$arrConf['elastix_version']);
+    $smarty->assign("ABOUT_ELASTIX2", _tr('About Elastix2'));
+    $smarty->assign("ABOUT_ELASTIX_CONTENT", _tr('About Elastix Content'));
+    $smarty->assign("ABOUT_CLOSED", _tr('About Elastix Closed'));
+
+    $jsonObject   = new PaloSantoJSON();
+
+    $response['html']  = $oForm->fetchForm("$local_templates_dir/_aboutas.tpl","", "");
+    $response['title'] = _tr('About Elastix')." ".$arrConf['elastix_version'];
+
+    if($arrConf['mainTheme']=="elastixwave" || $arrConf['mainTheme']=="elastixneo")
+        $response['title'] = _tr('About Elastix2');
+
+    $jsonObject->set_message($response);
+    return $jsonObject->createJSON();
+}
+
+function showFormRPMS_Version($smarty, $module_name, $local_templates_dir, $arrConf)
+{
+    $oForm = new paloForm($smarty,array());
+    
+    $smarty->assign("VersionDetails", _tr('VersionDetails'));
+    $smarty->assign("VersionPackage", _tr('VersionPackage'));
+    $smarty->assign("textMode", _tr('textMode'));
+    $smarty->assign("htmlMode", _tr('htmlMode'));
+
+    $jsonObject   = new PaloSantoJSON();
+
+    $response['html']  = $oForm->fetchForm("$local_templates_dir/_rpms_version.tpl","", "");
+    $response['title'] = _tr('VersionPackage');
+
+    $jsonObject->set_message($response);
+    return $jsonObject->createJSON();
 }
 
 function viewFormRegister($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrLang,&$pDBACL)
@@ -606,6 +651,10 @@ function getAction()
         return "save";
     else if(getParameter("action")=="getDataRegisterServer")
         return "getDataRegisterServer";
+    else if(getParameter("action")=="showAboutAs")
+        return "showAboutAs";
+    else if(getParameter("action")=="showRPMS_Version")
+        return "showRPMS_Version";
     else
         return "report"; //cancel
 }
