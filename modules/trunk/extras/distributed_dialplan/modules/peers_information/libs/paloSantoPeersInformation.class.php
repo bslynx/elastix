@@ -359,7 +359,7 @@ class paloSantoPeersInformation {
            }
       }
       $data = array($status, $his_status, $ip_answer);
-      $query = "UPDATE peer SET status=?, his_status=? where host=? and status='waiting response' or status='request accepted' or status='connected' or status='Requesting connection'";
+      $query = "UPDATE peer SET status=?, his_status=? where host=?";
 
       $result=$this->_DB->genQuery($query, $data);
       if($result==FALSE)
@@ -498,7 +498,7 @@ class paloSantoPeersInformation {
         global $arrLang;
         $astman = new AGI_AsteriskManager( );
         if (!$astman->connect("$host", "$user" , "$password")) {
-            $this->errMsg = $arrLang["Error when connecting to Asterisk Manager"];
+            $this->errMsg = _tr("Error when connecting to Asterisk Manager");
         } else{
             $salida = $astman->Command("$command");
             $astman->disconnect();

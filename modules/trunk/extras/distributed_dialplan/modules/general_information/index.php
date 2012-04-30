@@ -99,7 +99,7 @@ function uploadGeneralInformation($smarty, $module_name, $local_templates_dir, $
         }
         $strErrorMsg .= "";
         $smarty->assign("mb_message", $strErrorMsg);
-        $contenidoModulo=$oForm->fetchForm("$local_templates_dir/form.tpl",$arrLang["General Information"], $_POST);
+        $contenidoModulo=$oForm->fetchForm("$local_templates_dir/form.tpl",_tr("Company Information"), $_POST);
 
    }else{
         $upload = $_POST['command'];
@@ -115,17 +115,21 @@ function uploadGeneralInformation($smarty, $module_name, $local_templates_dir, $
        if($upload == "1"){
             $result = $pElastixConnection->uploadInformation('general', $data);
             if(!$result){
+                $smarty->assign("mb_title", _tr('ERROR').":");
                 $smarty->assign("mb_message", _tr("Error. Please try again."));
 		return formGeneralInformation($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
-            }else
-		$smarty->assign("mb_message", _tr("Information has been saved."));
+            }else{
+                $smarty->assign("mb_title", _tr('MESSAGE').":");
+		        $smarty->assign("mb_message", _tr("Information has been saved."));}
        }else{
             $result = $pElastixConnection->addInformation($data);
             if(!$result){
-		$smarty->assign("mb_message", _tr("Error. Please try again."));
+                $smarty->assign("mb_title", _tr('ERROR').":");
+		        $smarty->assign("mb_message", _tr("Error. Please try again."));
                 return formGeneralInformation($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
-	    }else
-		$smarty->assign("mb_message", _tr("Information has been saved."));
+	        }else{
+                $smarty->assign("mb_title", _tr('MESSAGE').":");
+		        $smarty->assign("mb_message", _tr("Information has been saved."));}
        }
        $serverIp = $_SERVER['SERVER_ADDR'];
        $arrEths = $pNet->obtener_interfases_red_fisicas();
@@ -179,7 +183,7 @@ function formGeneralInformation($smarty, $module_name, $local_templates_dir, &$p
         $datos = $_POST;
 
     $smarty->assign("command", $command);
-    $htmlForm = $oForm->fetchForm("$local_templates_dir/form.tpl",$arrLang["General Information"], $datos);
+    $htmlForm = $oForm->fetchForm("$local_templates_dir/form.tpl",_tr("Company Information"), $datos);
     $contenidoModulo = "<form  method='POST' style='margin-bottom:0;' action='?menu=$module_name'>".$htmlForm."</form>";
 
     return $contenidoModulo;
@@ -204,14 +208,14 @@ function createFieldForm($arrLang)
                                             "VALIDATION_TYPE"        => "text",
                                             "VALIDATION_EXTRA_PARAM" => ""
                                             ),
-            "locality"   => array(      "LABEL"                  => $arrLang["Locality"],
+            "locality"   => array(      "LABEL"                  => _tr("City"),
                                             "REQUIRED"               => "yes",
                                             "INPUT_TYPE"             => "TEXT",
                                             "INPUT_EXTRA_PARAM"      => "",
                                             "VALIDATION_TYPE"        => "text",
                                             "VALIDATION_EXTRA_PARAM" => ""
                                             ),
-            "state"   => array(      "LABEL"                  => $arrLang["State"],
+            "state"   => array(      "LABEL"                  => _tr("State/Province"),
                                             "REQUIRED"               => "yes",
                                             "INPUT_TYPE"             => "TEXT",
                                             "INPUT_EXTRA_PARAM"      => "",

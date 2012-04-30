@@ -1,7 +1,7 @@
 <table width="100%" border="0" cellspacing="0" cellpadding="4" align="center">
     <tr class="letra12">
-        <td align="left"><input class="button" type="submit" name="save" value="{$SAVE}"> 
-        <input class="button" type="submit" name="cancel" value="{$CANCEL}"></td>
+        <td align="left"><input class="button" type="submit" name="save" value="{$SAVE}" style="cursor:pointer;"> 
+        <input class="button" type="submit" name="cancel" value="{$CANCEL}" style="cursor:pointer;"></td>
         <td align="right" nowrap><span class="letra12"><span  class="required">*</span> {$REQUIRED_FIELD}</span></td>
     </tr>
 </table>
