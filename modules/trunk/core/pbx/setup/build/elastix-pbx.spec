@@ -3,14 +3,14 @@
 Summary: Elastix Module PBX 
 Name:    elastix-%{modname}
 Version: 2.3.0
-Release: 6
+Release: 7
 License: GPL
 Group:   Applications/System
 Source0: %{modname}_%{version}-%{release}.tgz
 #Source0: %{modname}_%{version}-20.tgz
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 BuildArch: noarch
-Prereq: elastix-framework >= 2.3.0-5
+Prereq: elastix-framework >= 2.3.0-9
 Prereq: elastix-my_extension >= 2.0.4-5
 Prereq: freePBX >= 2.8.1-12
 Prereq: elastix-system >= 2.2.0-18
@@ -292,6 +292,9 @@ fi
 /bin/asterisk.reload
 
 %changelog
+* Wed May 02 2012 Rocio Mera <rmera@palosanto> 2.3.0-7
+- CHANGED: In spec file, changed prereq elastix-framework >= 2.3.0-9
+
 * Wed May 02 2012 Alex Villacis Lasso <a_villacis@palosanto.com>
 - FIXED: Conference: Rework several conference manipulation functions so that
   they use SQL parameters. Fixes Elastix bug #1256.
