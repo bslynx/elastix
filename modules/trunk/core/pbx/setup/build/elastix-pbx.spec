@@ -292,6 +292,16 @@ fi
 /bin/asterisk.reload
 
 %changelog
+* Wed May 02 2012 Alex Villacis Lasso <a_villacis@palosanto.com>
+- FIXED: Conference: Rework several conference manipulation functions so that
+  they use SQL parameters. Fixes Elastix bug #1256.
+  FIXED: Conference: Reorder evaluation of actions so that kicking and muting
+  participants actually works. Fixes Elastix bug #1245.
+  SVN Rev[3916].
+- FIXED: Conference: Validation of type "integer" for HH:MM is unimplemented.
+  Use "numeric" instead.
+  SVN Rev[3914].
+
 * Fri Apr 27 2012 Rocio Mera <rmera@palosanto.com> 2.3.0-6
 - CHANGED: Addons - Build/elastix-addons.spec: update specfile with latest
   SVN history. Changed release in specfile
