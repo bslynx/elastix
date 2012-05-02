@@ -425,13 +425,13 @@ function createFieldForm($arrLang)
                                                      "REQUIRED"               => "yes",
                                                      "INPUT_TYPE"             => "TEXT",
                                                      "INPUT_EXTRA_PARAM"      => array("style" => "width:20px;text-align:center","maxlength" =>"2"),
-                                                     "VALIDATION_TYPE"        => "integer",
+                                                     "VALIDATION_TYPE"        => "numeric",
                                                      "VALIDATION_EXTRA_PARAM" => ""),
                             "duration_min"      => array("LABEL"              => $arrLang['Duration (HH:MM)'],
                                                      "REQUIRED"               => "yes",
                                                      "INPUT_TYPE"             => "TEXT",
                                                      "INPUT_EXTRA_PARAM"      => array("style" => "width:20px;text-align:center","maxlength" =>"2"),
-                                                     "VALIDATION_TYPE"        => "integer",
+                                                     "VALIDATION_TYPE"        => "numeric",
                                                      "VALIDATION_EXTRA_PARAM" => ""),
 /*
                             "recurs"            => array("LABEL"              => $arrLang['Recurs'],
@@ -490,7 +490,7 @@ function add_conference($smarty, $module_name, $local_templates_dir, $pDB, $arrL
             $strErrorMsg = "<b>{$arrLang['The following fields contain errors']}:</b><br/>";
             if(is_array($arrErrores) && count($arrErrores) > 0){
                 foreach($arrErrores as $k=>$v) {
-                    $strErrorMsg .= "$k, ";
+                    $strErrorMsg .= "$k : {$v['mensaje']}";
                 }
             }
             if(!$bandera)
