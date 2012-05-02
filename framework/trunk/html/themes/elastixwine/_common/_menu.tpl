@@ -116,7 +116,7 @@
   </table>
 </div>
 
-<div id="boxRPM" style="display:none;">
+<!--<div id="boxRPM" style="display:none;">
     <div class="popup">
         <table>
             <tr>
@@ -173,7 +173,8 @@
             </tr>
         </table>
     </div>
-</div><div id="fade_overlay" class="black_overlay"></div>
+</div>-->
+<div id="fade_overlay" class="black_overlay"></div>
 
 <table width="100%" cellpadding="0" cellspacing="0" height="100%">
   <tr>
