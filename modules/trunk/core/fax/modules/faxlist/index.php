@@ -88,7 +88,6 @@ function listFax($smarty, $module_name, $local_templates_dir)
         _tr("Secret"),
         _tr("Destination Email"),
         _tr("Caller ID Name"),
-        _tr("Caller ID Name"),
         _tr("Caller ID Number"),
         _tr("Status"));
     $oGrid->setColumns($arrColumns);
