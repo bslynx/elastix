@@ -216,8 +216,12 @@ function paramSpan(id){
         			$('#switch_pri_media').attr("style","display: none;");
 				$('.neo-modal-elastix-popup-box').css('height', 225);
         		}
+			
         	}
         );
+$('.tabForm').css("border-bottom",0);
+$('.tabForm').css("border-top",0);
+$('.tabForm').css("background-image","none");
 }
 
 $(document).ready(function(){
@@ -251,7 +255,7 @@ $(document).ready(function(){
     	request("index.php",arrAction,false,
           function(arrData,statusResponse,error)
           {
-  	      ShowModalPopUP(arrData['title'],350,260,arrData['html']);
+  	      ShowModalPopUP(arrData['title'],365,265,arrData['html']);
 	      paramSpan(id);
           }
         );
