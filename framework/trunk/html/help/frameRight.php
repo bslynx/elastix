@@ -25,12 +25,10 @@
   | The Original Code is: Elastix Open Source.                           |
   | The Initial Developer of the Original Code is PaloSanto Solutions    |
   +----------------------------------------------------------------------+
-  $Id: frameRight.php,v 1.1.1.1 2007/07/06 21:31:56 gcarrillo Exp $
-  $Id: frameRight.php,v 1.1.1.2 2012/03/29 10:24:26 labarca Exp $ */
-
-include_once ("../libs/misc.lib.php");
+  $Id: frameRight.php,v 1.1.1.1 2007/07/06 21:31:56 gcarrillo Exp $ */
+include_once("../libs/misc.lib.php");
 include_once "../configs/default.conf.php";
-include      "../configs/languages.conf.php";
+
 
 session_name("elastixSession");
 session_start();
@@ -43,8 +41,6 @@ $smarty->config_dir =   "../configs/";
 $smarty->cache_dir =    "../var/cache/";
 $smarty->assign("THEMENAME", $arrConf['mainTheme']);
 
-//$lang=get_language_global();
-
 // Nombres válidos de módulos son alfanuméricos y subguión
 if (!preg_match('/^\w+$/', $_GET['id_nodo'])) {
     unset($_GET['id_nodo']);
@@ -55,8 +51,6 @@ if(!empty($_GET['id_nodo'])){
     if(!empty($_GET['name_nodo'])){
 	    $nameMenuMostrar = $_GET['name_nodo'];
         $smarty->assign("node_name", $nameMenuMostrar);
-        $lang = confirmexistenceLang($idMenuMostrar);
-        $smarty->assign("lang", $lang);
     }
                 
     // Si no existe el archivo de ayuda y se trata de un menu "padre",
@@ -83,9 +77,7 @@ if(!empty($_GET['id_nodo'])){
         $sRuta = rutaArchivoAyuda($idMenuMostrar);
     }
     if (is_null($sRuta)) {
-        echo  '<html><body><div><img src="../help/images/oops.jpg" border="0" width="773px" height="350px"></div>';
-        echo '<h2>The help file information its not shown in a Folder like this.</h2></body></html>';    	
-        //echo '<html><body>The help file for selected menu does not exist.</body></html>';
+    	echo '<html><body>The help file for selected menu does not exist.</body></html>';
     } else {
        $smarty->assign("node_id", $idMenuMostrar);    
        $smarty->display($sRuta);
@@ -133,59 +125,15 @@ function existeArchivoAyuda($idMenu)
 
 function rutaArchivoAyuda($idMenu)
 {
-    $lang=get_language_global();
     $serverDir = dirname($_SERVER['SCRIPT_FILENAME']).'/..';
     $listaRutas = array(
-	    "$serverDir/modules/$idMenu/help/$idMenu.$lang.hlp",
-        "$serverDir/help/content/$idMenu.$lang.hlp",
+        "$serverDir/modules/$idMenu/help/$idMenu.hlp",
+        "$serverDir/help/content/$idMenu.hlp",
     );
     foreach ($listaRutas as $sRuta) {
-    	if (file_exists($sRuta)){ return $sRuta;}
-        else if (!file_exists($sRuta)){
-        $serverDir = dirname($_SERVER['SCRIPT_FILENAME']).'/..';
-        $listaRutas = array(
-	    "$serverDir/modules/$idMenu/help/$idMenu.en.hlp",
-        "$serverDir/help/content/$idMenu.en.hlp",
-    );
-        foreach ($listaRutas as $sRuta) {
-            if (file_exists($sRuta)){ return $sRuta;}
-            }
-        return NULL;
-        }    
+    	if (file_exists($sRuta)) return $sRuta;
     }
-        return NULL;
+    return NULL;
 }
 
-function get_language_global($ruta_base='')
-{
-    require_once $ruta_base."../configs/default.conf.php";
-    include $ruta_base."../configs/languages.conf.php";
-
-    global $arrConf;
-    $lang="";
-
-    //conectarse a la base de settings para obtener el idioma actual
-    $pDB = new paloDB($arrConf['elastix_dsn']['settings']);
-    if(empty($pDB->errMsg)) {
-        $lang=get_key_settings($pDB,'language');
-    }
-    //si no se encuentra tomar del archivo de configuracion
-    if (empty($lang)) $lang=isset($arrConf['language'])?$arrConf['language']:"en";
-
-    //verificar que exista en el arreglo de idiomas, sino por defecto en
-    if (!array_key_exists($lang,$languages)) $lang="en";
-    return $lang;   
-}
-
-function confirmexistenceLang($idMenu){
-$lang1=get_language_global();
-$serverDir = dirname($_SERVER['SCRIPT_FILENAME']).'/..';
-    if(file_exists("$serverDir/modules/$idMenu/help/$idMenu.$lang1.hlp")||file_exists("$serverDir/help/content/$idMenu.$lang1.hlp")) {
-            $lang1=get_language_global();
-            return $lang1;}
-        else{
-            $lang1="en";
-            return $lang1;
-            }
-}
 ?>
