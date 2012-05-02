@@ -3,14 +3,14 @@
 Summary: Elastix Module System 
 Name:    elastix-%{modname}
 Version: 2.3.0
-Release: 7
+Release: 8
 License: GPL
 Group:   Applications/System
 #Source0: %{modname}_%{version}-2.tgz
 Source0: %{modname}_%{version}-%{release}.tgz
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 BuildArch: noarch
-Prereq: elastix-framework >= 2.3.0-5
+Prereq: elastix-framework >= 2.3.0-9
 Prereq: elastix-fax >= 2.2.0-4 
 Prereq: php-soap
 Prereq: openfire, wanpipe-util >= 3.4.1-4, dahdi
@@ -128,6 +128,11 @@ fi
 %config(noreplace) /etc/dahdi/genconf_parameters
 
 %changelog
+* Wed May 02 2012 Rocio Mera <rmera@palosanto.com> 2.3.0-8
+- CHANGED: In spec file, changed prereq elastix-framework >= 2.3.0-9
+- UPDATED: Modules - hardware_detector: Update style table for content popup.
+  SVN Rev[3918]
+
 * Fri Apr 27 2012 Rocio Mera <rmera@palosanto.com> 2.3.0-7
 - CHANGED: System - Build/elastix-system.spec: update specfile with latest
   SVN history. Changed release in specfile
