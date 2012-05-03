@@ -292,6 +292,17 @@ fi
 /bin/asterisk.reload
 
 %changelog
+* Thu May 03 2012 Alex Villacis Lasso <a_villacis@palosanto.com>
+- FIXED: Conference: Check the context variable MEETME_ACTUAL_RECORDINGFILE 
+  alongside MEETME_RECORDINGFILE in order to decide whether a MeetMe recording
+  exists. Before this check, CBMySQL conferences end up marking a recording as
+  available in Monitoring report when no recording actually exists.
+  FIXED: Conference: Check that MEETME_ACTUAL_RECORDINGFILE with MIXMON_FORMAT
+  extension exists. If not, fallback to assuming .wav as file extension. Before
+  this check, CBMySQL conference recordings are not downloadable if
+  MIXMON_FORMAT is something other than .wav .
+  SVN Rev[3926].
+
 * Wed May 02 2012 Rocio Mera <rmera@palosanto> 2.3.0-7
 - CHANGED: In spec file, changed prereq elastix-framework >= 2.3.0-9
 
