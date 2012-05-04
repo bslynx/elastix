@@ -33,7 +33,7 @@ mkdir -p $RPM_BUILD_ROOT/usr/share/elastix-firstboot/
 mkdir -p $RPM_BUILD_ROOT/usr/bin/
 mkdir -p $RPM_BUILD_ROOT/usr/sbin/
 cp elastix-firstboot $RPM_BUILD_ROOT/etc/init.d/
-cp change-passwords  $RPM_BUILD_ROOT/usr/bin/
+cp change-passwords elastix-admin-passwords $RPM_BUILD_ROOT/usr/bin/
 mv compat-dbscripts/ $RPM_BUILD_ROOT/usr/share/elastix-firstboot/
 
 %post
@@ -99,8 +99,16 @@ rm -rf $RPM_BUILD_ROOT
 /usr/share/elastix-firstboot/compat-dbscripts/01-asteriskcdrdb.sql
 /usr/share/elastix-firstboot/compat-dbscripts/02-asteriskuser-password.sql
 /usr/bin/change-passwords
+/usr/bin/elastix-admin-passwords
 
 %changelog
+* Fri May 04 2012 Alex Villacis Lasso <a_villacis@palosanto.com>
+- FIXED: Rewrite the password assignment as a PHP script. This allows the use
+  of native preg_match() and proper string escaping instead of potentially
+  flawed shell escaping. Both initial password assignment and subsequent 
+  password changing are now handled by the PHP script. May fix Elastix 
+  bug #1260.
+
 * Fri Apr 27 2012 Rocio Mera <rmera@palosanto.com> 2.3.0-6
 - CHANGED: Addons - Build/elastix-addons.spec: update specfile with latest
   SVN history. Changed release in specfile
