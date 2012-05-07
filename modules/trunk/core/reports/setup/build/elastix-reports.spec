@@ -91,6 +91,10 @@ fi
 /usr/share/elastix/module_installer/*
 
 %changelog
+* Mon May 07 2012 German Macas <gmacas@palosanto.com>
+- CHANGED: Reports - Missed Calls: change application form Filter and spanish words in lang
+
+
 * Fri Apr 27 2012 Rocio Mera <rmera@palosanto.com> 2.3.0-4
 - CHANGED: Reports - Build/elastix-reports.spec: update specfile with latest
   SVN history. Changed release in specfile
