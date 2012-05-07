@@ -3,7 +3,7 @@
 Summary: Elastix Module System 
 Name:    elastix-%{modname}
 Version: 2.3.0
-Release: 8
+Release: 9
 License: GPL
 Group:   Applications/System
 #Source0: %{modname}_%{version}-2.tgz
@@ -128,6 +128,14 @@ fi
 %config(noreplace) /etc/dahdi/genconf_parameters
 
 %changelog
+* Mon May 07 2012 Rocio Mera <rmera@palosanto.com> 2.3.0-9
+- UPDATED: Specfile was updated to release 9
+- CHANGED: modules - hardware_detector: fixed popup in blackmin theme
+  SVN Rev[3930]
+- UPDATED: Modules - System/setup/build: update changelog specfile with the
+  latest commit from svn
+  SVN Rev[3924]
+
 * Wed May 02 2012 Rocio Mera <rmera@palosanto.com> 2.3.0-8
 - CHANGED: In spec file, changed prereq elastix-framework >= 2.3.0-9
 - UPDATED: Modules - hardware_detector: Update style table for content popup.
