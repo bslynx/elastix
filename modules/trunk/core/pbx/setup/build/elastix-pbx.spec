@@ -3,7 +3,7 @@
 Summary: Elastix Module PBX 
 Name:    elastix-%{modname}
 Version: 2.3.0
-Release: 7
+Release: 8
 License: GPL
 Group:   Applications/System
 Source0: %{modname}_%{version}-%{release}.tgz
@@ -292,6 +292,9 @@ fi
 /bin/asterisk.reload
 
 %changelog
+* Mon May 07 2012 Rocio Mera <rmera@palosanto.com> 2.3.0-8
+- UPDATED: UPDATED in specfile to release 8
+
 * Thu May 03 2012 Alex Villacis Lasso <a_villacis@palosanto.com>
 - FIXED: Conference: Check the context variable MEETME_ACTUAL_RECORDINGFILE 
   alongside MEETME_RECORDINGFILE in order to decide whether a MeetMe recording
