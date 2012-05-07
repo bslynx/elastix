@@ -1,7 +1,7 @@
 Summary: Elastix First Boot Setup
 Name:    elastix-firstboot
 Version: 2.3.0
-Release: 6
+Release: 7
 License: GPL
 Group:   Applications/System
 Source0: %{name}-%{version}.tar.bz2
@@ -102,12 +102,16 @@ rm -rf $RPM_BUILD_ROOT
 /usr/bin/elastix-admin-passwords
 
 %changelog
+* Mon May 07 2012 Rocio Mera <rmera@palosanto.com> 2.3.0-7
+- CHANGED: Changed in specfile, updated release to 7
+
 * Fri May 04 2012 Alex Villacis Lasso <a_villacis@palosanto.com>
 - FIXED: Rewrite the password assignment as a PHP script. This allows the use
   of native preg_match() and proper string escaping instead of potentially
   flawed shell escaping. Both initial password assignment and subsequent 
   password changing are now handled by the PHP script. May fix Elastix 
   bug #1260.
+  SVN Rev[3928]
 
 * Fri Apr 27 2012 Rocio Mera <rmera@palosanto.com> 2.3.0-6
 - CHANGED: Addons - Build/elastix-addons.spec: update specfile with latest
