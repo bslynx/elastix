@@ -219,8 +219,7 @@ function paramSpan(id){
 			
         	}
         );
-$('.tabForm').css("border-bottom",0);
-$('.tabForm').css("border-top",0);
+$('.tabForm').css("border",0);
 $('.tabForm').css("background-image","none");
 }
 
