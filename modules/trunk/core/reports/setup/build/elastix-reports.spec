@@ -93,7 +93,7 @@ fi
 %changelog
 * Mon May 07 2012 German Macas <gmacas@palosanto.com>
 - CHANGED: Reports - Missed Calls: change application form Filter and spanish words in lang
-
+- NEW: Missed Calls Module
 
 * Fri Apr 27 2012 Rocio Mera <rmera@palosanto.com> 2.3.0-4
 - CHANGED: Reports - Build/elastix-reports.spec: update specfile with latest
