@@ -207,9 +207,11 @@ function sendNewSendFax($smarty, $module_name, $local_templates_dir, &$pDB, $arr
     
         $pSendFax->sendFax($faxexten, $destine, $ruta_archivo);
         exec("rm -rf $ruta_archivo");
-        //Notification Sucessfull
-        $smarty->assign("mb_title", $arrLang["Notification Sucessfull"].": ");
-        $smarty->assign("mb_message", $arrLang["Fax has been sent correctly"]);
+        $smarty->assign("SEND_FAX_SUCCESS",_tr('Fax has been sent correctly'));
+        $smarty->assign("SENDING_FAX",_tr('Sending Fax...'));
+          //Notification Sucessfull
+        //$smarty->assign("mb_title", $arrLang["Notification Sucessfull"].": ");
+        //$smarty->assign("mb_message", $arrLang["Fax has been sent correctly"]);
         return $content = viewFormSendFax($smarty, $module_name, $local_templates_dir, $pDB, $arrConf, $arrLang);
         //done by Ivette
     }
