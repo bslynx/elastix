@@ -43,4 +43,4 @@
   </div>
 {/foreach}
 
-<input type="hidden" name="link_tmp" id="link_tmp" value="" />
+<input type="hidden" name="callback" id="callback" value="" />
