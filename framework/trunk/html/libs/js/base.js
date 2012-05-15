@@ -396,10 +396,13 @@ function getElastixKey(){
 	{
 	    var serverKey = arrData["server_key"];
 	    if(serverKey && serverKey != ""){
-		var link = $('#link_tmp').val();
-		if(link && link !=""){
-		    link += serverKey;
-		    location.href = link;
+		hideModalPopUP();
+		var callback = $('#callback').val();
+		if(callback && callback !=""){
+		    if(callback=="do_checkDependencies")
+		      do_checkDependencies(serverKey);
+		    else if(callback=="do_iniciarInstallUpdate")
+		      do_iniciarInstallUpdate();
 		}
 	    }
 	}
