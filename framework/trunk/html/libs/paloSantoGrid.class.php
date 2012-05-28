@@ -75,6 +75,8 @@ class paloSantoGrid {
 
     public function addFilterControl($msg, &$arrData, $arrFilter = array(), $always_activated=false)
     {
+        if (!empty($msg)) $msg = htmlentities($msg, ENT_COMPAT, 'UTF-8');
+
 		$defaultFiler = "yes";
         if((is_array($arrFilter) && count($arrFilter)>0)){
             $name_delete_filters = getParameter('name_delete_filters');
