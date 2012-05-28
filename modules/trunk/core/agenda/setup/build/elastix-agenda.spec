@@ -3,7 +3,7 @@
 Summary: Elastix Module Agenda 
 Name:    elastix-%{modname}
 Version: 2.3.0
-Release: 6
+Release: 7
 License: GPL
 Group:   Applications/System
 Source0: %{modname}_%{version}-%{release}.tgz
@@ -107,6 +107,11 @@ fi
 /var/lib/asterisk/sounds/custom/*
 
 %changelog
+* Mon May 28 2012 Rocio Mera <rmera@palosanto.com> 2.3.0-7
+- FIXED: Module - Agenda/Calendar: Fixed bug 1266. In firefox and IE
+  don't working action to add or edit event in the calendar. Now this
+  bug have been resolved
+
 * Fri Apr 27 2012 Rocio Mera <rmera@palosanto.com> 2.3.0-6
 - CHANGED: Agenda - Build/elastix-agenda.spec: Changed release in specfile
 - ADDED: CHANGED: Agenda - themes/js: Changed javascript3.js to solve bug 
