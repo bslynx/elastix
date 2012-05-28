@@ -293,7 +293,7 @@ rm -rf $RPM_BUILD_ROOT
 /usr/share/elastix/privileged/*
 
 %changelog
-* Mon May 7 2012 Alex Villacis <a_villacis@palosanto.com> 2.3.0-11
+* Mon May 28 2012 Alex Villacis <a_villacis@palosanto.com> 2.3.0-11
 - FIXED: Framework/PalosantoGrid: remove XSS vulnerability in filter 
   value display on elastixneo theme SVN Rev[3941]
 
