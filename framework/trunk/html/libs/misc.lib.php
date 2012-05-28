@@ -105,7 +105,6 @@ function obtener_info_de_sistema()
     exec("/usr/bin/uptime", $arrExec, $varExec);
 
     if($varExec=="0") {
-        //if(ereg(" up[[:space:]]+([[:digit:]]+ days,)?([[:space:]]+[[:digit:]]{2}:[[:digit:]]{2}), ", $arrExec[0], $arrReg)) {
         if(preg_match("/up[[:space:]]+([[:digit:]]+ days?,)?(([[:space:]]*[[:digit:]]{1,2}:[[:digit:]]{1,2}),?)?([[:space:]]*[[:digit:]]+ min)?/",
                 $arrExec[0],$arrReg)) {
             if(!empty($arrReg[3]) and empty($arrReg[4])) {
