@@ -3,7 +3,7 @@
 Summary: Elastix Module Fax
 Name:    elastix-%{modname}
 Version: 2.3.0
-Release: 3
+Release: 4
 License: GPL
 Group:   Applications/System
 #Source0: %{modname}_%{version}-5.tgz
@@ -188,6 +188,10 @@ fi
 %config(noreplace) /var/spool/hylafax/etc/config
 
 %changelog
+* Mon May 28 2012 German Macas <gmacas@palosanto.com> 2.3.0-4
+- CHANGED: modules - sendfax: Add messages of sending fax process with ajax 
+  on Send Fax application form. SVN Rev[3937]
+
 * Wed May 02 2012 Rocio Mera <rmera@palosanto.com> 2.3.0-3
 - FIXED: Modules - faxlist: Duplicate name column "Name Caller ID" was fixed.
   SVN Rev[3915]

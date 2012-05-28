@@ -3,7 +3,7 @@
 Summary: Elastix Module PBX 
 Name:    elastix-%{modname}
 Version: 2.3.0
-Release: 8
+Release: 9
 License: GPL
 Group:   Applications/System
 Source0: %{modname}_%{version}-%{release}.tgz
@@ -292,6 +292,12 @@ fi
 /bin/asterisk.reload
 
 %changelog
+* Mon May 28 2012 Sergio Broncano <sbroncano@palosanto.com> 2.3.0-9
+- CHANGED: MODULES - PBX/EXTENSION_BATCH: The following fields were added 
+  callgroup, pickupgroup, disallow, allow, deny, permit, Record Incoming, 
+  Outgoing Record in extensiones.csv file to upload and download. 
+  SVN Rev[3940]
+
 * Mon May 07 2012 Rocio Mera <rmera@palosanto.com> 2.3.0-8
 - UPDATED: UPDATED in specfile to release 8
 
