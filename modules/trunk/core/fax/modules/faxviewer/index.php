@@ -237,7 +237,7 @@ function getFormElements()
              "REQUIRED"               => "no",
              "INPUT_TYPE"             => "TEXT",
              "INPUT_EXTRA_PARAM"      => "",
-             "VALIDATION_TYPE"        => "email",
+             "VALIDATION_TYPE"        => "text",
              "VALIDATION_EXTRA_PARAM" => ""),
         "date_fax"    => array(
             "LABEL"                  => _tr('Fax Date'),

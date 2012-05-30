@@ -188,6 +188,10 @@ fi
 %config(noreplace) /var/spool/hylafax/etc/config
 
 %changelog
+* Wed May 30 2012 Alex Villacis Lasso <a_villacis@palosanto.com>
+- FIXED: Modules - Fax Viewer: relax unnecessarily-restrictive validation type
+  on "Company Fax" filter option. Fixes Elastix bug #1281. SVN Rev[3946]
+
 * Mon May 28 2012 German Macas <gmacas@palosanto.com> 2.3.0-4
 - CHANGED: modules - sendfax: Add messages of sending fax process with ajax 
   on Send Fax application form. SVN Rev[3937]
