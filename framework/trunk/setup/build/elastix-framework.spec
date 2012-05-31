@@ -186,8 +186,10 @@ cat   /usr/share/elastix/sudoers > /etc/sudoers
 rm -f /usr/share/elastix/sudoers
 
 # ** Change content of CentOS-Base.repo ** #
-cat   /usr/share/elastix/CentOS-Base.repo > /etc/yum.repos.d/CentOS-Base.repo
-rm -f /usr/share/elastix/CentOS-Base.repo
+if [ -e /etc/yum.repos.d/CentOS-Base.repo ] ; then
+    cat   /usr/share/elastix/CentOS-Base.repo > /etc/yum.repos.d/CentOS-Base.repo
+    rm -f /usr/share/elastix/CentOS-Base.repo
+fi
 
 # Patch httpd.conf so that User and Group directives in elastix.conf take effect
 sed --in-place "s,User\sapache,#User apache,g" /etc/httpd/conf/httpd.conf
@@ -293,7 +295,12 @@ rm -rf $RPM_BUILD_ROOT
 /usr/share/elastix/privileged/*
 
 %changelog
-* Mon May 28 2012 Alex Villacis <a_villacis@palosanto.com> 2.3.0-11
+* Thu May 31 2012 Alex Villacis Lasso <a_villacis@palosanto.com>
+- CHANGED: Only overwrite /etc/yum.repos.d/CentOS-Base.repo if this file already
+  exists. Prevents creation of nonfunctional repository in Fedora 17.
+  SVN Rev[3951]
+
+* Mon May 28 2012 Alex Villacis Lasso <a_villacis@palosanto.com> 2.3.0-11
 - FIXED: Framework/PalosantoGrid: remove XSS vulnerability in filter 
   value display on elastixneo theme SVN Rev[3941]
 
