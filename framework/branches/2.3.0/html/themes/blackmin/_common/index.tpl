@@ -18,7 +18,7 @@
 <span id="elx-blackmin-quicklink">
 &nbsp;<a class="register_link" style="color: {$ColorRegister}; cursor: pointer; font-weight: bold; font-size: 13px;" onclick="showPopupElastix('registrar','{$Register}',538,370)">{$Registered}</a>
 &nbsp;<a id="viewDetailsRPMs">{$VersionDetails}</a>
-&nbsp;<a id="about_elastix2">{$ABOUT_ELASTIX}</a>
+&nbsp;<!--<a id="about_elastix2">{$ABOUT_ELASTIX}</a>--> <a href="javascript:mostrar();">{$ABOUT_ELASTIX}</a>
 &nbsp;<a href="index.php?logout=yes">{$LOGOUT}</a>
 </span>
 </div>
@@ -46,9 +46,15 @@
 {* Popup genérico *}
 <div id="PopupElastix" style="position: absolute; top: 0px; left: 0px;">
 </div>
-
+<!-- Neo Progress Bar -->
+		<div class="neo-modal-elastix-popup-box">
+			<div class="neo-modal-elastix-popup-title"></div>
+			<div class="neo-modal-elastix-popup-close"></div>
+			<div class="neo-modal-elastix-popup-content"></div>
+		</div>
+		<div class="neo-modal-elastix-popup-blockmask"></div>
 {* Lista de RPMS instalados *}
-<div id="boxRPM" style="display:none;">
+<!--<div id="boxRPM" style="display:none;">
     <div class="popup">
         <table>
             <tr>
@@ -105,7 +111,7 @@
             </tr>
         </table>
     </div>
-</div>
+</div>-->
 <div id="fade_overlay" class="black_overlay"></div>
 
 </body>
@@ -158,4 +164,6 @@ function elx_blackmin_menu_mostrar(event)
 }
 {/literal}
 </script>
+<input type="hidden" id="lblTextMode" value="{$textMode}" />
+<input type="hidden" id="lblHtmlMode" value="{$htmlMode}" />
 </html>

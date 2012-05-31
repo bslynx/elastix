@@ -89,6 +89,29 @@ class paloDB {
         //if (!is_null($this->conn)) $this->conn->disconnect();
     }
 
+    private function _bindParameters(&$sth, &$param)
+    {
+        // Use native datatype to figure PDO::PARAM_* . Workaround for PHP bug #44639
+        for ($i = 0; $i < count($param); $i++) {
+            $data_type = PDO::PARAM_STR;
+            switch (gettype($param[$i])) {
+            case 'NULL':
+                $data_type = PDO::PARAM_NULL;
+                break;
+            case 'integer':
+                $data_type = PDO::PARAM_INT;
+                break;
+            case 'boolean':
+                $data_type = PDO::PARAM_BOOL;
+                break;
+            case 'string':
+                $data_type = ctype_digit("{$param[$i]}") ? PDO::PARAM_INT : PDO::PARAM_STR;
+                break;
+            }
+            $sth->bindValue($i + 1, $param[$i], $data_type);
+        }
+    }
+
     /**
      * Procedimiento para ejecutar una sentencia SQL(DML Data Manipulation Language) que no devuelve filas de resultados.
      * En caso de error, se asigna mensaje a $this->errMsg
@@ -113,9 +136,10 @@ class paloDB {
                     return FALSE;
                 }
                 try {
-                  $result = $sth->execute($param);
-                  if (!$result) $this->errMsg = "Error de conexion a la base de datos - " . print_r($sth->errorInfo(), 1);
-                  return $result;
+                    $this->_bindParameters($sth, $param);
+                    $result = $sth->execute();
+                    if (!$result) $this->errMsg = "Error de conexion a la base de datos - " . print_r($sth->errorInfo(), 1);
+                    return $result;
                 } catch(PDOException $e){
                     $this->errMsg = "Error de conexion a la base de datos - " . $e->getMessage();
                     return FALSE;
@@ -160,7 +184,8 @@ class paloDB {
                         $this->errMsg = "Error de conexion al preparar peticion - ".print_r($this->conn->errorInfo(), 1);
                         return FALSE;
                     }
-                    $r = $result->execute($param);
+                    $this->_bindParameters($result, $param);
+                    $r = $result->execute();
                     if (!$r) {
                         $this->errMsg = "Error de conexion a la base de datos - " . print_r($result->errorInfo(), 1);
                         return FALSE;
@@ -238,9 +263,10 @@ class paloDB {
                     return FALSE;
                 }
                 try {
-                  $result = $sth->execute($param);
-                  if (!$result) $this->errMsg = "Error de conexion a la base de datos - " . print_r($sth->errorInfo(), 1);
-                  return $result;
+                    $this->_bindParameters($sth, $param);
+                    $result = $sth->execute();
+                    if (!$result) $this->errMsg = "Error de conexion a la base de datos - " . print_r($sth->errorInfo(), 1);
+                    return $result;
                 } catch(PDOException $e){
                     $this->errMsg = "Error de conexion a la base de datos - " . $e->getMessage();
                     return FALSE;

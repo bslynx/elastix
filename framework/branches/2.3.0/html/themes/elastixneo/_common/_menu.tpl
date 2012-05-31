@@ -9,120 +9,12 @@
 	</script>
    {/literal}
 {/if}
-<div id='acerca_de'>
-    <table border='0' cellspacing="0" cellpadding="2" width='100%'>
-        <tr class="moduleTitle">
-            <td class="moduleTitle" align="center" colspan='2'>
-                {$ABOUT_ELASTIX2}
-            </td>
-        </tr>
-        <tr class="tabForm" >
-            <td class="tabForm"  height='120' colspan='2' align='center'>
-                {$ABOUT_ELASTIX_CONTENT}<br />
-                <a href='http://www.elastix.org' target='_blank'>www.elastix.org</a>
-            </td>
-        </tr>
-        <tr>
-            <td class="moduleTitle" align="center" colspan='2'>
-                <input type='button' value='{$ABOUT_CLOSED}' onclick="javascript:cerrar();" />
-            </td>
-        </tr>
-    </table>
-</div>
-
-<div id="boxRPM" style="display:none;">
-    <div class="popup">
-        <table>
-            <tr>
-                <td class="tl"/>
-                <td class="b"/>
-                <td class="tr"/>
-            </tr>
-            <tr>
-                <td class="b"/>
-                <td class="body">
-                    <div class="content_box">
-                        <div id="table_boxRPM">
-                           <table width="100%" border="0" cellspacing="0" cellpadding="4" align="center">
-                                <tr class="moduleTitle">
-                                    <td class="moduleTitle">
-                                        <div>
-                                            <div style="float: left;">&nbsp;&nbsp;{$VersionPackage}&nbsp;</div>
-                                            <div align="right" style="padding-top: 5px;"><a id="changeMode" style="visibility: hidden;">({$textMode})</a></div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="moduleTitle" id="loadingRPM" align="center" style="display: block;">
-                                        <img class="loadingRPMimg" alt="loading" src="images/loading.gif"  />
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td id="tdRpm" style="display: block;">
-                                        <table  id="tableRMP" width="100%" border="1" cellspacing="0" cellpadding="4" align="center">
-
-                                        </table>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td id="tdTa" style="display: none;">
-                                        <textarea  id="txtMode" value="" rows="60" cols="60"></textarea>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                    </div>
-                    <div class="footer">
-                        <a class="close_box_RPM">
-                        <img src="themes/{$THEMENAME}/images/closelabel.gif" title="close" class="close_image_box" />
-                        </a>
-                    </div>
-                </td>
-                <td class="b"/>
-            </tr>
-            <tr>
-                <td class="bl"/>
-                <td class="b"/>
-                <td class="br"/>
-            </tr>
-        </table>
-    </div>
-</div>
-<div id="fade_overlay" class="black_overlay"></div>
 
 <div id="PopupElastix" style="position: absolute; top: 0px; left: 0px;"></div>
 
 {literal}
-<style type='text/css'>
-#acerca_de{
-    -moz-border-radius: 20px 20px 20px 20px;
-    -webkit-border-radius: 20px 20px 20px 20px;
-    position:fixed;
-    background-color:#D8D8D8;
-    width:420px;
-    height:190px;
-    border:1px solid #9C9C9C;
-    z-index: 10000;
-}
-</style>
 <script type='text/javascript'>
 //<![CDATA[
-cerrar();
-function cerrar()
-{
-    var div_contenedor = document.getElementById('acerca_de');
-    div_contenedor.style.display = 'none';
-}
-
-function mostrar()
-{
-    var ancho = 440;
-    var div_contenedor = document.getElementById('acerca_de');
-    var eje_x=(screen.width - ancho) / 2;
-    div_contenedor.setAttribute("style","left:"+ eje_x + "px; top:123px");
-    div_contenedor.style.display = 'block';
-}
-
 function mostrar_Menu(element)
 {
     var subMenu;
@@ -625,7 +517,7 @@ function oneClickEvent()
 		  {else}
 		  <img src="themes/{$THEMENAME}/images/{$IMG_BOOKMARKS}" width="24" height="24" alt="bookmark" title="{$REMOVE_BOOKMARK}" id="togglebookmark" style="cursor: pointer;" onclick='addBookmark()' />
 		  {/if}
-	      <a href="javascript:popUp('help/?id_nodo={$idSubMenuSelected}&amp;name_nodo={$nameSubMenuSelected}','1000','460')">
+	      <a href="javascript:popUp('help/?id_nodo={$idSubMenu2Selected}&amp;name_nodo={$nameSubMenu2Selected}','1000','460')">
 	      <img src="images/icon-help.png" width="24" height="24" alt="help" title="{$HELP}" class="neo-picker" border="0"/></a></span><div class="neo-module-title-buttonstab-left"></div></div>
 	      <div class="neo-module-content">
 	{else}

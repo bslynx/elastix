@@ -2,7 +2,7 @@ Summary: Elastix is a Web based software to administrate a PBX based in open sou
 Name: elastix-framework
 Vendor: Palosanto Solutions S.A.
 Version: 2.3.0
-Release: 6
+Release: 11
 License: GPL
 Group: Applications/System
 #Source: elastix-framework_%{version}-%{release}.tgz
@@ -23,6 +23,9 @@ Conflicts: elastix-fax <= 2.2.0-5
 Conflicts: kernel-module-dahdi
 Conflicts: kernel-module-rhino
 Conflicts: kernel-module-wanpipe
+Conflicts: kernel-module-dahdi-xen
+Conflicts: kernel-module-rhino-xen
+Conflicts: kernel-module-wanpipe-xen
 Obsoletes: elastix <= 2.2.0-17
 
 %description
@@ -290,6 +293,47 @@ rm -rf $RPM_BUILD_ROOT
 /usr/share/elastix/privileged/*
 
 %changelog
+* Mon May 28 2012 Alex Villacis <a_villacis@palosanto.com> 2.3.0-11
+- FIXED: Framework/PalosantoGrid: remove XSS vulnerability in filter 
+  value display on elastixneo theme SVN Rev[3941]
+
+* Mon May 7 2012 Rocio Mera <rmera@palosanto.com> 2.3.0-10
+- CHANGED: theme - blackmin: fixed popup's in blackmin theme
+  SVN Rev[3929]
+- UPDATED: Framework - Build: update specfile with
+  SVN Rev[3922]
+
+* Wed May 2 2012 Rocio Mera <rmera@palosanto.com> 2.3.0-9
+- CHANGED: framework - help: Revert commit 3913.
+  SVN Rev[3919]
+- FIXED: Framework - Popups: Fixed bug in popup framework in all themes.
+  SVN Rev[3917]
+- CHANGED: modules - registration: Change popup form of version
+  SVN Rev[3913]
+
+* Fri Apr 27 2012 Rocio Mera <rmera@palosanto.com> 2.3.0-8
+- CHANGED: Framework - Build/elastix-framework.spec: Changed release in specfile
+  
+* Fri Apr 27 2012 Rocio Mera <rmera@palosanto.com> 2.3.0-7
+- CHANGED: Framework - Build/elastix-framework.spec: update specfile with
+  latest SVN history. Changed release in specfile
+
+* Tue Apr 24 2012 Alex Villacis Lasso <a_villacis@palosanto.com>
+- CHANGED: Add proper conflicts for kernel-module-*-xen as well as ordinary
+  kernel-module-* as neither are supported anymore.
+- CHANGED: Framework: attempt to pick any educated guess for the default 
+  timezone before hitting the filesystem.
+- FIXED: Framework: PHP 5.3+ requires the timezone to be explicitly set. Load 
+  timezone from /etc/sysconfig/clock if it exists.
+- FIXED: Framework: Workaround for PHP bug #44639 in PHP 5.3.x and later. 
+  Instead of executing the PDO database statement directly, the parameters are 
+  bound with a PDO datatype derived from the underlying PHP data type. 
+- FIXED: Framework: do not use reserved superglobal names as parameters for a 
+  function.
+- FIXED: framework - base.js: when press enter event in textarea html not work 
+  it.
+- FIXED: New validation type when it is empty.
+
 * Fri Mar 30 2012 Rocio Mera <rmera@palosanto.com> 2.3.0-6
 - CHANGED: Framework - Themes/blackmin/index.tpl: Added id='message_error' 
   in div that show the message on top of the window

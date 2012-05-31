@@ -30,6 +30,8 @@ require_once "$documentRoot/configs/default.conf.php";
 require_once "$documentRoot/libs/paloSantoJSON.class.php";
 require_once "$documentRoot/libs/paloSantoACL.class.php";
 
+load_default_timezone();
+
 // Verificación de autenticación
 // Verificar si el método HTTP es conocido
 if (!in_array($_SERVER['REQUEST_METHOD'], 

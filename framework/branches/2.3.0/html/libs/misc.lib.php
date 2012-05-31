@@ -28,9 +28,9 @@
   $Id: misc.lib.php,v 1.3 2007/08/10 01:32:51 gcarrillo Exp $ */
 
 
-function recoger_valor($key, &$_GET, &$_POST, $default = NULL) {
-    if (isset($_POST[$key])) return $_POST[$key];
-    elseif (isset($_GET[$key])) return $_GET[$key];
+function recoger_valor($key, &$get, &$post, $default = NULL) {
+    if (isset($post[$key])) return $post[$key];
+    elseif (isset($get[$key])) return $get[$key];
     else return $default;
 }
 
@@ -105,7 +105,6 @@ function obtener_info_de_sistema()
     exec("/usr/bin/uptime", $arrExec, $varExec);
 
     if($varExec=="0") {
-        //if(ereg(" up[[:space:]]+([[:digit:]]+ days,)?([[:space:]]+[[:digit:]]{2}:[[:digit:]]{2}), ", $arrExec[0], $arrReg)) {
         if(preg_match("/up[[:space:]]+([[:digit:]]+ days?,)?(([[:space:]]*[[:digit:]]{1,2}:[[:digit:]]{1,2}),?)?([[:space:]]*[[:digit:]]+ min)?/",
                 $arrExec[0],$arrReg)) {
             if(!empty($arrReg[3]) and empty($arrReg[4])) {
@@ -1181,6 +1180,24 @@ function saveStickyNote($menu, $description, $popup)
 		}
 	}
 	return $arrResult;
+}
+
+// Set default timezone from /etc/sysconfig/clock for PHP 5.3+ compatibility
+function load_default_timezone()
+{
+    $sDefaultTimezone = @date_default_timezone_get();
+    if ($sDefaultTimezone == 'UTC') {
+        $sDefaultTimezone = 'America/New_York';
+        if (file_exists('/etc/sysconfig/clock')) {
+            foreach (file('/etc/sysconfig/clock') as $s) {
+                $regs = NULL;
+                if (preg_match('/^ZONE\s*=\s*"(.+)"/', $s, $regs)) {
+                    $sDefaultTimezone = $regs[1];
+                }
+            }
+        }
+    }
+    date_default_timezone_set($sDefaultTimezone);
 }
 
 ?>

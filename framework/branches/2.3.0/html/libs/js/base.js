@@ -396,10 +396,13 @@ function getElastixKey(){
 	{
 	    var serverKey = arrData["server_key"];
 	    if(serverKey && serverKey != ""){
-		var link = $('#link_tmp').val();
-		if(link && link !=""){
-		    link += serverKey;
-		    location.href = link;
+		hideModalPopUP();
+		var callback = $('#callback').val();
+		if(callback && callback !=""){
+		    if(callback=="do_checkDependencies")
+		      do_checkDependencies(serverKey);
+		    else if(callback=="do_iniciarInstallUpdate")
+		      do_iniciarInstallUpdate();
 		}
 	    }
 	}
@@ -653,7 +656,7 @@ function saveToggleTab(){
 function loadDetails(){
         var order = "action=versionRPM&rawmode=yes";
         $.post("index.php", order, function(theResponse){
-            //$("#loadingRPM").hide();
+            $("#loadingRPM").hide();
             $("#changeMode").show();
             var message = JSONRPMtoString(theResponse);
             var html = "";
@@ -664,7 +667,7 @@ function loadDetails(){
             var i = 0;
             var cont = 0;
             for(key in message){
-                html += "<table  width='96%' border='0' cellspacing='0' cellpadding='0' align='left' style='border:1px solid #999'>"+
+                html += "<table  width='96%' border='0' cellspacing='0' cellpadding='0' style='border:1px solid #999'>"+
                            "<tr class='letra12'>" +
                             "<td class='letra12 tdRPMNamesCol'>&nbsp;&nbsp;<b>Name</b></td>" +
                             "<td class='letra12 tdRPMNamesCol'>&nbsp;&nbsp;<b>Package Name</b></td>" +
@@ -706,10 +709,12 @@ function loadDetails(){
             }
             cont = cont + 2;
             html +="</table>";
+	    
             $("#txtMode").attr("rows", cont);
             $("#tableRMP").html(html);
 	    $("#changeMode").show();
             $("#txtMode").val(html2);
+            $("#tableRMP").css("border-style", "none");	
             
         });
 }
@@ -725,12 +730,14 @@ function changeMode(){
 
             $(".tdRpm").attr("style","display: none;");
             $("#tdTa").attr("style","display: block;");
+		
         }else{
             //change lblHtmlMode
             var lbltextMode = $("#lblTextMode").val();
             $("#changeMode").text("("+lbltextMode+")");
             $(".tdRpm").attr("style","display: block;");
             $("#tdTa").attr("style","display: none;");
+            $("#txtMode").css("height","auto");
         }
 }
 

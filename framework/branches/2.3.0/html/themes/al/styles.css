@@ -1136,3 +1136,45 @@ td a.link_summary_on{
     position: relative;
     top: 20px;
 }
+/*Version*/
+#tableRMP{
+    border:0px solid;
+    display: block;
+    position:relative;
+    top:10px;
+
+}
+#txtMode{
+    width: 95%;
+    position:relative;
+    top:10px;
+    height:750px;
+}
+#tdTa{
+    display: none;
+}
+#changeMode{
+    font-size: 10px;
+    cursor: pointer;
+    position: relative;
+    display: none;
+    left:80%;
+    width:20%;
+    color:blue;
+    top:5px;
+    
+}
+
+.loadingRPMimg{
+    padding: 10px;
+}
+
+#loadingRPM{
+    display: block;
+    text-align:center;	
+    position: absolute;
+    top:45%;
+    left:45%; 
+
+}
+
