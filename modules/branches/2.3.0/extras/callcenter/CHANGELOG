@@ -1,3 +1,4 @@
+* Dialer: set the timezone explictly for PHP 5.3+ compatibility.
 * Dialer: parse manager.conf manually as it may contain characters that choke
   parse_ini_file(). Fixes Elastix bug #1211.
 * Dialer: add new configuration parameter to specify the maximum number of

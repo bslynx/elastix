@@ -256,6 +256,11 @@ function do_iniciarInstallUpdate($smarty, $module_name, $local_templates_dir)
     Header('Content-Type: application/json');
 
     $oAddons = new paloSantoAddons();
+    $sid = $oAddons->getSID();
+    if(is_null($sid)){
+	$respuesta["error"] = _tr("Server id is not defined, you need to register your Elastix");
+	return $json->encode($respuesta);
+    }
     $oAddons->updateStatusCache();
     $status = $oAddons->getStatusCache();
     if($status["status"] == "busy"){
@@ -321,6 +326,11 @@ function do_checkDependencies($smarty, $module_name, $local_templates_dir)
     Header('Content-Type: application/json');
 
     $oAddons = new paloSantoAddons();
+    $sid = $oAddons->getSID();
+    if(is_null($sid)){
+	$respuesta["error"] = _tr("Server id is not defined, you need to register your Elastix");
+	return $json->encode($respuesta);
+    }
     $oAddons->updateStatusCache();
     $status = $oAddons->getStatusCache();
     if($status["status"] == "busy"){

@@ -3,7 +3,7 @@
 Summary: Elastix Module Agenda 
 Name:    elastix-%{modname}
 Version: 2.3.0
-Release: 3
+Release: 7
 License: GPL
 Group:   Applications/System
 Source0: %{modname}_%{version}-%{release}.tgz
@@ -107,6 +107,34 @@ fi
 /var/lib/asterisk/sounds/custom/*
 
 %changelog
+* Mon May 28 2012 Rocio Mera <rmera@palosanto.com> 2.3.0-7
+- FIXED: Module - Agenda/Calendar: Fixed bug 1266. In firefox and IE
+  don't working action to add or edit event in the calendar. Now this
+  bug have been resolved
+
+* Fri Apr 27 2012 Rocio Mera <rmera@palosanto.com> 2.3.0-6
+- CHANGED: Agenda - Build/elastix-agenda.spec: Changed release in specfile
+- ADDED: CHANGED: Agenda - themes/js: Changed javascript3.js to solve bug 
+  introduce in commit 3908. Didn't work color picker when was created a event. 
+  SVN Rev[3910]
+  
+* Fri Apr 27 2012 Rocio Mera <rmera@palosanto.com> 2.3.0-5
+- CHANGED: Agenda - Build/elastix-agenda.spec: Changed release in specfile
+- ADDED: Calendar - themes/evento.tpl: Added file evento.tpl. File required 
+  for commit 3488. SVN Rev[3908]
+
+* Fri Apr 27 2012 Rocio Mera <rmera@palosanto.com> 2.3.0-4
+- CHANGED: Agenda - Build/elastix-agenda.spec: Changed release in specfile
+
+* Thu Apr 26 2012 Alex Villacis Lasso <a_villacis@palosanto.com>
+- FIXED: module calenadar, some functional points use a callback with a function
+  called "_rechazar_correo_vacio" that was not implemented. Now that function is
+  implemented in the class.
+  SVN Rev[3890]
+- CHANGED: Modules - Calendar: Changed the format of the popup that appear when 
+  a user want create, view or edit a event.
+  SVN Rev[3844]
+
 * Fri Mar 30 2012 Bruno Macias <bmacias@palosanto.com> 2.3.0-3
 - CHANGED: In spec file, changed prereq elastix-framework >= 2.3.0-5
 - FIXED: modules - SQLs DB: se quita SQL redundante de alter table y nuevos 

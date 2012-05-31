@@ -67,6 +67,7 @@ $arrLangModule = array(
 "Location" => "Location",
 "Please wait..." => "Please wait...",
 "Warning" => "Warning",
-"Note" => "Note"
+"Note" => "Note",
+"Server id is not defined, you need to register your Elastix" => "Server id is not defined, you need to register your Elastix",
 );
 ?>

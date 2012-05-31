@@ -3,7 +3,7 @@
 Summary: Elastix Security 
 Name:    elastix-%{modname}
 Version: 2.3.0
-Release: 4
+Release: 5
 License: GPL
 Group:   Applications/System
 Source0: %{modname}_%{version}-%{release}.tgz
@@ -94,6 +94,12 @@ fi
 /usr/share/elastix/privileged/*
 
 %changelog
+* Fri Apr 27 2012 Rocio Mera <rmera@palosanto.com> 2.3.0-5
+- CHANGED: Security - Build/elastix-security.spec: update specfile with latest
+  SVN history. Changed release in specfile
+- DELETED: modules - security: delete file db-delete not necesary.
+  SVN Rev[3878]
+
 * Fri Mar 30 2012 Bruno Macias <bmacias@palosanto.com> 2.3.0-4
 - CHANGED: In spec file, changed prereq elastix-framework >= 2.3.0-5
 - FiXED: Security - Sec_Rules: Fixed action changed order firewalls rules. 

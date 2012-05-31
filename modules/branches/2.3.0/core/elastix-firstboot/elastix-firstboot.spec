@@ -1,7 +1,7 @@
 Summary: Elastix First Boot Setup
 Name:    elastix-firstboot
 Version: 2.3.0
-Release: 1
+Release: 7
 License: GPL
 Group:   Applications/System
 Source0: %{name}-%{version}.tar.bz2
@@ -22,7 +22,7 @@ either prepare their databases on their own, or delegate this task to this
 package.
 
 %prep
-%setup 
+%setup -n %{name}
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -33,7 +33,7 @@ mkdir -p $RPM_BUILD_ROOT/usr/share/elastix-firstboot/
 mkdir -p $RPM_BUILD_ROOT/usr/bin/
 mkdir -p $RPM_BUILD_ROOT/usr/sbin/
 cp elastix-firstboot $RPM_BUILD_ROOT/etc/init.d/
-cp change-passwords  $RPM_BUILD_ROOT/usr/bin/
+cp change-passwords elastix-admin-passwords $RPM_BUILD_ROOT/usr/bin/
 mv compat-dbscripts/ $RPM_BUILD_ROOT/usr/share/elastix-firstboot/
 
 %post
@@ -99,11 +99,71 @@ rm -rf $RPM_BUILD_ROOT
 /usr/share/elastix-firstboot/compat-dbscripts/01-asteriskcdrdb.sql
 /usr/share/elastix-firstboot/compat-dbscripts/02-asteriskuser-password.sql
 /usr/bin/change-passwords
+/usr/bin/elastix-admin-passwords
 
 %changelog
+* Mon May 07 2012 Rocio Mera <rmera@palosanto.com> 2.3.0-7
+- CHANGED: Changed in specfile, updated release to 7
+
+* Fri May 04 2012 Alex Villacis Lasso <a_villacis@palosanto.com>
+- FIXED: Rewrite the password assignment as a PHP script. This allows the use
+  of native preg_match() and proper string escaping instead of potentially
+  flawed shell escaping. Both initial password assignment and subsequent 
+  password changing are now handled by the PHP script. May fix Elastix 
+  bug #1260.
+  SVN Rev[3928]
+
+* Fri Apr 27 2012 Rocio Mera <rmera@palosanto.com> 2.3.0-6
+- CHANGED: Addons - Build/elastix-addons.spec: update specfile with latest
+  SVN history. Changed release in specfile
+- CHANGED: elastix-firstboot: Remove greater-than and less-than characters
+  from accepted characters in passwords, since amportal/FOP choke on these.
+  SVN Rev[3888]
+
+* Mon Apr 02 2012 Rocio Mera <rmera@palosanto.com> 2.3.0-5
+- CHANGED: Additionals - Elastix_Firstboot: Changed in elastix-firstboot and
+  elastix-chance-password for change manager asterisk config username and
+  password for a2billing
+  SVN Rev[3817]-[3815]
+
+* Fri Mar 30 2012 Rocio Mera <rmera@palosanto.com> 2.3.0-4
+- CHANGED: elastix-firstboot: comment-out /etc/init.d/functions inclusion. This
+  inclusion is useless in CentOS and actually harmful in Fedora, since (in
+  Fedora) it sends dialog output to /dev/console instead of controlling console
+  which might be a SSH session.
+  SVN Rev[3800]
+- CHANGED: elastix-firsboot, se revierte los cambios del firewall activado por
+  omisión hasta mejorar el diseño y conjunto de reglas activas.
+  SVN Rev[3798]
+- FIXED: Additional - Elastix-FistBoot/elastix-firstboot: problem with restart
+  firewall
+  SVN Rev[3794]
+
+* Wed Mar 28 2012 Rocio Mera <rmera@palosanto.com> 2.3.0-3
+- FIXED: Additional - Elastix-FistBoot/elastix-firstboot: problem with
+  restart firewall
+  SVN Rev[3791]
+- FIXED: Additional - Elastix-FistBoot/elastix-firstboot: Solved the problem
+  that firewall be activated each time restart elastix
+  SVN Rev[3783]
+
+* Tue Mar 27 2012 Rocio Mera <rmera@palosanto.com> 2.3.0-2
+- CHANGED: Elastix-Firstboot - elastix-firstboot: Changed the message that
+  appear when the firewall is activated
+  SVN Rev[3783]
+- FIXED: elastix-firstboot: the character sequence &-@ unexpectedly created a
+  character range, instead of the intended three literal characters. This
+  allowed more characters to be accepted as valid passwords than intended. Now
+  only the three intended characters are accepted.
+  SVN Rev[3770]
+- CHANGED: Additionals - elastix-fistboot/elastix-firstboot: Now the Firewall
+  will be activated in the installations process
+  SVN Rev[3766]
+
 * Fri Mar 09 2012 Alex Villacis Lasso <a_villacis@palosanto.com> 2.3.0-1
 - CHANGED: Remove fix for Elastix bug 595. This workaround is rendered obsolete
   with the use of kmod-dahdi. 
+  SVN Rev[3726]
 
 * Wed Dec 22 2011 Eduardo Cueva <ecueva@palosanto.com> 2.2.0-9
 - CHANGED: In spec file remove actions over vtiger database because the
@@ -111,6 +171,7 @@ rm -rf $RPM_BUILD_ROOT
 - FIXED: Elastix-firstboot: Changes in elastix-firstboot script to fix 
   the bug with elastix.conf where is created that file by elastix-framework 
   for adding "amiadminpwd" to ami password.
+  SVN Rev[3480]
 - FIXED: Fixed bug in  "elastix-firstboot" after intallation of an iso 
   where all passwords are never changed after the first reboot. SVN Rev[3478]
 - CHANGED: Elastix-Firstboot: Support update change password to 

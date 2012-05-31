@@ -360,7 +360,9 @@ function reportMonitoring($smarty, $module_name, $local_templates_dir, &$pDB, $p
     return $content;
 }
 
-function downloadFile($smarty, $module_name, $local_templates_dir, &$pDB, $pACL, $arrConf, $user, $extension, $esAdministrador){
+function downloadFile($smarty, $module_name, $local_templates_dir, &$pDB, $pACL,
+    $arrConf, $user, $extension, $esAdministrador)
+{
     $record = getParameter("id");
     $namefile = getParameter('namefile');
     $pMonitoring = new paloSantoMonitoring($pDB);
@@ -372,62 +374,71 @@ function downloadFile($smarty, $module_name, $local_templates_dir, &$pDB, $pACL,
         }
     }
     $path_record = $arrConf['records_dir'];
-    if (isset($record) && preg_match("/^[[:digit:]]+\.[[:digit:]]+$/",$record)) {
 
-        $filebyUid   = $pMonitoring->getAudioByUniqueId($record, $namefile);
-
-        $file = basename($filebyUid['userfield']);
-        $file = str_replace("audio:","",$file);
-
-        $path = $path_record.$file;
-
-        if($file[0] == "q"){// caso de archivos de colas no se tiene el tipo de archivo gsm, wav,etc
-            $arrData  = glob("$path*");
-            $path = isset($arrData[0])?$arrData[0]:$path;
-        }
-
-    // See if the file exists
-        if ($file == 'deleted' || !is_file($path)) {
-            die("<b>404 "._tr("no_file")." </b>");
-        }
-
-    // Gather relevent info about file
-        $size = filesize($path);
-        $name = basename($path);
-
-    //$extension = strtolower(substr(strrchr($name,"."),1));
-        $extension=substr(strtolower($name), -3);
-
-    // This will set the Content-Type to the appropriate setting for the file
-        $ctype ='';
-        switch( $extension ) {
-
-            case "mp3": $ctype="audio/mpeg"; break;
-            case "wav": $ctype="audio/x-wav"; break;
-            case "Wav": $ctype="audio/x-wav"; break;
-            case "WAV": $ctype="audio/x-wav"; break;
-            case "gsm": $ctype="audio/x-gsm"; break;
-            // not downloadable
-            default: die("<b>404 "._tr("no_file")." </b>"); break ;
-        }
-
-    // need to check if file is mislabeled or a liar.
-        $fp=fopen($path, "rb");
-        if ($size && $ctype && $fp) {
-            header("Pragma: public");
-            header("Expires: 0");
-            header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
-            header("Cache-Control: public");
-            header("Content-Description: wav file");
-            header("Content-Type: " . $ctype);
-            header("Content-Disposition: attachment; filename=" . $name);
-            header("Content-Transfer-Encoding: binary");
-            header("Content-length: " . $size);
-            fpassthru($fp);
-        }
-    }else{
+    if (is_null($record) || !preg_match('/^[[:digit:]]+\.[[:digit:]]+$/', $record)) {
+        // Missing or invalid uniqueid
+        Header('HTTP/1.1 404 Not Found');
         die("<b>404 "._tr("no_file")." </b>");
     }
+
+    // Check record is valid and points to an actual file
+    $filebyUid = $pMonitoring->getAudioByUniqueId($record, $namefile);
+    if (is_null($filebyUid) || count($filebyUid) <= 0) {
+        // Uniqueid does not point to a record with specified file
+        Header('HTTP/1.1 404 Not Found');
+        die("<b>404 "._tr("no_file")." </b>");
+    }
+    $file = basename(str_replace('audio:', '', $filebyUid['userfield']));
+    $path = $path_record.$file;
+    if ($file == 'deleted') {
+        // Specified file has been deleted
+        Header('HTTP/1.1 404 Not Found');
+        die("<b>404 "._tr("no_file")." </b>");
+    }
+    if (!file_exists($path)) {
+    	// Queue recordings might lack an extension
+        $arrData = glob("$path*");
+        if (count($arrData) > 0) {
+        	$path = $arrData[0];
+            $file = basename($path);
+        }
+    }
+    if (!file_exists($path) || !is_file($path)) {
+        // Failed to find specified file
+        Header('HTTP/1.1 404 Not Found');
+        die("<b>404 "._tr("no_file")." </b>");
+    }
+    
+    // Set Content-Type according to file extension
+    $contentTypes = array(
+        'wav'   =>  'audio/x-wav',
+        'gsm'   =>  'audio/x-gsm',
+        'mp3'   =>  'audio/mpeg',
+    );
+    $extension = substr(strtolower($file), -3);
+    if (!isset($contentTypes[$extension])) {
+        // Unrecognized file extension
+    	Header('HTTP/1.1 404 Not Found');
+        die("<b>404 "._tr("no_file")." </b>");
+    }
+    
+    // Actually open and transmit the file
+    $fp = fopen($path, 'rb');
+    if (!$fp) {
+        Header('HTTP/1.1 404 Not Found');
+        die("<b>404 "._tr("no_file")." </b>");
+    }
+    header("Pragma: public");
+    header("Expires: 0");
+    header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+    header("Cache-Control: public");
+    header("Content-Description: wav file");
+    header("Content-Type: " . $contentTypes[$extension]);
+    header("Content-Disposition: attachment; filename=" . $file);
+    header("Content-Transfer-Encoding: binary");
+    header("Content-length: " . filesize($path));
+    fpassthru($fp);
+    fclose($fp);
 }
 
 function record_format(&$pDB, $arrConf){

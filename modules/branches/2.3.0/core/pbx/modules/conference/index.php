@@ -86,11 +86,11 @@ function _moduleContent(&$smarty, $module_name)
     else if(isset($_POST["new_open"])) $accion = "new_conference";
     else if(isset($_POST["delete_conference"])) $accion = "delete_conference";
     else if(isset($_POST["caller_invite"])) $accion = "caller_invite";
-    else if(isset($_GET["accion"]) && $_GET["accion"]=="show_callers") $accion = "show_callers";
     else if(isset($_POST["callers_mute"])) $accion = "callers_mute";
     else if(isset($_POST["callers_kick"])) $accion = "callers_kick";
     else if(isset($_POST["callers_kick_all"])) $accion = "callers_kick_all";
     else if(isset($_POST["update_show_callers"])) $accion = "update_show_callers";
+    else if(isset($_GET["accion"]) && $_GET["accion"]=="show_callers") $accion = "show_callers";
     else if(isset($_GET["accion"]) && $_GET["accion"]=="view_conference") $accion = "view_conference";
 
     // Las siguientes dos opciones funcionan al integrar conferencias Web
@@ -425,13 +425,13 @@ function createFieldForm($arrLang)
                                                      "REQUIRED"               => "yes",
                                                      "INPUT_TYPE"             => "TEXT",
                                                      "INPUT_EXTRA_PARAM"      => array("style" => "width:20px;text-align:center","maxlength" =>"2"),
-                                                     "VALIDATION_TYPE"        => "integer",
+                                                     "VALIDATION_TYPE"        => "numeric",
                                                      "VALIDATION_EXTRA_PARAM" => ""),
                             "duration_min"      => array("LABEL"              => $arrLang['Duration (HH:MM)'],
                                                      "REQUIRED"               => "yes",
                                                      "INPUT_TYPE"             => "TEXT",
                                                      "INPUT_EXTRA_PARAM"      => array("style" => "width:20px;text-align:center","maxlength" =>"2"),
-                                                     "VALIDATION_TYPE"        => "integer",
+                                                     "VALIDATION_TYPE"        => "numeric",
                                                      "VALIDATION_EXTRA_PARAM" => ""),
 /*
                             "recurs"            => array("LABEL"              => $arrLang['Recurs'],
@@ -490,7 +490,7 @@ function add_conference($smarty, $module_name, $local_templates_dir, $pDB, $arrL
             $strErrorMsg = "<b>{$arrLang['The following fields contain errors']}:</b><br/>";
             if(is_array($arrErrores) && count($arrErrores) > 0){
                 foreach($arrErrores as $k=>$v) {
-                    $strErrorMsg .= "$k, ";
+                    $strErrorMsg .= "$k : {$v['mensaje']}";
                 }
             }
             if(!$bandera)
@@ -503,63 +503,35 @@ function add_conference($smarty, $module_name, $local_templates_dir, $pDB, $arrL
         return $contenidoModulo;
     }
 
-    {
-        $data = array();
-
-        //$_POST['recurs'];
-        //$_POST['reoccurs_period'];
-        //$_POST['reoccurs_days'];
-
-        $data['confDesc'] = "'".$_POST['conference_name']."'";
-        $data['confOwner'] = empty($_POST['conference_owner'])?"''":"'".$_POST['conference_owner']."'";
-        $data['roomNo'] = $_POST['conference_number'];
-
-        $data['silPass'] = empty($_POST['moderator_pin'])?"''":$_POST['moderator_pin'];
-
-        $announce = ($_POST['moderator_options_1']=='on')?'i':'';
-        $record = ($_POST['moderator_options_2']=='on')?'r':'';
-        $data['aFlags'] = "'asdA".$announce.$record."'";
-
-        $data['roomPass'] = empty($_POST['user_pin'])?"''":$_POST['user_pin'];
-
-        $announce = ($_POST['user_options_1']=='on')?'i':'';
-        $listen_only = ($_POST['user_options_2']=='on')?'m':'';
-        $wait_for_leader = ($_POST['user_options_3']=='on')?'w':'';
-        $data['uFlags'] = "'d".$announce.$listen_only.$wait_for_leader."'";
-
-        $data['startTime'] = "'".$_POST['start_time']."'";
-
-        $fecha = strtotime($_POST['start_time']);
-        $duracion = ($_POST['duration']*3600)+($_POST['duration_min']*60);
-        $fecha = $fecha + $duracion;
-        $data['endTime'] = "'".date("Y-m-d H:i:s", $fecha)."'";
-
-        $data['maxUser'] = $_POST['max_participants'];
-
-        $data['clientId'] = 0;
-        $data['status'] = "'A'";
-        $data['sequenceNo'] = 0; //Si se usa recurrencia debe autoincrementar
-        $data['recurInterval'] = 0; //Si se usa recurrencia debe calcularse el tiempo
-
-        $pConference = new paloSantoConference($pDB);
-        $result = $pConference->AddConference($data);
-
-        if ($result) {
-            if (!($bSoporteWebConf && isset($_POST['enable_webconf']))) {
-                header("Location: ?menu=$module_name");
-            } else {
-                // Aquí se aprovecha que AddConference es una inserción MySQL
-                // a la tabla booking. Se usa LAST_INSERT_ID() para recuperar
-                // el ID de inserción.
-                $id_cbmysql_conference = $pConference->_DB->getLastInsertId();
-                $_POST['id_cbmysql_conference'] = $id_cbmysql_conference;
-                $result = ejecutarCreacionWebConf($smarty, $arrLang);
-                if ($result[0]) {
-                    return $result[1];
-                } else {
-                    return new_conference($smarty, $module_name, $local_templates_dir, $pDB, $arrLang, $arrConfig, $dsnAsterisk);
-                }
-            }
+    $pConference = new paloSantoConference($pDB);
+    $id_cbmysql_conference = $pConference->CreateConference($_POST['conference_name'],
+        $_POST['conference_number'], $_POST['start_time'], 
+        ($_POST['duration'] * 3600) + ($_POST['duration_min'] * 60),
+        $_POST['max_participants'],
+        array(
+            'confOwner'         =>  empty($_POST['conference_owner']) ? '' : $_POST['conference_owner'],
+            'silPass'           =>  empty($_POST['moderator_pin']) ? '' : $_POST['moderator_pin'],
+            'moderatorAnnounce' =>  ($_POST['moderator_options_1'] == 'on'),
+            'moderatorRecord'   =>  ($_POST['moderator_options_2'] == 'on'),
+            'roomPass'          =>  empty($_POST['user_pin']) ? '' : $_POST['user_pin'],
+            'userAnnounce'      =>  ($_POST['user_options_1'] == 'on'),
+            'userListenOnly'    =>  ($_POST['user_options_2'] == 'on'),
+            'userWaitLeader'    =>  ($_POST['user_options_3'] == 'on'),
+        ));
+    if (is_null($id_cbmysql_conference)) {
+        $smarty->assign("mb_message", _tr('Unable to create conference').': '.$pConference->errMsg);
+        $contenidoModulo = new_conference($smarty, $module_name, $local_templates_dir, $pDB, $arrLang, $arrConfig, $dsnAsterisk);
+        return $contenidoModulo;
+    }
+    if (!($bSoporteWebConf && isset($_POST['enable_webconf']))) {
+        header("Location: ?menu=$module_name");
+    } else {
+        $_POST['id_cbmysql_conference'] = $id_cbmysql_conference;
+        $result = ejecutarCreacionWebConf($smarty, $arrLang);
+        if ($result[0]) {
+            return $result[1];
+        } else {
+            return new_conference($smarty, $module_name, $local_templates_dir, $pDB, $arrLang, $arrConfig, $dsnAsterisk);
         }
     }
 }
@@ -599,7 +571,7 @@ function show_callers($smarty, $module_name, $local_templates_dir, $pDB, $arrLan
     $room = getParameter("roomNo");
     $arrCallers = $pConference->ObtainCallers($dsn_agi_manager, $room);
     $arrDevices = $pConference->getDeviceFreePBX($dsnAsterisk);
-    $arrData = null;
+    $arrData = array();
 
     if(is_array($arrCallers) && count($arrCallers)>0){
         foreach($arrCallers as $key => $caller){

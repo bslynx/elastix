@@ -3,14 +3,14 @@
 Summary: Elastix Module System 
 Name:    elastix-%{modname}
 Version: 2.3.0
-Release: 6
+Release: 9
 License: GPL
 Group:   Applications/System
 #Source0: %{modname}_%{version}-2.tgz
 Source0: %{modname}_%{version}-%{release}.tgz
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 BuildArch: noarch
-Prereq: elastix-framework >= 2.3.0-5
+Prereq: elastix-framework >= 2.3.0-9
 Prereq: elastix-fax >= 2.2.0-4 
 Prereq: php-soap
 Prereq: openfire, wanpipe-util >= 3.4.1-4, dahdi
@@ -128,6 +128,37 @@ fi
 %config(noreplace) /etc/dahdi/genconf_parameters
 
 %changelog
+* Mon May 07 2012 Rocio Mera <rmera@palosanto.com> 2.3.0-9
+- UPDATED: Specfile was updated to release 9
+- CHANGED: modules - hardware_detector: fixed popup in blackmin theme
+  SVN Rev[3930]
+- UPDATED: Modules - System/setup/build: update changelog specfile with the
+  latest commit from svn
+  SVN Rev[3924]
+
+* Wed May 02 2012 Rocio Mera <rmera@palosanto.com> 2.3.0-8
+- CHANGED: In spec file, changed prereq elastix-framework >= 2.3.0-9
+- UPDATED: Modules - hardware_detector: Update style table for content popup.
+  SVN Rev[3918]
+
+* Fri Apr 27 2012 Rocio Mera <rmera@palosanto.com> 2.3.0-7
+- CHANGED: System - Build/elastix-system.spec: update specfile with latest
+  SVN history. Changed release in specfile
+- CHANGED: modules - hardware_detector:change the modal popup form of
+  Configuration of Span and Span Parameter  to ShowModalPopUp form, to keep the
+  same PopUp form in the system.
+  SVN Rev[3874]
+- CHANGED: modules - dashboard: add _register.tpl file that contains the
+  application form of Register Card to show in the ModalPopUp form.
+  SVN Rev[3869]
+- CHANGED: modules - dashboard: Change the application form of Register Card to
+  ShowModalPopUp form, to mantain the same popup format in the system.
+  SVN Rev[3868]
+- ADDED: Build - SPEC's: The spec files were added to the corresponding modules
+  and the framework.
+  SVN Rev[3857]
+  SVN Rev[3839]
+
 * Mon Apr 02 2012 Rocio Mera <rmera@palosanto.com> 2.3.0-6
 - CHANGED: System - Package: Changed message that appear when repositories
   aren't update in english and spanish

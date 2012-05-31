@@ -3,14 +3,14 @@
 Summary: Elastix Module PBX 
 Name:    elastix-%{modname}
 Version: 2.3.0
-Release: 5
+Release: 9
 License: GPL
 Group:   Applications/System
 Source0: %{modname}_%{version}-%{release}.tgz
 #Source0: %{modname}_%{version}-20.tgz
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 BuildArch: noarch
-Prereq: elastix-framework >= 2.3.0-5
+Prereq: elastix-framework >= 2.3.0-9
 Prereq: elastix-my_extension >= 2.0.4-5
 Prereq: freePBX >= 2.8.1-12
 Prereq: elastix-system >= 2.2.0-18
@@ -292,6 +292,60 @@ fi
 /bin/asterisk.reload
 
 %changelog
+* Mon May 28 2012 Sergio Broncano <sbroncano@palosanto.com> 2.3.0-9
+- CHANGED: MODULES - PBX/EXTENSION_BATCH: The following fields were added 
+  callgroup, pickupgroup, disallow, allow, deny, permit, Record Incoming, 
+  Outgoing Record in extensiones.csv file to upload and download. 
+  SVN Rev[3940]
+
+* Mon May 07 2012 Rocio Mera <rmera@palosanto.com> 2.3.0-8
+- UPDATED: UPDATED in specfile to release 8
+
+* Thu May 03 2012 Alex Villacis Lasso <a_villacis@palosanto.com>
+- FIXED: Conference: Check the context variable MEETME_ACTUAL_RECORDINGFILE 
+  alongside MEETME_RECORDINGFILE in order to decide whether a MeetMe recording
+  exists. Before this check, CBMySQL conferences end up marking a recording as
+  available in Monitoring report when no recording actually exists.
+  FIXED: Conference: Check that MEETME_ACTUAL_RECORDINGFILE with MIXMON_FORMAT
+  extension exists. If not, fallback to assuming .wav as file extension. Before
+  this check, CBMySQL conference recordings are not downloadable if
+  MIXMON_FORMAT is something other than .wav .
+  SVN Rev[3926].
+
+* Wed May 02 2012 Rocio Mera <rmera@palosanto> 2.3.0-7
+- CHANGED: In spec file, changed prereq elastix-framework >= 2.3.0-9
+
+* Wed May 02 2012 Alex Villacis Lasso <a_villacis@palosanto.com>
+- FIXED: Conference: Rework several conference manipulation functions so that
+  they use SQL parameters. Fixes Elastix bug #1256.
+  FIXED: Conference: Reorder evaluation of actions so that kicking and muting
+  participants actually works. Fixes Elastix bug #1245.
+  SVN Rev[3916].
+- FIXED: Conference: Validation of type "integer" for HH:MM is unimplemented.
+  Use "numeric" instead.
+  SVN Rev[3914].
+
+* Fri Apr 27 2012 Rocio Mera <rmera@palosanto.com> 2.3.0-6
+- CHANGED: Addons - Build/elastix-addons.spec: update specfile with latest
+  SVN history. Changed release in specfile
+- FIXED: Monitoring: queue recording file names are written with full absolute
+  path in DB, so a LIKE operator is required to select on the file name.
+  Rewrite recording file download to add more checks. Part of fix for Elastix
+  bug #1225.
+  SVN Rev[3873]
+- FIXED: Batch of Extensions: voicemail password (if any) should be
+  numeric-only. Part of the fix for Elastix bug #1238.
+  SVN Rev[3871]
+- FIXED: PBX Admin: add enough of the FreePBX validation javascripts so that
+  field validations work. Part of the fix for Elastix bug #1238.
+  SVN Rev[3870]
+- ADDED: Build - SPEC's: The spec files were added to the corresponding modules
+  and the framework.
+  SVN Rev[3854]
+  SVN Rev[3836]
+- FIXED: PBX - Festival: Fixed problem when chance status to festival. Bug 1219
+  SVN Rev[3814]
+
 * Mon Apr 02 2012 Rocio Mera <rmera@palosanto.com> 2.3.0-5
 - FIXED: PBX - Festival: Fixed problem when chance status to festival. Bug 1219
   SVN Rev[3814]

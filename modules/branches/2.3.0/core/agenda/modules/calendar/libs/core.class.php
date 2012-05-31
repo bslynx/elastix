@@ -543,6 +543,15 @@ CONTENIDO_ARCHIVO_AUDIO;
 
         return $extension;        
     }
+
+    private function _rechazar_correo_vacio($email)
+    {
+        if(preg_match("/^<?[a-z0-9]+([\._\-]?[a-z0-9]+[_\-]?)*@[a-z0-9]+([\._\-]?[a-z0-9]+)*(\.[a-z0-9]{2,4})+>?$/",trim($email)))
+            return TRUE;
+        else
+            return FALSE;
+    }
+
 /*
     public function getFunction()
     {

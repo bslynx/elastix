@@ -334,7 +334,8 @@ class paloSantoSysInfo
         $dsn = "sqlite3:///$arrConf[elastix_dbdir]/hardware_detector.db";
         $pDB  = new paloDB($dsn);
 
-        $query = "update car_system set num_serie='$num_serie', vendor='$vendor' where hwd='$hwd';";
+        
+        $query = "update car_system set num_serie='$num_serie', vendor='$vendor' where hwd='$hwd' and num_serie='' and vendor='';";
         $result=$pDB->genQuery($query);
 
         if($result==FALSE){

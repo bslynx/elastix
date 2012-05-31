@@ -2,11 +2,11 @@
 Summary: Package that installs A2Billing.
 Name: elastix-%{modname}
 Version: 1.9.4
-Release: 3
+Release: 4
 License: GPL
 Group: Applications/System
 Source0: %{modname}_%{version}.tar.gz
-Source1: %{modname}_%{version}-3.tgz
+Source1: %{modname}_%{version}-%{release}.tgz
 Patch0:  elastix-a2billing-1.8.1.patch
 BuildRoot: %{_tmppath}/%{name}-%{version}
 BuildArch: noarch
@@ -22,8 +22,6 @@ A2billing is a full featured telecom platform and softswitch providing converged
 
 
 %install
-
-mkdir -p /usr/share/a2billing
 
 rm -rf    $RPM_BUILD_ROOT
 mkdir -p  $RPM_BUILD_ROOT
@@ -256,6 +254,10 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) /etc/a2billing.conf
 
 %changelog
+* Thu Apr 26 2012 Alex Villacis Lasso <a_villacis@palosanto.com> 1.9.4-4
+- FIXED: Use commas instead of pipes in order to comply with Asterisk 1.6+ 
+  context syntax. Fixes Elastix bug #1248.
+
 * Mon Apr 02 2012 Bruno Macias <bmacias@palosanto.com> 1.9.4-3
 - UPDATED: script setup/changeencodepass.php was updated for support
   change manager asterisk config username and password for a2billing
