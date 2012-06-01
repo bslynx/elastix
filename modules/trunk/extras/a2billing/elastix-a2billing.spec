@@ -256,7 +256,7 @@ rm -rf $RPM_BUILD_ROOT
 %changelog
 * Thu May 31 2012 Alex Villacis Lasso <a_villacis@palosanto.com> 1.9.4-5
 - FIXED: Fix missing semicolon in a comment in file 
-  extension_a2billing_additionals.conf
+  extension_a2billing_additionals.conf. Fixes Elastix bug #1283.
 
 * Thu Apr 26 2012 Alex Villacis Lasso <a_villacis@palosanto.com> 1.9.4-4
 - FIXED: Use commas instead of pipes in order to comply with Asterisk 1.6+ 
