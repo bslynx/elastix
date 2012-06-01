@@ -261,7 +261,7 @@ class paloSantoSysInfo
         $arrSERVICES["MySQL"]["status_service"]    = $this->_existPID_ByCMD("mysqld","mysqld");
         $arrSERVICES["MySQL"]["name_service"]      = "Database Service";
 
-        $arrSERVICES["Apache"]["status_service"]   = $this->_existPID_ByFile("/var/run/httpd.pid","httpd");
+        $arrSERVICES["Apache"]["status_service"]   = $this->_existPID_ByCMD('httpd',"httpd");
         $arrSERVICES["Apache"]["name_service"]     = "Web Server";
 
         $arrSERVICES["Dialer"]["status_service"]   = $this->_existPID_ByFile("/opt/elastix/dialer/dialerd.pid","elastixdialer");
@@ -377,40 +377,30 @@ class paloSantoSysInfo
 
     function _existPID_ByFile($filePID, $nameService)
     {
-        if($this->_existService($nameService)){
-            if(file_exists($filePID)){
-                $pid=trim(`cat $filePID`);
-                $exist=`ps -p $pid | grep $pid`;
-                if(isset($exist)) return "OK";
-                else return "Shutdown";
-            }
-            return "Shutdown";
-        }
-        else
-            return "Not_exists";
+        if (!$this->_existService($nameService)) return "Not_exists";
+    	if (file_exists($filePID)) {
+    		$pid = trim(file_get_contents($filePID));
+            return (is_dir("/proc/$pid")) ? 'OK' : 'Shutdown';
+    	}
+        return "Shutdown";
     }
 
     function _existPID_ByCMD($serviceName, $nameService)
     {
-        if($this->_existService($nameService)){
-            $pid=trim(`/sbin/pidof $serviceName`);
-            $pid_grep=str_replace(" ","|",$pid);
-
-            $exist=`ps -p $pid | grep "[$pid_grep]"`;
-
-            if(isset($exist)) return "OK";
-            else return "Shutdown";
+        if (!$this->_existService($nameService)) return "Not_exists";
+        foreach (explode(' ', trim(`/sbin/pidof $serviceName`)) as $pid) {
+        	if ((is_dir("/proc/$pid"))) return 'OK';
         }
-        else
-            return "Not_exists";
+        return 'Shutdown';
     }
 
     function _existService($nameService)
     {
-        $path = "/etc/rc.d/init.d";
-        if(file_exists("$path/$nameService"))
-            return true;
-        return false;
+        if (file_exists("/usr/lib/systemd/system/{$nameService}.service"))
+            return TRUE;
+        if (file_exists("/etc/rc.d/init.d/{$nameService}"))
+            return TRUE;
+        return FALSE;
     }
 
     function getAsterisk_Connections()

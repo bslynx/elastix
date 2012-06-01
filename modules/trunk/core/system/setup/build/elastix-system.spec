@@ -128,6 +128,12 @@ fi
 %config(noreplace) /etc/dahdi/genconf_parameters
 
 %changelog
+* Fri Jun 01 2012 Alex Villacis Lasso <a_villacis@palosanto.com>
+- FIXED: Dashboard: rework service state query so that it works in both CentOS
+  and Fedora. In particular, Fedora denies access to /var/run/asterisk/httpd.pid
+  from asterisk user, so httpd needs to be queried by command name, not pid.
+  Also, query uses filesystem functions instead of external commands - faster.
+
 * Mon May 07 2012 Rocio Mera <rmera@palosanto.com> 2.3.0-9
 - UPDATED: Specfile was updated to release 9
 - CHANGED: modules - hardware_detector: fixed popup in blackmin theme
