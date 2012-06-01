@@ -292,6 +292,11 @@ fi
 /bin/asterisk.reload
 
 %changelog
+* Fri Jun 01 2012 Alex Villacis Lasso <a_villacis@palosanto.com>
+- FIXED: On-demand recording must not use MIXMON_FORMAT. The format for
+  recording is TOUCH_MONITOR_FORMAT, if defined, or wav if not defined.
+- CHANGED: Use ASTSPOOLDIR instead of hardcoded /var/spool/asterisk.
+
 * Mon May 28 2012 Sergio Broncano <sbroncano@palosanto.com> 2.3.0-9
 - CHANGED: MODULES - PBX/EXTENSION_BATCH: The following fields were added 
   callgroup, pickupgroup, disallow, allow, deny, permit, Record Incoming, 
