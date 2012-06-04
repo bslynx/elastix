@@ -108,6 +108,10 @@ fi
 /etc/yum.repos.d/*
 
 %changelog
+* Mon Jun 04 2012 Alex Villacis Lasso <a_villacis@palosanto.com>
+- CHANGED: Elastix Updater: remove E_STRICT from error_reporting to silence
+  warning messages at daemon startup in Fedora 17.
+
 * Fri Apr 27 2012 Rocio Mera <rmera@palosanto.com> 2.3.0-4
 - CHANGED: Addons - Build/elastix-addons.spec: update specfile with latest
   SVN history. Changed release in specfile
