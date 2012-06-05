@@ -294,6 +294,12 @@ fi
 /etc/cron.daily/asterisk_cleanup
 
 %changelog
+* Tue Jun 05 2012 Alex Villacis Lasso <a_villacis@palosanto.com>
+- FIXED: installer.php: stop leaving temporary file /tmp/trunk_dump.sql around 
+  after install or update.
+- FIXED: installer.php: stop leaving temporary file /var/www/db/trunk-pbx.db
+  around on most install/update scenarios. 
+
 * Mon Jun 04 2012 Alex Villacis Lasso <a_villacis@palosanto.com> 2.3.0-10
 - FIXED: Changed specfile so that several files are explicitly set as 
   executable. Fixes Elastix bugs #1291, #1292.
