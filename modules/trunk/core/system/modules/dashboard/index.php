@@ -265,10 +265,13 @@ function executeImage($module_name, $sImg)
 {
     $listaImgs = array(
         'CallsMemoryCPU'                                =>  array(null, 'functionCallback'),
+/*
         'ObtenerInfo_CPU_Usage'                         =>  array(array('size'), null),
         'ObtenerInfo_MemUsage'                          =>  array(array('size'), null),
         'ObtenerInfo_SwapUsage'                         =>  array(array('size'), null),
+*/
         'ObtenerInfo_Particion'                         =>  array(array('percent'), null),
+        'rbgauge'                                       =>  array(array('percent', 'size'), null),
     );
     if (isset($listaImgs[$sImg])) {
         $arrParameters = array();

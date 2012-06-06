@@ -128,6 +128,17 @@ fi
 %config(noreplace) /etc/dahdi/genconf_parameters
 
 %changelog
+* Wed Jun 06 2012 Alex Villacis Lasso <a_villacis@palosanto.com>
+- CHANGED: Dashboard: Reorganize some of the code for system status. Before this
+  commit, each gauge graph had to run the system probe anew in order to build 
+  the display. This, despite having the correct value superimposed on the graph
+  from the HTML output. This could sometimes lead to the gauge displaying a 
+  different value from the one in HTML. Now the gauge merely displays a value 
+  supplied by the URL, which is the same value used in HTML. This cuts three 
+  system probes. It also allows to remove some now-dead code. Additionally the 
+  paloSantoSysInfo class was changed to only do the system probe on an explicit
+  call, instead of every time an object is built.
+
 * Fri Jun 01 2012 Alex Villacis Lasso <a_villacis@palosanto.com>
 - FIXED: Dashboard: rework service state query so that it works in both CentOS
   and Fedora. In particular, Fedora denies access to /var/run/asterisk/httpd.pid

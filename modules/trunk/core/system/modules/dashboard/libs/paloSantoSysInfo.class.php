@@ -8,16 +8,9 @@ require_once "/var/lib/asterisk/agi-bin/phpagi-asmanager.php";
 
 class paloSantoSysInfo
 {
-    var $arrSysInfo;
-
-    function paloSantoSysInfo()
-    {
-        $this->arrSysInfo = obtener_info_de_sistema();
-    }
-
     function getSysInfo()
     {
-        return $this->arrSysInfo;
+        return obtener_info_de_sistema();
     }
 
     function ObtenerInfo_Particion($value)
@@ -41,10 +34,8 @@ class paloSantoSysInfo
 
     }
 
-    function ObtenerInfo_CPU_Usage($size = "90,20")
+    function rbgauge($value, $size = "90,20")
     {
-        $value = $this->arrSysInfo['CpuUsage'];
-
         $result = array();
         $result['ATTRIBUTES'] = array('TYPE'=>'gauge','SIZE'=>$size);  // bar => gauge
         $result['MESSAGES'] = array('ERROR'=>'Error','NOTHING_SHOW'=>'Nada que mostrar');
@@ -132,36 +123,6 @@ class paloSantoSysInfo
 
         $temp = array();
         $temp['DAT_1'] = array('VALUES'=>array("value"=>$valor));
-        $result['DATA'] = $temp;
-
-        return $result;
-    }
-
-    function ObtenerInfo_MemUsage($size = "90,20")
-    {
-        $value = ($this->arrSysInfo['MemTotal'] - $this->arrSysInfo['MemFree'] - $this->arrSysInfo['Cached'] - $this->arrSysInfo['MemBuffers'])/$this->arrSysInfo['MemTotal'];
-
-        $result = array();
-        $result['ATTRIBUTES'] = array('TYPE'=>'gauge','SIZE'=>$size); // bar => gauge
-        $result['MESSAGES'] = array('ERROR'=>'Error','NOTHING_SHOW'=>'Nada que mostrar');
-
-        $temp = array();
-        $temp['DAT_1'] = array('VALUES'=>array("value"=>$value));
-        $result['DATA'] = $temp;
-
-        return $result;
-    }
-
-    function ObtenerInfo_SwapUsage($size = "90,20")
-    {
-        $value = ($this->arrSysInfo['SwapTotal'] - $this->arrSysInfo['SwapFree'])/$this->arrSysInfo['SwapTotal'];
-
-        $result = array();
-        $result['ATTRIBUTES'] = array('TYPE'=>'gauge','SIZE'=>$size); // bar => gauge
-        $result['MESSAGES'] = array('ERROR'=>'Error','NOTHING_SHOW'=>'Nada que mostrar');
-
-        $temp = array();
-        $temp['DAT_1'] = array('VALUES'=>array("value"=>$value));
         $result['DATA'] = $temp;
 
         return $result;
