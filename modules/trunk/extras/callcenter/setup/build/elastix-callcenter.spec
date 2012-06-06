@@ -98,6 +98,10 @@ fi
 /etc/logrotate.d/elastixdialer
 
 %changelog
+* Wed Jun 06 2012 Alex Villacis Lasso <a_villacis@palosanto.com>
+- CHANGED: Agent Console: add onsubmit handling to login form so that pressing 
+  ENTER also starts login process.
+
 * Mon Jun 04 2012 Alex Villacis Lasso <a_villacis@palosanto.com>
 - CHANGED: Dialer: remove E_STRICT from error_reporting to silence warning 
   messages at daemon startup in Fedora 17.

@@ -41,7 +41,7 @@
 {elseif $NO_AGENTS}
 <p><h4 align="center">{$LABEL_NOAGENTS}</h4></p>
 {else}
-<form method="POST"  action="index.php?menu={$MODULE_NAME}">
+<form method="POST"  action="index.php?menu={$MODULE_NAME}" onsubmit="do_login(); return false;">
 
 <p>&nbsp;</p>
 <p>&nbsp;</p>
