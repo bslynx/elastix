@@ -34,9 +34,56 @@ function recoger_valor($key, &$get, &$post, $default = NULL) {
     else return $default;
 }
 
+function obtener_muestra_actividad_cpu()
+{
+    if (!function_exists('_info_sistema_linea_cpu')) {
+        function _info_sistema_linea_cpu($s) { return (strpos($s, 'cpu ') === 0); }
+    }
+    $muestra = preg_split('/\s+/', array_shift(array_filter(file('/proc/stat', FILE_IGNORE_NEW_LINES), '_info_sistema_linea_cpu')));
+    array_shift($muestra);
+    return $muestra;
+}
+
+function calcular_carga_cpu_intervalo($m1, $m2)
+{
+    if (!function_exists('_info_sistema_diff_stat')) {
+        function _info_sistema_diff_stat($a, $b)
+        {
+            $aa = str_split($a);
+            $bb = str_split($b);
+            while (count($aa) < count($bb)) array_unshift($aa, '0');
+            while (count($aa) > count($bb)) array_unshift($bb, '0');
+            while (count($aa) > 0 && $aa[0] == $bb[0]) {
+                array_shift($aa);
+                array_shift($bb);
+            }
+            if (count($aa) <= 0) return 0;
+            $a = implode('', $aa); $b = implode('', $bb);
+            return (int)$b - (int)$a;
+        }
+    }
+    $diffmuestra = array_map('_info_sistema_diff_stat', $m1, $m2);
+    $cpuActivo = $diffmuestra[0] + $diffmuestra[1] + $diffmuestra[2] + $diffmuestra[4] + $diffmuestra[5] + $diffmuestra[6];
+    $cpuTotal = $cpuActivo + $diffmuestra[3];
+    return ($cpuTotal > 0) ? $cpuActivo / $cpuTotal : 0;
+}
+
 function obtener_info_de_sistema()
 {
-    $arrInfo=array();
+    $muestracpu = array();
+    $muestracpu[0] = obtener_muestra_actividad_cpu();
+
+    $arrInfo=array(
+        'MemTotal'      =>  0,
+        'MemFree'       =>  0,
+        'MemBuffers'    =>  0,
+        'SwapTotal'     =>  0,
+        'SwapFree'      =>  0,
+        'Cached'        =>  0,
+        'CpuModel'      =>  '(unknown)',
+        'CpuVendor'     =>  '(unknown)',
+        'CpuMHz'        =>  0.0,
+    );
     $arrExec=array();
     $arrParticiones=array();
     $varExec="";
@@ -72,6 +119,9 @@ function obtener_info_de_sistema()
             if(preg_match("/^model name[[:space:]]+:[[:space:]]+(.*)$/", $linea, $arrReg)) {
                 $arrInfo["CpuModel"]=trim($arrReg[1]);
             }
+            if (preg_match("/^Processor[[:space:]]+:[[:space:]]+(.*)$/", $linea, $arrReg)) {
+                $arrInfo["CpuModel"]=trim($arrReg[1]);
+            }
             if(preg_match("/^vendor_id[[:space:]]+:[[:space:]]+(.*)$/", $linea, $arrReg)) {
                 $arrInfo["CpuVendor"]=trim($arrReg[1]);
             }
@@ -79,26 +129,6 @@ function obtener_info_de_sistema()
                 $arrInfo["CpuMHz"]=trim($arrReg[1]);
             }
         }
-        fclose($fh);
-    }
-
-
-    if($fh=fopen("/proc/stat", "r")) {
-        while($linea=fgets($fh, "4048")) {
-            if(preg_match("/^cpu[[:space:]]+([[:digit:]]+)[[:space:]]+([[:digit:]]+)[[:space:]]+([[:digit:]]+)" .
-                    "[[:space:]]+([[:digit:]]+)[[:space:]]+([[:digit:]]+)[[:space:]]+([[:digit:]]+)" .
-                    "[[:space:]]+([[:digit:]]+)[[:space:]]?/", $linea, $arrReg)) {
-                $cpuActivo=$arrReg[1]+$arrReg[2]+$arrReg[3]+$arrReg[5]+$arrReg[6]+$arrReg[7];
-                $cpuTotal=$cpuActivo+$arrReg[4];
-                if($cpuTotal>0 and $cpuActivo>=0) {
-                    $arrInfo["CpuUsage"]=$cpuActivo/$cpuTotal;
-                } else {
-                    $arrInfo["CpuUsage"]="";
-                }
-
-            }
-        }
-
         fclose($fh);
     }
 
@@ -142,6 +172,11 @@ function obtener_info_de_sistema()
             }
         }
     }
+
+    usleep(250000);
+    $muestracpu[1] = obtener_muestra_actividad_cpu();
+    $arrInfo['CpuUsage'] = calcular_carga_cpu_intervalo($muestracpu[0], $muestracpu[1]);
+
     return $arrInfo;
 }
 

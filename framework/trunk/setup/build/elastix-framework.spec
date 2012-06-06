@@ -295,6 +295,12 @@ rm -rf $RPM_BUILD_ROOT
 /usr/share/elastix/privileged/*
 
 %changelog
+* Wed Jun 06 2012 Alex Villacis Lasso <a_villacis@palosanto.com>
+- FIXED: Framework: probe CPU load the proper way, by reading /proc/stat twice
+  and subtracting values. Fixes Elastix bug #1043.
+- FIXED: Framework: use Processor entry in /proc/cpuinfo if present. Allows 
+  presenting a decent "CPU" entry in dashboard on ARM systems.
+
 * Thu May 31 2012 Alex Villacis Lasso <a_villacis@palosanto.com>
 - CHANGED: Only overwrite /etc/yum.repos.d/CentOS-Base.repo if this file already
   exists. Prevents creation of nonfunctional repository in Fedora 17.
