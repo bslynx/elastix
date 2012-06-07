@@ -30,7 +30,7 @@
 declare(ticks=1);
 ini_set('memory_limit', -1);        // Permitir al programa usar toda la memoria que necesite
 ini_set('display_errors', 0);       // Impedir que los errores de STDERR se copien en STDOUT
-ini_set('error_reporting', E_ALL);  // Mostrar advertencias además de errores
+ini_set('error_reporting', E_ALL & ~E_STRICT);  // Mostrar advertencias además de errores
 
 // Agregar directorio de script a la lista de rutas a buscar para require()
 ini_set('include_path', dirname($argv[0]).":".ini_get('include_path'));
@@ -297,7 +297,7 @@ function finalizarInstanciaPrevia($sNombrePID)
         $regs = NULL;
         $contenido = file($sNombrePID);
         if (!is_array($contenido)) die("Unable to open PID file '$sNombrePID'\n");
-        if (count($contenido) > 0 && ereg('^([[:digit:]]+)', $contenido[0], $regs)) {
+        if (count($contenido) > 0 && preg_match('/^(\d+)/', $contenido[0], $regs)) {
             $iPid = $regs[1];
             if (posix_kill($iPid, 0)) {
                 /* El siguiente método es específico de Linux y no funcionará 

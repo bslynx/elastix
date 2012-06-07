@@ -1,3 +1,4 @@
+* Dialer: remove last call to deprecated ereg(). 
 * Agent Console: add onsubmit handling to login form so that pressing ENTER
   also starts login process.
 * Dialer: remove E_STRICT from error_reporting to silence warning messages at 

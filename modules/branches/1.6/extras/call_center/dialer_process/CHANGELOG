@@ -1,3 +1,4 @@
+* Dialer: remove last call to deprecated ereg(). 
 * Agent Console: add onsubmit handling to login form so that pressing ENTER
   also starts login process.
 * Dialer: set the timezone explictly for PHP 5.3+ compatibility.

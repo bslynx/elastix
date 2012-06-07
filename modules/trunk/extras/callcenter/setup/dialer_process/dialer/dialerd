@@ -297,7 +297,7 @@ function finalizarInstanciaPrevia($sNombrePID)
         $regs = NULL;
         $contenido = file($sNombrePID);
         if (!is_array($contenido)) die("Unable to open PID file '$sNombrePID'\n");
-        if (count($contenido) > 0 && ereg('^([[:digit:]]+)', $contenido[0], $regs)) {
+        if (count($contenido) > 0 && preg_match('/^(\d+)/', $contenido[0], $regs)) {
             $iPid = $regs[1];
             if (posix_kill($iPid, 0)) {
                 /* El siguiente método es específico de Linux y no funcionará 
