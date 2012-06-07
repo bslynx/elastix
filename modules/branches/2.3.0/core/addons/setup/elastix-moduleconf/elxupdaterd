@@ -29,7 +29,7 @@
   $Id: dialerd,v 1.2 2008/09/08 18:29:36 alex Exp $ */
 declare(ticks=1);
 ini_set('display_errors', 0);       // Impedir que los errores de STDERR se copien en STDOUT
-ini_set('error_reporting', E_ALL);  // Mostrar advertencias además de errores
+ini_set('error_reporting', E_ALL & ~E_STRICT);  // Mostrar advertencias además de errores
 
 // Agregar directorio de script a la lista de rutas a buscar para require()
 ini_set('include_path', dirname($argv[0]).":".ini_get('include_path'));

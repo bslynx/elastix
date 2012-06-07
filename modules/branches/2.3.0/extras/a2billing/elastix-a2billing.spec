@@ -2,7 +2,7 @@
 Summary: Package that installs A2Billing.
 Name: elastix-%{modname}
 Version: 1.9.4
-Release: 4
+Release: 5
 License: GPL
 Group: Applications/System
 Source0: %{modname}_%{version}.tar.gz
@@ -254,6 +254,10 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) /etc/a2billing.conf
 
 %changelog
+* Thu May 31 2012 Alex Villacis Lasso <a_villacis@palosanto.com> 1.9.4-5
+- FIXED: Fix missing semicolon in a comment in file 
+  extension_a2billing_additionals.conf. Fixes Elastix bug #1283.
+
 * Thu Apr 26 2012 Alex Villacis Lasso <a_villacis@palosanto.com> 1.9.4-4
 - FIXED: Use commas instead of pipes in order to comply with Asterisk 1.6+ 
   context syntax. Fixes Elastix bug #1248.

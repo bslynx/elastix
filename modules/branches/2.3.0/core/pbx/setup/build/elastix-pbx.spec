@@ -3,7 +3,7 @@
 Summary: Elastix Module PBX 
 Name:    elastix-%{modname}
 Version: 2.3.0
-Release: 9
+Release: 10
 License: GPL
 Group:   Applications/System
 Source0: %{modname}_%{version}-%{release}.tgz
@@ -281,17 +281,34 @@ fi
 /etc/asterisk/sip_notify_custom_elastix.conf
 /var/lib/asterisk/*
 /var/lib/asterisk/agi-bin
-/etc/init.d/festival
 /var/log/festival
 /usr/share/elastix/module_installer/%{name}-%{version}-%{release}/setup/extensions_override_elastix.conf
 %defattr(-, root, root)
 /tftpboot/*
 /usr/share/elastix/tftp
-/usr/share/elastix/privileged/*
-/etc/cron.daily/asterisk_cleanup
+%defattr(755, root, root)
+/etc/init.d/festival
 /bin/asterisk.reload
+/usr/share/elastix/privileged/*
+/var/lib/asterisk/agi-bin/*
+/etc/cron.daily/asterisk_cleanup
 
 %changelog
+* Tue Jun 05 2012 Alex Villacis Lasso <a_villacis@palosanto.com>
+- FIXED: installer.php: stop leaving temporary file /tmp/trunk_dump.sql around 
+  after install or update.
+- FIXED: installer.php: stop leaving temporary file /var/www/db/trunk-pbx.db
+  around on most install/update scenarios. 
+
+* Mon Jun 04 2012 Alex Villacis Lasso <a_villacis@palosanto.com> 2.3.0-10
+- FIXED: Changed specfile so that several files are explicitly set as 
+  executable. Fixes Elastix bugs #1291, #1292.
+
+* Fri Jun 01 2012 Alex Villacis Lasso <a_villacis@palosanto.com>
+- FIXED: On-demand recording must not use MIXMON_FORMAT. The format for
+  recording is TOUCH_MONITOR_FORMAT, if defined, or wav if not defined.
+- CHANGED: Use ASTSPOOLDIR instead of hardcoded /var/spool/asterisk.
+
 * Mon May 28 2012 Sergio Broncano <sbroncano@palosanto.com> 2.3.0-9
 - CHANGED: MODULES - PBX/EXTENSION_BATCH: The following fields were added 
   callgroup, pickupgroup, disallow, allow, deny, permit, Record Incoming, 
