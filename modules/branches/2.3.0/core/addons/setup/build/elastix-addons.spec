@@ -108,6 +108,9 @@ fi
 /etc/yum.repos.d/*
 
 %changelog
+* Thu Jun 07 2012 Alex Villacis Lasso <a_villacis@palosanto.com>
+- CHANGED: Elastix Updater: remove lone call to deprecated ereg().
+
 * Mon Jun 04 2012 Alex Villacis Lasso <a_villacis@palosanto.com>
 - CHANGED: Elastix Updater: remove E_STRICT from error_reporting to silence
   warning messages at daemon startup in Fedora 17.
