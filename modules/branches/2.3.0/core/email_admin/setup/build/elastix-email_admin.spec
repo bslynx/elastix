@@ -190,6 +190,9 @@ fi
 /var/www/disable_vacations.php
 
 %changelog
+* Thu Jun 07 2012 Alex Villacis Lasso <a_villacis@palosanto.com>
+- FIXED: Postfix Stats: the cron job should explicitly set the default timezone.
+
 * Mon Apr 02 2012 Rocio Mera <rmera@palosanto.com> 2.3.0-6
 - CHANGED: Email_Admin - Remote_Smtp: Changed in index.php and remote.js to 
   show other as default option in smpt_server
