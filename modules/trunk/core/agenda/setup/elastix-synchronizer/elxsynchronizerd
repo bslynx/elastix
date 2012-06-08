@@ -82,12 +82,12 @@ function main($paramConfig, $sDescDemonio, $sNombreDemonio /* , ... */)
     $sNombreMainLog = $sNombreDemonio.'.log';
     $sNombrePID = $sNombreDemonio.'.pid';
 
-/*
+
     // El script se rehusa a ejecutarse como root en Unix/Linux.
     if (posix_geteuid() == 0) die(
         "\nSECURITY WARNING: Sorry, I STRONGLY OBJECT to run as root.\n\n".
         "This program requires only network access and therefore does not require root privileges.\n\n");
-*/
+
 
     // Construir el nombre del archivo de configuración
     $sRutaTrabajo = dirname($argv[0]);
