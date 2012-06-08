@@ -128,6 +128,11 @@ fi
 %config(noreplace) /etc/dahdi/genconf_parameters
 
 %changelog
+* Thu Jun 07 2012 Alex Villacis Lasso <a_villacis@palosanto.com>
+- CHANGED: PaloSantoNetwork: mark some methods as private
+- CHANGED: PaloSantoNetwork: more efficient implementation for IP manipulation 
+  methods.
+
 * Wed Jun 06 2012 Alex Villacis Lasso <a_villacis@palosanto.com>
 - CHANGED: Dashboard: Reorganize some of the code for system status. Before this
   commit, each gauge graph had to run the system probe anew in order to build 
