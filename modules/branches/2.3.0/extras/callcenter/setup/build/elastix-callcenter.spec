@@ -98,6 +98,9 @@ fi
 /etc/logrotate.d/elastixdialer
 
 %changelog
+* Thu Jun 07 2012 Alex Villacis Lasso <a_villacis@palosanto.com> 
+- CHANGED: Dialer: remove last call to deprecated ereg().
+
 * Wed Jun 06 2012 Alex Villacis Lasso <a_villacis@palosanto.com>
 - CHANGED: Agent Console: add onsubmit handling to login form so that pressing 
   ENTER also starts login process.
