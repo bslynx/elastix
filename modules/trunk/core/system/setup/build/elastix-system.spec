@@ -128,6 +128,11 @@ fi
 %config(noreplace) /etc/dahdi/genconf_parameters
 
 %changelog
+* Mon Jun 11 2012 Alex Villacis Lasso <a_villacis@palosanto.com>
+- FIXED: PaloSantoNetwork: rewrite network parameter query to stop using 
+  ifconfig which changed output format between CentOS and Fedora 17. Add
+  documentation on the output format of network query methods.
+
 * Thu Jun 07 2012 Alex Villacis Lasso <a_villacis@palosanto.com>
 - CHANGED: PaloSantoNetwork: mark some methods as private
 - CHANGED: PaloSantoNetwork: more efficient implementation for IP manipulation 
