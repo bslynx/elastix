@@ -282,7 +282,7 @@ TEMP;
     return $content;
 }
 
-function PrincipalFileAtcom320IAX($DisplayName, $id_device, $secret, $ipAdressServer)
+function PrincipalFileAtcom320IAX($DisplayName, $id_device, $secret, $arrParameters, $ipAdressServer)
 {
 $arrAtcom320 = array(
 //***************Network Settings***************
@@ -345,7 +345,7 @@ $arrAtcom320 = array(
     return $arrAtcom320;
 }
 
-function PrincipalFileAtcom320SIP($DisplayName, $id_device, $secret, $ipAdressServer)
+function PrincipalFileAtcom320SIP($DisplayName, $id_device, $secret, $arrParameters, $ipAdressServer)
 {
 $arrAtcom320 = array(
 //***************Network Settings***************
@@ -418,15 +418,47 @@ $arrAtcom320 = array(
     return $arrAtcom320;
 }
 
-function PrincipalFileAtcom530SIP($DisplayName, $id_device, $secret, $ipAdressServer, $macAdress, $versionCfg)
+function existsValue($arr, $key, $default)
+{
+    if(isset($arr[$key])){
+        $value = trim($arr[$key]);
+        if($value != "") return $value;
+        else return $default;
+    }
+    else return $default;
+}
+
+function PrincipalFileAtcom530SIP($DisplayName, $id_device, $secret, $arrParameters, $ipAdressServer, $macAdress, $versionCfg)
 {
    $versionCfg = isset($versionCfg)?$versionCfg:'2.0002';
+   $configNetwork ="";
+   $ByDHCP = existsValue($arrParameters,'By_DHCP',1);
+   // 1 indica que es por DHCP y 0 por estatico
+
+   if($ByDHCP==0){ // 0 es IP Estatica
+        $configNetwork ="
+Static IP          :".existsValue($arrParameters,'IP','')."
+Static NetMask     :".existsValue($arrParameters,'Mask','')."
+Static GateWay     :".existsValue($arrParameters,'GW','')."
+Primary DNS        :".existsValue($arrParameters,'DNS1','')."
+Secundary DNS      :".existsValue($arrParameters,'DNS2','')."
+";
+   }
+
+# CONTENT
    $content=
 "<<VOIP CONFIG FILE>>Version:$versionCfg                         
 
 <GLOBAL CONFIG MODULE>
 SNTP Server        :$ipAdressServer
 Enable SNTP        :1
+$configNetwork
+DHCP Mode          :$ByDHCP
+Time Zone          :".existsValue($arrParameters,'Time_Zone',12)."
+
+<LAN CONFIG MODULE>
+Bridge Mode        :".existsValue($arrParameters,'Bridge',1)."
+
 
 <TELE CONFIG MODULE>
 Dial End With #    :1
@@ -502,7 +534,7 @@ Download Interval  :1
     return $content;
 }
 
-function PrincipalFileAtcom530IAX($DisplayName, $id_device, $secret, $ipAdressServer, $macAdress, $versionCfg)
+function PrincipalFileAtcom530IAX($DisplayName, $id_device, $secret, $arrParameters, $ipAdressServer, $macAdress, $versionCfg)
 {
    $versionCfg = isset($versionCfg)?$versionCfg:'2.0002';
    $content=
@@ -511,6 +543,15 @@ function PrincipalFileAtcom530IAX($DisplayName, $id_device, $secret, $ipAdressSe
 <GLOBAL CONFIG MODULE>
 SNTP Server        :$ipAdressServer
 Enable SNTP        :1
+Static IP          :".existsValue($arrParameters,'IP','')."
+Static NetMask     :".existsValue($arrParameters,'Mask','')."
+Static GateWay     :".existsValue($arrParameters,'GW','')."
+Primary DNS        :".existsValue($arrParameters,'DNS','')."
+DHCP Mode          :".existsValue($arrParameters,'By_DHCP',0)."
+Time Zone          :".existsValue($arrParameters,'Time_Zone',12)."
+
+<LAN CONFIG MODULE>
+Bridge Mode        :".existsValue($arrParameters,'Bridge',0)."
 
 <TELE CONFIG MODULE>
 Dial End With #    :1
@@ -560,8 +601,102 @@ function arrAtcom530($ipAdressServer, $macAdress)
         "download"  => "tftp -ip $ipAdressServer -file atc$macAdress.cfg",
         "save"      => "",
         "reload"    => "",
-);
+   );
 
     return $arrAtcom530;
+}
+
+function getVersionConfigFileATCOM($ip, $user, $passwd)
+{
+    $nonce = getNonceATCOM($ip);
+
+    usleep(500000);
+    $fileC = getConfigFileATCOM($ip,$nonce,$user,$passwd,true);
+
+    usleep(500000);
+    $logou = logoutATCOM($ip,$nonce);
+
+    return $fileC;
+}
+
+function getNonceATCOM($ip)
+{
+    $token = null;
+    while(true){
+        $home_html = file_get_contents("http://$ip");
+        if($home_html === false) break;
+
+        if(preg_match("/<input type=\"hidden\" name=\"nonce\" value=\"([0-9a-zA-Z]+)\">/",$home_html,$arrTokens)){
+            if(isset($arrTokens[1])){
+                $token = $arrTokens[1];
+                break;
+            }
+        }
+    }
+    return $token;
+}
+
+function logoutATCOM($ip, $nonce)
+{
+    $respuesta = null;
+    $conexion  = @fsockopen($ip,80);
+
+    if ($conexion) {
+       $dataSend = "DefaultLogout=Logout";
+       $dataLenght = strlen($dataSend);
+       $headerRequest = createHeaderHttp($ip,"/LogOut.htm",$dataLenght,$nonce);
+       fputs($conexion,$headerRequest.$dataSend);
+
+       while(($r = fread($conexion,2048)) != "")
+           $respuesta .= $r;
+       fclose($conexion);
+    }
+    else
+       echo "Error Conección $ip\n";
+
+    return $respuesta;
+}
+
+function getConfigFileATCOM($ip, $nonce, $user, $passwd, $getOnlyVersion = false)
+{
+    $respuesta = null;
+    $encoded   = "$user:".md5("$user:$passwd:$nonce");
+    $conexion  = @fsockopen($ip,80);
+
+    if ($conexion) {
+       $dataSend = "encoded=$encoded&nonce=$nonce&goto=Logon&URL=/";
+       $dataLenght = strlen($dataSend);
+       $headerRequest = createHeaderHttp($ip,"/config.txt",$dataLenght,$nonce);
+       fputs($conexion,$headerRequest.$dataSend);
+
+       while(($r = fread($conexion,2048)) != ""){
+            if($getOnlyVersion){
+                if(preg_match("/<<VOIP CONFIG FILE>>Version:([2-9]{1}\.[0-9]{4})/",$r,$arrTokens)){
+                    if(isset($arrTokens[1])){
+                        $respuesta = $arrTokens[1];
+                        break;
+                    }
+                }
+            }
+            else
+                $respuesta .= $r;
+       }
+       fclose($conexion);
+    }
+    else
+       echo "Error Conección $ip\n";
+
+    return $respuesta;
+}
+
+function createHeaderHttp($ip_remote, $file_remote, $dataLenght, $nonce)
+{
+    $headerRequest  = "POST $file_remote HTTP/1.0\r\n";
+    $headerRequest .= "Host: $ip_remote\r\n";
+    $headerRequest .= "Content-Type: application/x-www-form-urlencoded\r\n";
+    $headerRequest .= "Cookie: auth=$nonce\r\n";
+    $headerRequest .= "Connection:keep-alive\r\n";
+    $headerRequest .= "Content-Length: $dataLenght\r\n\r\n";
+    return $headerRequest;
 }
 ?>

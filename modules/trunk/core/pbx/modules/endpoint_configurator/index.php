@@ -145,7 +145,9 @@ function endpointConfiguratedShow($smarty, $module_name, $local_templates_dir, $
             }
 
             if(is_array($arrEndpointsMap) && count($arrEndpointsMap)>0){
+                $cont=0;
                 foreach($arrEndpointsMap as $key => $endspoint){
+                    $cont++;
                     if(isset($endspoint['model_no']) && $endspoint['model_no'] != ""){
                         if($paloEndPoint->modelSupportIAX($endspoint['model_no']))
                             $comboDevices = combo($arrDeviceFreePBXAll,$endspoint['account']);
@@ -194,15 +196,17 @@ function endpointConfiguratedShow($smarty, $module_name, $local_templates_dir, $
                         else
                             $arrTmp[7] = $currentExtension;
                     }
-
+                   
                     $arrTmp[2] = $endspoint['mac_adress'];
-                    $arrTmp[3] = "<a href='http://{$endspoint['ip_adress']}/' target='_blank'>{$endspoint['ip_adress']}</a><input type='hidden' name='ip_adress_endpoint_{$endspoint['mac_adress']}' value='{$endspoint['ip_adress']}' />";
+                    //$arrTmp[3] = "<div class='chkbox' id=".$cont." style='width:135px;'><div class='resp_".$cont."'><a href='http://{$endspoint['ip_adress']}/' target='_blank' id='a_".$cont."' style='float:left;'>{$endspoint['ip_adress']}</a><input type='hidden' name='ip_adress_endpoint_{$endspoint['mac_adress']}' id='hid_".$cont."' value='{$endspoint['ip_adress']}' />"."<input type='checkbox' id='chk_".$cont."' name='{$endspoint['mac_adress']}' style='margin-top:1px;' /></div></div>";
+                     $arrTmp[3] = "<a href='http://{$endspoint['ip_adress']}/' target='_blank'>{$endspoint['ip_adress']}</a><input type='hidden' name='ip_adress_endpoint_{$endspoint['mac_adress']}' value='{$endspoint['ip_adress']}' />";
                     $arrTmp[4] = $endspoint['name_vendor']." / ".$endspoint['desc_vendor']."&nbsp;<input type='hidden' name='id_vendor_device_{$endspoint['mac_adress']}' value='{$endspoint['id_vendor']}' />&nbsp;<input type='hidden' name='name_vendor_device_{$endspoint['mac_adress']}' value='{$endspoint['name_vendor']}' />";
 
                     $arrData[] = $arrTmp;
                     $_SESSION["endpoint_ip"][$endspoint['mac_adress']] = $endspoint['ip_adress'];
                 }
                 $_SESSION['elastix_endpoints'] = $arrData;
+                $_SESSION['grid'] = $arrData;
                 //Lo guardo en la session para hacer mucho mas rapido el proceso
                 //de configuracion de los endpoint. Solo la primera vez corre el
                 //comado nmap y cuando quiera el usuario correrlo de nuevo lo debe

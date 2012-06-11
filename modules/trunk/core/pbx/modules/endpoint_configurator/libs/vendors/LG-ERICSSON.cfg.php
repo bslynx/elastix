@@ -1,6 +1,6 @@
 <?php
 
-function PrincipalFileLG_IP8802A($DisplayName, $id_device, $secret, $ipAdressServer)
+function PrincipalFileLG_IP8802A($DisplayName, $id_device, $secret, $arrParameters, $ipAdressServer)
 {
     $content = "
 [VOIP]
