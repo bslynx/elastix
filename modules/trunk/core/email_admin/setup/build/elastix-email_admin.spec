@@ -190,6 +190,9 @@ fi
 /var/www/disable_vacations.php
 
 %changelog
+* Mon Jun 11 2012 Alex Villacis Lasso <a_villacis@palosanto.com>
+- FIXED: Remote SMTP: only check authentication on activation, not deactivation.
+
 * Thu Jun 07 2012 Alex Villacis Lasso <a_villacis@palosanto.com>
 - FIXED: Postfix Stats: the cron job should explicitly set the default timezone.
 
