@@ -296,6 +296,8 @@ rm -rf $RPM_BUILD_ROOT
 
 %changelog
 * Mon Jun 11 2012 Alex Villacis Lasso <a_villacis@palosanto.com>
+- FIXED: Framework: replace TERM=dumb with TERM=xterm in elastix-helper 
+  environment, prevents error messages from appearing on stderr.
 - FIXED: Framework: teach version display to deal with some missing packages
 
 * Fri Jun 08 2012 Alberto Santos <asantos@palosanto.com>
