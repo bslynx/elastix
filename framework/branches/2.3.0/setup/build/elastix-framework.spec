@@ -295,6 +295,9 @@ rm -rf $RPM_BUILD_ROOT
 /usr/share/elastix/privileged/*
 
 %changelog
+* Mon Jun 11 2012 Alex Villacis Lasso <a_villacis@palosanto.com>
+- FIXED: Framework: teach version display to deal with some missing packages
+
 * Wed Jun 06 2012 Alex Villacis Lasso <a_villacis@palosanto.com>
 - FIXED: Framework: probe CPU load the proper way, by reading /proc/stat twice
   and subtracting values. Fixes Elastix bug #1043.

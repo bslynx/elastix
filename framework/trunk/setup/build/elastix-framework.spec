@@ -295,6 +295,9 @@ rm -rf $RPM_BUILD_ROOT
 /usr/share/elastix/privileged/*
 
 %changelog
+* Mon Jun 11 2012 Alex Villacis Lasso <a_villacis@palosanto.com>
+- FIXED: Framework: teach version display to deal with some missing packages
+
 * Fri Jun 08 2012 Alberto Santos <asantos@palosanto.com>
 - ADDED: framework databases, added a new database called elastix.db
   SVN Rev[3982]

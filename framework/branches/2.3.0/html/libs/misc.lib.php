@@ -541,27 +541,25 @@ function generarDSNSistema($sNombreUsuario, $sNombreDB, $ruta_base='')
  *
  * @return  mixed   NULL si no se reconoce usuario, o el DNS con clave resuelta
  */
-function obtenerDetallesRPMS(){
+function obtenerDetallesRPMS()
+{
     $comando1  = "/bin/bash /usr/bin/versionPaquetes.sh";
 
-    $arrPro = "";
-    ///// elastix web interface
-    exec($comando1,$output1,$retval);
-    if ($retval<>0){
-        $arrPro['Elastix'] = array("name" => "no", "version" => "no", "release" => "no");
-    }
-    else{ // se ejecuto de manera correcta
-        $arrmin = "";
-        for($i = 0; $i < count($output1); $i++){
-            $lim = substr($output1[$i], 0, 3);
-            if($lim == "RPM"){
-                $j = 0;
-                $label = substr($output1[$i], 4);
-            }else{
-                $arrPro[$label][$j] =  explode(" ",$output1[$i]);
-                $j++;
+    $arrPro = array();
+    $output1 = $retval = NULL;
+    exec($comando1, $output1, $retval);
+    $label = NULL;
+    foreach ($output1 as $s) {
+    	if (substr($s, 0, 3) == 'RPM') {
+            $arrPro[$label = substr($s, 4)] = array();
+    	} else {
+            $regs = NULL;
+            if (preg_match('/package (.+) is not installed/', $s, $regs)) {
+                $arrPro[$label][] = array($regs[1], '(not installed)', ' ');
+            } else {
+                $arrPro[$label][] = explode(' ', $s);
             }
-        }
+    	}
     }
     return $arrPro;
 }
