@@ -347,26 +347,11 @@ class paloSantoNavigation {
             return $this->includeModule($ultimoMenu);
         }
         else {
-/*
-            $retVar .= "<iframe id=\"myframe\" src=\"" . $this->arrMenu[$this->currSubMenu]['Link'] . "\" scrolling=\"no\" marginwidth=\"0\" ";
-            $retVar .= " marginheight=\"0\" ";
-            $retVar .= " frameborder=\"0\" vspace=\"0\" hspace=\"0\" style=\"overflow:visible; width:100%; display:none\"></iframe>";
-*/
-/*
-            $retVar  = "<iframe marginwidth=\"0\" marginheight=\"0\" style=\"border: 1px solid rgb(200, 200, 200); background-color: rgb(255, 255, 255);";
-            $retVar .= "\" src=\"" . $this->arrMenu[$this->currSubMenu]['Link'] . "\" name=\"myframe\" id=\"myframe\" frameborder=\"0\"";
-            $retVar .= " width=\"100%\"></iframe>";
-*/
-            /*Version 0.9 agregado variable $ip*/
-            $name_server = $this->obtenerNameServer();
-            $ip_server   = $this->obtenerIpServer("eth0");
-            if($ip_server==null)
-                $ip_server="127.0.0.1";
 			$title = $bSubMenu2Framed?$this->arrMenu[$this->currSubMenu2]['Name']:$this->arrMenu[$this->currSubMenu]['Name'];
 			$this->smarty->assign("title",$title);
 			$link=$bSubMenu2Framed?$this->arrMenu[$this->currSubMenu2]['Link']:$this->arrMenu[$this->currSubMenu]['Link'];
-            $link = str_replace("{NAME_SERVER}",$name_server,$link);
-            $link = str_replace("{IP_SERVER}",$ip_server,$link);
+            $link = str_replace("{NAME_SERVER}", $_SERVER['SERVER_NAME'], $link);
+            $link = str_replace("{IP_SERVER}", $_SERVER['SERVER_ADDR'], $link);
 
             $retVar  = "<iframe marginwidth=\"0\" marginheight=\"0\" class=\"frameModule\"";
             $retVar .= "\" src=\"" . $link . "\" name=\"myframe\" id=\"myframe\" frameborder=\"0\"";
@@ -388,24 +373,6 @@ class paloSantoNavigation {
         } else {
             return "Error: The module <b>modules/$module/index.php</b> could not be found<br>";
         }
-    }
-
-    function obtenerIpServer($eth)
-    {
-        exec("which ifconfig 2>/dev/null||echo /sbin/ifconfig",$arrSalidaIfConfig,$flagSalidaIfConfig);
-        if($flagSalidaIfConfig==0 && is_array($arrSalidaIfConfig)  && count($arrSalidaIfConfig)>0){
-            exec("$arrSalidaIfConfig[0] $eth|gawk '/inet addr/{print $2}'|gawk -F: '{print $2}'",$arrSalidaIpServer,$flagSalidaIpServer);
-            if($flagSalidaIpServer==0 && is_array($arrSalidaIpServer)  && count($arrSalidaIpServer)>0){
-                return $arrSalidaIpServer[0];
-            }
-            return false;
-        }
-        return false;
-    }
-
-    function obtenerNameServer()
-    {
-        return $_SERVER['SERVER_NAME'];
     }
 
     /**
