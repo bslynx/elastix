@@ -543,10 +543,9 @@ function createStatus($type,$text)
 
 function network()
 {
-    $ip=$_SERVER['SERVER_ADDR'];
+    $ip = $_SERVER['SERVER_ADDR'];
     $total = subMask($ip);
-    list($oc1, $oc2, $oc3, $oc4)=explode(".",$ip);
-    return $oc1.".".$oc2.".".$oc3.".0"."/".$total;
+    return paloNetwork::getNetAdress($ip, $total)."/".$total;    
 }
 
 function subMask($ip)

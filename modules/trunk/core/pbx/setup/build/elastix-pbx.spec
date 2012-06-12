@@ -295,6 +295,8 @@ fi
 
 %changelog
 * Tue Jun 12 2012 Alex Villacis Lasso <a_villacis@palosanto.com>
+- FIXED: Endpoint Configurator: Properly figure out network mask for local 
+  network instead of hardcoding a /24 network mask.
 - FIXED: Endpoint Configurator: Relax pattern matching in listmacip script to
   account for differences in output format in nmap from CentOS to Fedora 17.
 - FIXED: Endpoint Configurator: Use ip addr show instead of ifconfig to get
