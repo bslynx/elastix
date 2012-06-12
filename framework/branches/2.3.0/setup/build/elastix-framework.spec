@@ -295,6 +295,10 @@ rm -rf $RPM_BUILD_ROOT
 /usr/share/elastix/privileged/*
 
 %changelog
+* Tue Jun 12 2012 Alex Villacis Lasso <a_villacis@palosanto.com>
+- FIXED: Framework: use ip addr show instead of ifconfig to get assigned IP 
+  address. Required for compatibility with Fedora 17.
+
 * Mon Jun 11 2012 Alex Villacis Lasso <a_villacis@palosanto.com>
 - FIXED: Framework: replace TERM=dumb with TERM=xterm in elastix-helper 
   environment, prevents error messages from appearing on stderr.
