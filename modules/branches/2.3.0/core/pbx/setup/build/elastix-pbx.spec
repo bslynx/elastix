@@ -295,6 +295,8 @@ fi
 
 %changelog
 * Tue Jun 12 2012 Alex Villacis Lasso <a_villacis@palosanto.com>
+- FIXED: Endpoint Configurator: Relax pattern matching in listmacip script to
+  account for differences in output format in nmap from CentOS to Fedora 17.
 - FIXED: Endpoint Configurator: Use ip addr show instead of ifconfig to get
   size of network mask for endpoint scan. Required for compatibility with 
   Fedora 17.
