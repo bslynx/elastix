@@ -32,6 +32,7 @@ include_once "libs/paloSantoForm.class.php";
 include_once "libs/paloSantoDB.class.php";
 include_once "modules/sec_ports/libs/paloSantoPortService.class.php";
 include_once "libs/paloSantoJSON.class.php";
+require_once "libs/paloSantoNetwork.class.php";
 
 function _moduleContent(&$smarty, $module_name)
 {
@@ -100,7 +101,6 @@ function _moduleContent(&$smarty, $module_name)
 
 function newRules($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf, $arrValues, $action="")
 {
-    $pRules = new paloSantoRules($pDB);
     $arrFormRules = createFieldForm($pDB,$arrValues);
     $oForm = new paloForm($smarty,$arrFormRules);
     $smarty->assign("SAVE", _tr("Save"));
@@ -503,12 +503,13 @@ function saveRules($smarty, $module_name, $local_templates_dir, &$pDB, $arrConf)
     }
     $arrValues['mask_source'] = ($arrValues['ip_source'] == "0.0.0.0") ? "0" : $arrValues['mask_source'];
     $arrValues['mask_destin'] = ($arrValues['ip_destin'] == "0.0.0.0") ? "0" : $arrValues['mask_destin'];
+    $pNet = new paloNetwork();
     $oPalo = new paloSantoRules($pDB);
     if($arrValues['ip_source'] != "0.0.0.0" && $arrValues['mask_source'] != "" && $arrValues['ip_source'] != ""){
-        $arrValues['ip_source'] = $oPalo->getNetAdress($arrValues['ip_source'],$arrValues['mask_source']);
+        $arrValues['ip_source'] = $pNet->getNetAdress($arrValues['ip_source'],$arrValues['mask_source']);
     }
     if($arrValues['ip_destin'] != "0.0.0.0" && $arrValues['mask_destin'] != "" && $arrValues['ip_destin'] != ""){
-        $arrValues['ip_destin'] = $oPalo->getNetAdress($arrValues['ip_destin'],$arrValues['mask_destin']);
+        $arrValues['ip_destin'] = $pNet->getNetAdress($arrValues['ip_destin'],$arrValues['mask_destin']);
     }
     if($id == ""){
         if( $oPalo->saveRule( $arrValues ) == true )
