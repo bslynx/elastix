@@ -551,19 +551,28 @@ function network()
 
 function subMask($ip)
 {
-    $total = 0;
-    $binario = "";
-    $arrIp = array();
-    $result = `ifconfig | grep $ip`;
-    /*     inet addr:192.168.1.135  Bcast:192.168.1.255  Mask:255.255.255.0*/
-    if(preg_match("/inet[[:space:]][[:alpha:]]{1,}:(([[:digit:]]*\.+[[:digit:]]{1,}){1,})[[:space:]]{1,}[[:alpha:]]{1,}:(([[:digit:]]*\.*[[:digit:]]{1,}){1,})[[:space:]]{1,}[[:alpha:]]{1,}:(([[:digit:]]*\.*[[:digit:]]{1,}){1,})/",$result,$regs)){
-        $arrIp = explode(".",$regs[5]);
-        foreach($arrIp as $key => $valor){
-            $binario = decbin($valor);
-            $total += substr_count($binario,"1");
+    $output = NULL;
+    exec('/sbin/ip addr', $output);
+    /*
+    [root@picosam ~]# ip addr show
+    1: lo: <LOOPBACK,UP,LOWER_UP> mtu 16436 qdisc noqueue state UNKNOWN 
+        link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+        inet 127.0.0.1/8 scope host lo
+        inet6 ::1/128 scope host 
+           valid_lft forever preferred_lft forever
+    2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UNKNOWN qlen 1000
+        link/ether 7a:35:22:cd:57:98 brd ff:ff:ff:ff:ff:ff
+        inet 192.168.5.130/16 brd 192.168.255.255 scope global eth0
+        inet6 fe80::7835:22ff:fecd:5798/64 scope link 
+           valid_lft forever preferred_lft forever
+     */
+    foreach ($output as $s) {
+        $regs = NULL;
+        if (preg_match('|inet (\d+.\d+.\d+.\d+)/(\d+)|', $s, $regs)) {
+            if ($regs[1] == $ip) return (int)$regs[2];
         }
-        return $total;
     }
+    return 32;  // No se pudo encontrar máscara de la red
 }
 
 function getPattonData($smarty, $module_name, $local_templates_dir, $dsnAsterisk, $dsnSqlite, $arrConf)

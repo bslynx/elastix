@@ -294,6 +294,10 @@ fi
 /etc/cron.daily/asterisk_cleanup
 
 %changelog
+- FIXED: Endpoint Configurator: Use ip addr show instead of ifconfig to get
+  size of network mask for endpoint scan. Required for compatibility with 
+  Fedora 17.
+
 * Tue Jun 05 2012 Alex Villacis Lasso <a_villacis@palosanto.com>
 - FIXED: installer.php: stop leaving temporary file /tmp/trunk_dump.sql around 
   after install or update.
