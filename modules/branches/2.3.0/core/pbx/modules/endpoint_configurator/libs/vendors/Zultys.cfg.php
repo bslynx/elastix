@@ -39,7 +39,7 @@ mode=0
     PrincipalFileZultys nos retorna la configuración específica para un teléfono ZIP2xX
     EndPoint Zultys
 */
-function PrincipalFileZultys($DisplayName, $id_device, $secret)
+function PrincipalFileZultys($DisplayName, $id_device, $secret, $arrParameters)
 {
      $content="[SIP_CONFIG]
 device_id=$id_device

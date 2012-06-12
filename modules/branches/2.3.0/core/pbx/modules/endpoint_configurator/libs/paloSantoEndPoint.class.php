@@ -299,10 +299,11 @@ class paloSantoEndPoint
      * @param   array   $vendors        Lista de vendedores por prefijo MAC
      * @param   array   $prevEndpoints  Lista previa de endpoints
      * @param   array   $pattonDevices  Lista de dispositivos Patton detectados
+     * @param   array   $KeyAsMAC       Indice del arreglo de salida como MAC 
      * 
      * @return  mixed   NULL en error, o lista de extensiones configurables 
      */
-    function endpointMap($sNetMask, $vendors, $prevEndpoints, $pattonDevices)
+    function endpointMap($sNetMask, $vendors, $prevEndpoints, $pattonDevices, $KeyAsMAC=false)
     {
         // Validación de parámetros
     	if (!preg_match('|^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/\d{1,2}$|', $sNetMask)) {
@@ -337,7 +338,7 @@ class paloSantoEndPoint
         exec('/usr/bin/elastix-helper listmacip '.$sNetMask, $output, $retval);
         if ($retval != 0) {
             $this->errMsg = 'Failed to map IPs';
-        	return NULL;
+            return NULL;
         }
         $listaEndpoints = array();
         foreach ($output as $linea) {
@@ -346,10 +347,10 @@ class paloSantoEndPoint
             
             if (isset($pattonByIp[$sEndpointIP])) {
                 // El endpoint listado es un Patton
-            	$pattonByIp[$sEndpointIP]['mac_adress'] = $sEndpointMac;
+                $pattonByIp[$sEndpointIP]['mac_adress'] = $sEndpointMac;
                 $listaEndpoints[] = $pattonByIp[$sEndpointIP];
             } elseif (isset($vendorByMac[$sMacVendor])) {
-            	$endpoint = array(
+                $endpoint = array(
                     'ip_adress'     =>  $sEndpointIP,
                     'mac_adress'    =>  $sEndpointMac,
                     'desc_vendor'   =>  $sDescVendor,
@@ -369,9 +370,16 @@ class paloSantoEndPoint
                     $endpoint['account'] = $prevEndpointByMac[$sEndpointMac]['account'];
                     $endpoint['id'] = $prevEndpointByMac[$sEndpointMac]['id'];
                 }
-                $listaEndpoints[] = $endpoint;
+                if($KeyAsMAC==true){
+                    $macTMP = strtolower($sEndpointMac);
+                    $macTMP = str_replace(":","",$macTMP);
+                    $listaEndpoints[$macTMP] = $endpoint;
+                }
+                else
+                    $listaEndpoints[] = $endpoint;
             }
         }
+
         if (!function_exists('_paloSantoEndPoint_cmp_endpoints')) {
             function _paloSantoEndPoint_cmp_endpoints(&$a, &$b)
             {
@@ -382,7 +390,7 @@ class paloSantoEndPoint
                 return 0;
             }
         }
-        usort($listaEndpoints, '_paloSantoEndPoint_cmp_endpoints');
+        uasort($listaEndpoints, '_paloSantoEndPoint_cmp_endpoints');
         return $listaEndpoints;
     }
 
@@ -458,7 +466,21 @@ class paloSantoEndPoint
             $arrModels['no_model'] = "-- {$arrLang["No Models"]} --";
         }
         $pDB->disconnect(); 
-	return $arrModels;
+        return $arrModels;
+    }
+
+    function getModelByVendor($id_vendor, $name_model)
+    {
+        $pDB = $this->connectDataBase("sqlite","endpoint");
+        if($pDB==false)
+            return false;
+
+        $sqlPeticion = "select m.* from vendor v inner join model m on v.id=m.id_vendor where v.id =? and m.name=?;";
+        $result = $pDB->getFirstRowQuery($sqlPeticion,true,array($id_vendor,$name_model)); //se consulta a la base endpoints
+
+        if(is_array($result) && count($result)>0)
+            return $result;
+        else return false;
     }
 
     function getModelById($id_model)
@@ -559,12 +581,11 @@ class paloSantoEndPoint
 
     function setParameters($arrParameters, $mac_adress, $pDB)
     {
-        foreach($arrParameters as $key => $value)
-        {
+        foreach($arrParameters as $key => $value){
             $sqlPeticion = " select count(*) as exist from parameter where name='$key' and id_endpoint = (select id from endpoint where mac_adress = '$mac_adress');";
             $result = $pDB->getFirstRowQuery($sqlPeticion,true); //se consulta a la base
-            if(is_array($result) && count($result)>0 && $result['exist']==1)
-            {
+
+            if(is_array($result) && count($result)>0 && $result['exist']==1){
                 $sqlPeticion = "update parameter set 
                                   value   = '$value'
                                   where name='$key' and id_endpoint = (select id from endpoint where mac_adress = '$mac_adress');";
@@ -579,9 +600,8 @@ class paloSantoEndPoint
                 $pDB->disconnect();
                 return false;
             }
-
-            return true;
         }
+        return true;
     }
 
     /** Funcion que compara si hay incongruencia de informacion entre las bases asterisk(mysql) y endpoint(sqlite)

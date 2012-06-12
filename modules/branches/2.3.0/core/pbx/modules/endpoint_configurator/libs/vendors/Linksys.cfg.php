@@ -3,7 +3,7 @@
     PrincipalFileLinksys nos retorna el contenido del archivo de configuracion de los EndPoint
     Linksys, para ello es necesario enviarle el UserID, Password.
 */
-function PrincipalFileLinksys($DisplayName, $id_device, $secret, $ipAdressServer)
+function PrincipalFileLinksys($DisplayName, $id_device, $secret, $arrParameters, $ipAdressServer)
 {
     $content="
 <flat-profile>
