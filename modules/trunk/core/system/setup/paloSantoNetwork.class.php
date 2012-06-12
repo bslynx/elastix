@@ -37,7 +37,7 @@ class paloNetwork
         $this->errMsg = "";
     }
 
-    private function obtener_tipo_interfase($if)
+    private static function obtener_tipo_interfase($if)
     {
         $filePattern = "/etc/sysconfig/network-scripts/ifcfg-";
         $fileIf      = $filePattern . $if;
@@ -85,7 +85,7 @@ class paloNetwork
      * 
      * @return array    Lista de interfases de red
      */
-    function obtener_interfases_red()
+    static function obtener_interfases_red()
     {
     	$interfases = array();
         
@@ -210,17 +210,17 @@ class paloNetwork
         
         // Tipo de interfaz de red configurada en /etc/sysconfig/network-scripts/
         foreach (array_keys($interfases) as $if_actual) {
-        	$interfases[$if_actual]['Type'] = $this->obtener_tipo_interfase($if_actual);
+        	$interfases[$if_actual]['Type'] = self::obtener_tipo_interfase($if_actual);
         }
 
         return $interfases;
     }
     
     // Es decir que no se incluye "lo" ni interfases virtuales
-    function obtener_interfases_red_fisicas()
+    static function obtener_interfases_red_fisicas()
     {
         $arrInterfasesRedPreliminar=array();
-        $arrInterfasesRedPreliminar=$this->obtener_interfases_red();
+        $arrInterfasesRedPreliminar=self::obtener_interfases_red();
     
         // Selecciono solo las interfases de red fisicas
         $arrInterfasesRed=array();
@@ -241,7 +241,7 @@ class paloNetwork
      *      host:       nombre de host para el sistema
      *      gateway:    El gateway predeterminado asignado para el sistema
      */
-    function obtener_configuracion_red()
+    static function obtener_configuracion_red()
     {
         $archivoResolv = "/etc/resolv.conf";
         $arrResult = array(
@@ -351,7 +351,7 @@ class paloNetwork
      *
      * @return string    Computed IPv4 network address
      */ 
-    function getNetAdress($ip, $mask)
+    static function getNetAdress($ip, $mask)
     {
         $octetos_ip = explode('.', $ip);
         $octetos_net = array(0, 0, 0, 0);
@@ -373,7 +373,7 @@ class paloNetwork
      * 
      * @return int      Number of bits set in the mask
      */
-    function maskToDecimalFormat($mask)
+    static function maskToDecimalFormat($mask)
     {
         $mask = explode(".", $mask);
         $decimal = 0;

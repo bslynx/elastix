@@ -129,6 +129,7 @@ fi
 
 %changelog
 * Mon Jun 11 2012 Alex Villacis Lasso <a_villacis@palosanto.com>
+- CHANGED: PaloSantoNetwork: make some functions static
 - FIXED: PaloSantoNetwork: rewrite network parameter query to stop using 
   ifconfig which changed output format between CentOS and Fedora 17. Add
   documentation on the output format of network query methods.
