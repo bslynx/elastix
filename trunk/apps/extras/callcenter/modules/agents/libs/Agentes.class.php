@@ -82,7 +82,7 @@ class Agentes
     function getAgents($id=null)
     {
         // CONSULTA DE LA BASE DE DATOS LA INFORMACIÓN DE LOS AGENTES
-        $paramQuery = array(); $where = array("estatus = 'A'"); $sWhere = '';
+        $paramQuery = array(); $where = array("type = 'Agent'", "estatus = 'A'"); $sWhere = '';
         if (!is_null($id)) {
         	$paramQuery[] = $id;
             $where[] = 'number = ?';
